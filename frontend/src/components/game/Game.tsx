@@ -7,7 +7,7 @@ import { Game } from "./scene/gameScene";
 
 export interface IGameProps {}
 export var USERNAME = '';
-export const socket = io('http://localhost:5000');
+export const socket = io('http://localhost:667');
 export default class IGame extends React.Component<IGameProps, any> {
   componentDidMount() {
     const config: Phaser.Types.Core.GameConfig = {
@@ -39,6 +39,6 @@ export default class IGame extends React.Component<IGameProps, any> {
   }
 
   public render() {
-    return <div id="phaser-game" />;
+    return <div id="phaser-game" style={{width: '50%'}}/>;
   }
 }

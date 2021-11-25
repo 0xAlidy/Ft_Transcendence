@@ -20,20 +20,20 @@ import IGame from './components/game/Game'
 
 function App() {
 		return (
-			<div>
+			<div >
 					<Banner />
-						<Route path="/auth" component={Auth} />
-					<Switch>
-					<Route exact path="/versus">
-						<IGame />
+					<Route path="/auth" component={Auth} />
+					<Route exact path="/dev" >
+							<Chat />
+							<IGame />
 					</Route>
-					<Route exact path="/versus/local-game">
+					{/* <Route exact path="/versus/local-game">
 						<LocalGame />
 					</Route>
 					<Route exact path="/versus/online-game">
 						<OnlineGame />
-					</Route>
-					<Route exact path="/chat">
+					</Route> 
+					 <Route exact path="/chat">
 						<Chat />
 					</Route>
 					<Route exact path="/scoreboard">
@@ -41,12 +41,9 @@ function App() {
 					</Route>
 					<Route exact path="/icon">
 						<Icon />
-					</Route>
-					<Route exact path="/">
-						<Homepage />
-					</Route>
-					</Switch>
-			</div>
+		</Route>*/}
+					<Route exact path="/" component={Homepage}/>
+				</div>
 		)
 }
 

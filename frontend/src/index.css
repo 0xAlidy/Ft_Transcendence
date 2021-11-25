@@ -17,10 +17,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.link{
-  
+#root{
+  width: 100%;;
 }
-
+.phaser-game{
+  width: 50%;
+}
 .loginButton
 {
   background-color: #333333;

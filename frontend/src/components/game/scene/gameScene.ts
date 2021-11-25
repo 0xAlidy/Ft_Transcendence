@@ -56,10 +56,10 @@ export class Game extends Scene {
 
 	preload ()
 	{
-		this.load.image('bar1', 'http://localhost:5000/bar.png');
-		this.load.image('background', 'http://localhost:5000/background.png');
-		this.load.image('ball1', 'http://localhost:5000/ball.png');
-		this.load.audio('pop', 'http://localhost:5000/popPong.mp3')
+		this.load.image('bar1', 'http://localhost:667/bar.png');
+		this.load.image('background', 'http://localhost:667/background.png');
+		this.load.image('ball1', 'http://localhost:667/ball.png');
+		this.load.audio('pop', 'http://localhost:667/popPong.mp3')
 	}
 
 	create ()

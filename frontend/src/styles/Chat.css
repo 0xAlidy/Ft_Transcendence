@@ -1,10 +1,10 @@
-.chat {
-    width: 60vw;
-    height: 65vh;
+.chatApp {
+    width: 20vw;
+    height: 30vh;
     display: flex;
     place-content: flex-start ;
     align-items: center;
-    flex-direction: column;
+    flex-direction: horizontal;
     flex-wrap: wrap;
     
 

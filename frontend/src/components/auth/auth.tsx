@@ -10,7 +10,7 @@ class Auth extends React.Component {
     const data = {
         code: values.code,
     }
-    axios.get('http://localhost:5000/app/token/?code=' + data.code)
+    axios.get('http://localhost:667/app/token/?code=' + data.code)
     .then(response => console.log(response));
     // Use the values to whatever you want.
   }

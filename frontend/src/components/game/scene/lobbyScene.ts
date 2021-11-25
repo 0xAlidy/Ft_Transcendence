@@ -10,11 +10,11 @@ export class Lobby extends Scene {
 	}
     preload()
     {
-        this.load.html('hostform', 'http://localhost:5000/hostForm.html');
-        this.load.html('joinform', 'http://localhost:5000/joinForm.html');
-        this.load.html('joinItem', 'http://localhost:5000/joinItem.html');
-        this.load.html('specItem', 'http://localhost:5000/specItem.html');
-        this.load.image('background', 'http://localhost:5000/background.png');
+        this.load.html('hostform', 'http://localhost:667/hostForm.html');
+        this.load.html('joinform', 'http://localhost:667/joinForm.html');
+        this.load.html('joinItem', 'http://localhost:667/joinItem.html');
+        this.load.html('specItem', 'http://localhost:667/specItem.html');
+        this.load.image('background', 'http://localhost:667/background.png');
     }
     create()
     {

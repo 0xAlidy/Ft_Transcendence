@@ -14,6 +14,6 @@ async function bootstrap() {
     credentials: true,
 });
   app.useStaticAssets(join(__dirname, '..', 'static'));
-  await app.listen(5000);
+  await app.listen(667);
 }
 bootstrap();

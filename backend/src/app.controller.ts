@@ -8,6 +8,8 @@ export class AppController {
     @Get('/token')
     async getToken(@Query('code') code: string)
     {
+        let resp;
+        let user;
         const headersRequest = {
             Authorization: ` Bearer`,
         };
@@ -18,13 +20,24 @@ export class AppController {
             code: code,
             redirect_uri: 'http://localhost:3000/auth/'
         }
-        const resp = await this.httpService
+        try{
+            resp = await this.httpService
             .post('https://api.intra.42.fr/oauth/token/', data)
-            .toPromise();
-        const user = await this.httpService
+			.toPromise();
+        }
+        catch(error){
+            console.log("Invalid auth")
+            return ('error');
+        }
+        try{
+            user = await this.httpService
             .get('https://api.intra.42.fr/v2/me', { headers: { Authorization: `Bearer ${resp.data.access_token}`}})
             .toPromise();
-        
+        }
+        catch(error){
+            console.log("Invalid auth")
+            return ('error');
+        }
         console.log(user.data);
         return(resp.data.access_token);
     }
