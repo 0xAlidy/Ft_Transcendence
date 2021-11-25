@@ -1,0 +1,37 @@
+.pong-banner {
+	display: none;
+	border-radius: 5vh;
+	height: 10vh;
+	background-color: #fee154;
+	align-items: center;
+	place-content: space-around;
+	padding-top: 1vh;
+	
+}
+
+.pong-button {
+	cursor: pointer;
+	Animate: Move in Bottom;
+	animation-timing-function: ease-out;
+	animation-duration: 300ms;
+
+	font-family: Courier Prime;
+	font-style: normal;
+	font-weight: bold;
+	font-size: 15px;
+	line-height: 17px;
+
+	color: #6A7985;
+	background: transparent;
+	text-decoration-line: none;
+}
+
+/*verifier si l'anim est fonctionnelle*/
+.pong-button:hover {
+	text-decoration-line: underline;
+}
+
+.button-profil {
+	display: flex;
+	margin-right: 35vw;
+}

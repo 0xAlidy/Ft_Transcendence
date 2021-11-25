@@ -1,0 +1,44 @@
+body{
+	background-color:  rgb(254,225,84);
+}
+.container {
+	display: grid;
+	grid-template-columns: 0.6fr 2fr 0.4fr;
+	grid-template-rows: 0.4fr 2.1fr 0.5fr;
+	gap: 0px 0px;
+	grid-template-areas:
+	  ". logo ."
+	  "menubox jeu ."
+	  ". . .";
+  }
+  .logo {
+	justify-self: center;
+	align-self: center;
+	grid-area: logo;
+  }
+
+.menubox {
+	flex-direction: column;
+	justify-self: center;
+	align-self: center;
+	grid-area: menubox;
+	width: 120px;
+	height: 500px;
+	max-height: 600;
+	max-width: 120;
+	background-color: rgb(51, 51, 51);
+	border-radius: 60px;
+}
+
+  .openbutton {
+
+	margin-left: 29;
+	margin-top: 29;
+	filter: invert(91%) sepia(16%) saturate(7225%) hue-rotate(348deg) brightness(103%) contrast(89%);
+}
+
+  .jeu {
+	justify-content: center;
+	align-self: center;
+	grid-area: jeu;
+  }

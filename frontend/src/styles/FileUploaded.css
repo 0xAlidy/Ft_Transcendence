@@ -1,0 +1,30 @@
+.file-uploaded {
+    display: none;
+}
+
+.file-to-upload {
+    display: flex;
+    font-family: sans-serif;
+    text-align: center;
+    color: #6A7985;
+    
+    background: transparent;
+}
+
+.label-file {
+    cursor: pointer;
+    color: #6A7985;
+    font-weight: bold;
+    background: transparent;
+
+    font-family: Courier Prime;
+	font-style: normal;
+	font-weight: bold;
+	font-size: 20px;
+	line-height: 22px;
+    color: #6A7985;
+
+    cursor: pointer;
+	background: transparent;
+	text-decoration-line: none;
+}

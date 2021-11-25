@@ -1,0 +1,14 @@
+canvas {
+	display:flex;
+	place-content: center;
+	align-items: flex-end;
+	overflow: hidden;
+	width: 90vw;
+	height: 10vh;
+  }
+
+.footer {
+	display:flex;
+	place-content: center;
+	align-items: flex-end;
+}

@@ -1,0 +1,333 @@
+/* /////////////////////           Profil           ///////////////////// */
+
+.pong-pannel-profil-toggle-button {
+	background: none;
+	outline: none;
+	border: none;
+	font-weight: 600;
+	cursor: pointer;
+	align-self: self-start;
+	padding: 0;
+	color: yellow;
+	align-self: flex-end;
+}
+
+.pong-pannel-profil-closed {
+	width: 100%;
+	max-width: 100%;
+	top: 5%;
+	display: flex;
+	justify-content: center;
+	position: relative;
+}
+
+.pong-pannel-profil-closed > button {
+	color: black;
+}
+
+.pong-pannel-profil-toggle-button-up {
+	font-weight: 600;
+	cursor: pointer;
+	align-self: flex-end;
+	background: none;
+	outline: none;
+	border: none;
+	color: yellow;
+	display: inline-block;
+	padding-top: 3%;
+	margin: 0 2%;
+}
+
+.pong-pannel-profil-up {
+	width:310%;
+	height:85px;
+	background:grey;
+	-webkit-border-radius:100px;
+	-moz-border-radius:100px;
+	-o-border-radius:100px;
+	
+	border-radius:100px;
+	position: absolute;
+	border: solid;
+	z-index: -1;
+	top: 3%;
+}
+
+/* /////////////////////          Profil:icone          ///////////////////// */
+
+.pong-pannel-profil-icone-button-close {
+	font-weight: 600;
+	cursor: pointer;
+	align-self: flex-end;
+	background: none;
+	outline: none;
+	border: none;
+	color: yellow;
+	display: inline-block;
+	padding-top: 3%;
+	margin: 0 2%;
+}
+
+.pong-profil-icon-item-cover {
+	height: 50px;
+	width: 50px;
+	border-radius: 20px;
+	object-fit: cover;
+	padding-top: 30px;
+    display: block-inline;
+}
+
+/* /////////////////////          Profil:disconnect          ///////////////////// */
+
+.pong-pannel-profil-disconnect-button-close {
+	font-weight: 600;
+	cursor: pointer;
+	align-self: flex-end;
+	background: none;
+	outline: none;
+	border: none;
+	color: yellow;
+	display: inline-block;
+	padding-top: 3%;
+	margin: 0 2%;
+}
+
+/* /////////////////////          Profil:animation          ///////////////////// */
+
+.animation {
+	animation: fadein 1.5s;
+    -moz-animation: fadein 1.5s; /* Firefox */
+    -webkit-animation: fadein 1.5s; /* Safari et Chrome */
+    -o-animation: fadein 1.5s; /* Opera */
+	z-index: -1;
+}
+
+#slide {
+    position: absolute;
+    left: -100px;
+    -webkit-animation: slide 0.5s forwards;
+    -webkit-animation-delay: 2s;
+    animation: slide 0.5s forwards;
+}
+
+@-webkit-keyframes slide {
+    100% { left: 0; }
+}
+
+@keyframes slide {
+    100% { left: 0; }
+}
+
+@keyframes fadein {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-moz-keyframes fadein { /* sur Firefox */
+	from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-webkit-keyframes fadein { /* sur Safari et Chrome */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-o-keyframes fadein { /* sur Opera */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+/* /////////////////////           CHAT           ///////////////////// */
+
+.pong-pannel-chat {
+	background-color: black;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	width: 15%;
+	height: 60%;
+	position: absolute;
+	right: 0%;
+	bottom: 10%;
+}
+
+.pong-pannel-chat-toggle-button {
+	background: none;
+	outline: none;
+	border: none;
+	font-weight: 600;
+	cursor: pointer;
+	color: yellow;
+	align-self: flex-end;
+	display: flex;
+	position: absolute;
+}
+
+.pong-pannel-chat-closed {
+	width: 100%;
+	max-width: 100%;
+	top: 42%;
+	display: flex;
+	justify-content: center;
+	position: absolute;
+}
+
+.pong-pannel-chat-closed > button {
+	color: black;
+}
+
+.pong-pannel-chat-button-close {
+	font-weight: 600;
+	cursor: pointer;
+	align-self: flex-end;
+	background: none;
+	outline: none;
+	border: none;
+	color: yellow;
+	display: flex;
+	position: absolute;
+	top: 0%;
+	right: 0%;
+}
+
+/* /////////////////////           SUCCESS           ///////////////////// */
+
+.pong-pannel-success {
+	background-color: black;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	width: 15%;
+	height: 60%;
+	position: absolute;
+	right: 0%;
+	bottom: 10%;
+}
+
+.pong-pannel-success-toggle-button {
+	background: none;
+	outline: none;
+	border: none;
+	font-weight: 600;
+	cursor: pointer;
+	padding: 0;
+	color: yellow;
+	align-self: flex-end;
+	display: flex;
+	position: absolute;
+}
+
+.pong-pannel-success-closed {
+	width: 100%;
+	max-width: 100%;
+	top: 68%;
+	display: flex;
+	justify-content: center;
+	position: absolute;
+}
+
+.pong-pannel-success-closed > button {
+	color: black;
+}
+
+.pong-pannel-success-button-close {
+	font-weight: 600;
+	cursor: pointer;
+	align-self: flex-end;
+	background: none;
+	outline: none;
+	border: none;
+	color: yellow;
+	display: flex;
+	position: absolute;
+	top: 0%;
+	right: 0%;
+}
+
+/* /////////////////////           MatchMaking           ///////////////////// */
+
+.pong-pannel-match {
+	background-color: black;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	width: 15%;
+	height: 60%;
+	position: absolute;
+	right: 0%;
+	bottom: 10%;
+
+}
+
+.pong-pannel-match-toggle-button {
+	background: none;
+	outline: none;
+	border: none;
+	font-weight: 600;
+	cursor: pointer;
+	padding: 0;
+	color: yellow;
+	align-self: flex-end;
+	display: flex;
+	position: absolute;
+}
+
+.pong-pannel-match-closed {
+	width: 100%;
+	max-width: 100%;
+	top: 92%;
+	display: flex;
+	justify-content: center;
+	position: absolute;
+}
+
+.pong-pannel-match-closed > button {
+	color: black;
+}
+
+.pong-pannel-match-button-close {
+	font-weight: 600;
+	cursor: pointer;
+	align-self: flex-end;
+	background: none;
+	outline: none;
+	border: none;
+	color: yellow;
+	display: flex;
+	position: absolute;
+	top: 0%;
+	right: 0%;
+}
+
+/* /////////////////////           Layout           ///////////////////// */
+
+
+.pong-pannel-layout {
+	width: 3.5%;
+	min-width: 85px;
+	height:40%;
+	min-height: 350px;
+	background:grey;
+	-webkit-border-radius:100px;
+	-moz-border-radius:100px;
+	-o-border-radius:100px;
+	border-radius:100px;
+	position: absolute;
+	border: solid;
+	margin: 32px;
+	bottom: 40%;
+	z-index: 0;
+}

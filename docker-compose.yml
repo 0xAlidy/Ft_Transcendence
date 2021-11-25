@@ -1,0 +1,73 @@
+version: '3.9'
+
+services:
+  database:
+    container_name: database
+    image: "postgres"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=user42
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=database
+    restart: always
+    ports:
+      - 5432:5432
+    #networks:
+      #- app
+
+  pgadmin:
+    container_name: pgadmin
+    depends_on:
+      - database
+    image: "dpage/pgadmin4"
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=user42@42lyon.fr
+      - PGADMIN_DEFAULT_PASSWORD=password
+    ports:
+      - 5050:80
+    #volumes:
+      #- pgadmin:/var/lib/pgadmin
+    #networks:
+      #- app
+
+  backend:
+    container_name: backend
+    depends_on:
+      - database
+    build: ./backend/
+    volumes:
+      - ./backend/:/usr/src/app
+      #- /usr/src/app/node_modules
+    stdin_open: true
+    ports:
+      - 667:667
+      - 9229:9229 # debug port
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    #networks:
+      #- app
+
+  frontend:
+    container_name: frontend
+    build: ./frontend/
+    volumes:
+      - ./frontend/:/usr/src/app
+      #- /usr/src/app/node_modules
+    command: npm start
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - 3000:3000
+    stdin_open: true
+    #networks:
+      #- app
+
+volumes:
+  postgres:
+  #pgadmin:
+
+#networks:
+  #app:
+    #driver: bridge
