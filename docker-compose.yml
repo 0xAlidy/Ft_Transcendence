@@ -10,6 +10,7 @@ services:
       - POSTGRES_USER=user42
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=database
+      - IP=${IP}
     restart: always
     ports:
       - 5432:5432
@@ -25,6 +26,7 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=user42@42lyon.fr
       - PGADMIN_DEFAULT_PASSWORD=password
+      - IP=${IP}
     ports:
       - 5050:80
     #volumes:
@@ -46,6 +48,7 @@ services:
       - 9229:9229 # debug port
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - IP=${IP}
     #networks:
       #- app
 
@@ -58,6 +61,7 @@ services:
     command: npm start
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - IP=${IP}
     ports:
       - 3000:3000
     stdin_open: true
