@@ -24,6 +24,7 @@ export class Login extends Scene {
 			{
 				var html = document.getElementById('username') as HTMLInputElement;
 				var inputValue : string = html.value;
+				console.log('wtf: '+ inputValue);
 				//  Have they entered anything?
 				if (inputValue !== '')
 				{

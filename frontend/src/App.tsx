@@ -16,34 +16,35 @@ import React from 'react';
 import Auth from './components/auth/auth'
 import { Route, Switch} from "react-router-dom";
 import IGame from './components/game/Game'
+import Logo from './components/Homepage/Logo'
 
 
 function App() {
 		return (
-			<div >
-					<Banner />
-					<Route path="/auth" component={Auth} />
-					<Route exact path="/dev" >
-							<Chat />
-							<IGame />
-					</Route>
-					{/* <Route exact path="/versus/local-game">
-						<LocalGame />
-					</Route>
-					<Route exact path="/versus/online-game">
-						<OnlineGame />
-					</Route> 
-					 <Route exact path="/chat">
-						<Chat />
-					</Route>
-					<Route exact path="/scoreboard">
-						<Scoreboard />
-					</Route>
-					<Route exact path="/icon">
-						<Icon />
-		</Route>*/}
-					<Route exact path="/" component={Homepage}/>
+			<Switch>
+			<Route exact path="/game">
+			</Route>
+			<Route exact path="/dev" >
+				<div className="container">
+					<Chat />
+				<div className="game">
+					<IGame />
 				</div>
+				<div className="menu"></div>
+				<div className="logo">
+				</div>
+				<div className="profile"></div>
+					{/* <Banner />
+					<Route path="/auth" component={Auth} />
+						<div className="horizontal">
+							<div className="limit"> 
+								
+							</div>
+						</div> 
+					<Route exact path="/" component={Homepage}/> */}
+			</div>
+			</Route>
+			</Switch>
 		)
 }
 

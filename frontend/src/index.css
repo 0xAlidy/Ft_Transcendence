@@ -17,12 +17,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-#root{
-  width: 100%;;
-}
-.phaser-game{
-  width: 50%;
-}
 .loginButton
 {
   background-color: #333333;
@@ -53,3 +47,65 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+
+
+
+
+
+
+
+
+
+#root{
+  width: 100%;;
+}
+/* 
+ .game{
+  width: 31%;
+  height: 100%;
+  position: relative;
+  top: 50%;
+  left: 35%; */
+/* } */
+/*
+.horizontal{
+  display:flex;
+  height: 100%;
+  flex-direction: row;
+} */
+
+.container {
+
+  height: 100%;
+  width: 100%;
+  display: grid; 
+  grid-template-columns: 25% 50% 25%; 
+  grid-template-rows: 15% 80%; 
+  gap: 40px 20px; 
+  grid-template-areas: 
+    ". profile ."
+    "menu game chat"; 
+}
+@media screen and (max-width: 1000px) {
+  .container {
+
+    height: 100%;
+    width: 100%;
+    display: grid; 
+    grid-template-columns: 100%; 
+    grid-template-rows: 10% 50% 40%; 
+    gap: 40px 20px; 
+    grid-template-areas: 
+      "logo"
+      "game" 
+      "chat"; 
+  }
+}
+
+.menu { grid-area: menu; }
+.game { grid-area: game; }
+.chat { grid-area: chat; background-color: #fee154; border-radius: 30px 30px 0px 30px;}
+.profile { grid-area: profile; }
+.logo { grid-area: logo; }

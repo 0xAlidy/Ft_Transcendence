@@ -50,7 +50,7 @@ export default class Chat extends React.Component{
 	render(){
 		return (
 			
-			<div className="chatApp" >
+			<div className="chat" >
 
 				<div className="username">
 					<input type="text" placeholder="enter a pseudo" id="username" ref={this.user} />

@@ -15,9 +15,17 @@ export default class IGame extends React.Component<IGameProps, any> {
         scale:{
             mode: Phaser.Scale.FIT,
             parent: 'phaser-game',
-            autoCenter: Phaser.Scale.CENTER_BOTH,
+            autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
             width: 800,
             height: 600,
+            min:{
+                width: 400,
+                height: 300,
+            },
+            max:{
+              width: 800,
+              height: 600,
+            }
         },
         physics: {
             default: 'arcade',
@@ -39,6 +47,6 @@ export default class IGame extends React.Component<IGameProps, any> {
   }
 
   public render() {
-    return <div id="phaser-game" style={{width: '50%'}}/>;
+    return <div id="phaser-game"/>;
   }
 }
