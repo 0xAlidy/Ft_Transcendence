@@ -5,6 +5,7 @@
   background: rgba(255, 255, 255, 0.2);
   border-radius: 30px;
 }
+
 .logo
 {
   display: flex;
@@ -12,6 +13,7 @@
   color:#1f1f1f;
   align-items: center;
 }
+
 .item {
   width: 50vw;
 	margin-top: 25%;

@@ -41,9 +41,9 @@ body {
   background-color: #fee154;
   width: 20%;
   border: #1f1f1f;
-  border-radius: 60px;
-  height: 98px;
-  font-size: 500%;
+  border-radius: 20px;
+  padding: 15px;
+  font-size: calc(20px + 2vw);;
   color: #1f1f1f;
   font-weight: bold;
   align-self: center;
@@ -55,6 +55,7 @@ body {
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 }
+
 .loginButton:hover
 {
   width: 20%;
@@ -79,18 +80,18 @@ code {
     monospace;
 }
 
-
-
-
-
-
-
-
+@keyframes opacite {
+  0%   {opacity: 0%;}
+  25%  {opacity: 0%;}
+  50%  {opacity: 50%;}
+  75% {opacity: 100%;}
+}
 
 
 
 #root{
-  width: 100%;;
+  width: 100%;
+  box-sizing: border-box;
 }
 /*
  .game{

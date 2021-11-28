@@ -18,7 +18,8 @@ const icon = {
 function Logo() {
   return (
     <motion.svg
-      viewBox="-180 0 1100 250"
+      viewBox="-150 0 1100 250"
+      preserveAspectRatio="xMidYMin"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className="item"
