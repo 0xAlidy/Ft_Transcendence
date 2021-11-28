@@ -3,25 +3,39 @@ import "../../styles/Chat.css"
 import { io } from "socket.io-client";
 import room from './class';
 import "../../styles/Chat.css"
+import Send from '../../assets/send.png'
 
 export const socket = io('http://localhost:667');
 
-
+class Message{
+	message: string;
+	Time: number;
+	dest: string;
+	sender: string;
+	constructor(msg:string , dest:string, sender: string){
+		this.message = msg;
+		this.sender = sender;
+		this.dest = dest;
+		this.Time = Date.now();
+	}
+}
 
 export default class Chat extends React.Component{
-	
+
 	//---------//
-	
+
 	roomList: room[];
 	username: string;
+	inputText: string;
 	general: room;
-	
+
 	//---------//
-	
+
 	constructor(props:any) {
 		super(props)
 		this.roomList = [];
 		this.username = "";
+		this.inputText= 'NULL';
 		this.general = {name:"general", password:"", userList:[]};
 		this.roomList.push(this.general);
 
@@ -29,11 +43,11 @@ export default class Chat extends React.Component{
 			console.log(data.rooms)
 		});
 	}
-	
+
 	//---------//
-	
+
 	private user = React.createRef<HTMLInputElement>();
-	
+
 	//---------//
 
 	getUsername() {
@@ -46,21 +60,40 @@ export default class Chat extends React.Component{
 		console.log("update roomList")
 		socket.emit("getRoomList");
 	};
+	sendMessage(){
+		var input = (document.getElementById('inputText') as HTMLInputElement).value;
+		var ne = new Message(input, '<yourDest>', '<yourUsername>'); //a envoyer a la database, le back dispatchera les messages aux user concerne. le back enverra un msg socket pour refresh les msg affiche
+		console.log(ne);
+	}
+	menu(){
 
+	}
+	updateMessage(){
+
+	}
 	render(){
 		return (
-			
-			<div className="chat" >
-
-				<div className="username">
-					<input type="text" placeholder="enter a pseudo" id="username" ref={this.user} />
-					<button type="submit" onClick={() => this.getUsername()}>Send</button>
+			<div className="chatContainer">
+				<div className="chatMenu">
 				</div>
-
-				<div className="roomlist">
-					<button type="submit" id="getRoom" onClick={() => this.getRoomList()}>Room</button>
+				<div className="chattext">
+				<input placeholder="     Text message" id='inputText' className="inputChat" /></div>
+				<div className="chatsend">
+					<img src={Send} alt="mabite" className="send" defaultValue='NULL' width='22px' height='22px' onClick={this.sendMessage}/>
 				</div>
-
+				<div className="back" ></div>
+				<div className="chatinfo">ROOM</div>
+				<div className="chatmessage">
+				</div>
+				{/* <div className="chat" >
+					<div className="username">
+						<input type="text" placeholder="enter a pseudo" id="username" ref={this.user} />
+						<button type="submit" onClick={() => this.getUsername()}>Send</button>
+					</div>
+					<div className="roomlist">
+						<button type="submit" id="getRoom" onClick={() => this.getRoomList()}>Room</button>
+					</div>
+				</div> */}
 			</div>
 		)
 	}
@@ -103,9 +136,9 @@ export default class Chat extends React.Component{
 
 
 
-		
-		
-		
+
+
+
 
 // 	    	<div className="select">
 // 	    			<select className="menu-input" id="selectroom" onClick={getSelect}>
@@ -130,15 +163,15 @@ export default class Chat extends React.Component{
 // 	    			<input className="menu-input" id="inputPassRoom" placeholder="add a password (optionnal)"></input>
 // 	    			<button className="menu-button" id="addbutton" onClick={addRoom}>add</button>
 // 	    	</div>
-		
+
 
 
 
 // 	    	<div className="chat">
 // 	    		<ul id="chatbox">
-// 	    		</ul>  
+// 	    		</ul>
 // 	    	</div>
-		
+
 
 
 // 	    	<div className="chat-input">
@@ -146,5 +179,5 @@ export default class Chat extends React.Component{
 // 	    			<img src="/assets/send.png" className="button-send" onClick={sendChatMessage}></img>
 // 	    	</div>
 // 	    </div>
-// )	    
-// }   
+// )
+// }

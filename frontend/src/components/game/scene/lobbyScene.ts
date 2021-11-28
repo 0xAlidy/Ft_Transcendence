@@ -10,6 +10,7 @@ export class Lobby extends Scene {
 	}
     preload()
     {
+		this.cameras.main.backgroundColor.setTo(31, 31, 31);
         this.load.html('hostform', 'http://localhost:667/hostForm.html');
         this.load.html('joinform', 'http://localhost:667/joinForm.html');
         this.load.html('joinItem', 'http://localhost:667/joinItem.html');

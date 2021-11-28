@@ -7,7 +7,7 @@ export class Login extends Scene {
 	}
 	preload ()
 	{
-		this.cameras.main.backgroundColor.setTo(254,225,84);
+		this.cameras.main.backgroundColor.setTo(31, 31, 31);
 		this.load.html('nameform', 'http://localhost:667/loginForm.html');
 		this.load.image('background', 'http://localhost:667/background.png');
 	}

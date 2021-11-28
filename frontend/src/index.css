@@ -5,7 +5,7 @@ body {
 	padding: 0;
 	margin: 0;
 	display: flex;
-	
+
 	justify-content: center;
 	perspective: 500px;
 	background: #1f1f1f;
@@ -17,23 +17,33 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.link{
+  visibility: hidden;
+}
 .loginButton
 {
-  background-color: #333333;
-  width: 10vw;
+  visibility: visible;
+  background-color: #fee154;
+  width: 120%;
+  border: #1f1f1f;
   border-radius: 60px;
-  height: 5vw;
-  font-size: 2vw;
+  height: 98px;
+  font-size: 500%;
+  color: #1f1f1f;
+  font-weight: bold;
   align-self: center;
   margin-top: 15vh;
 }
 .loginButton:hover
 {
-  background-color: #fee154;
-  width: 10vw;
+  background-color: #fee254a4;
+  width: 120%;
+  border: #1f1f1f;
   border-radius: 60px;
-  height: 5vw;
-  font-size: 2vw;
+  height: 98px;
+  font-size: 500%;
+  color: #1f1f1f;
+  font-weight: bold;
   align-self: center;
   margin-top: 15vh;
 }
@@ -61,7 +71,7 @@ code {
 #root{
   width: 100%;;
 }
-/* 
+/*
  .game{
   width: 31%;
   height: 100%;
@@ -76,36 +86,37 @@ code {
   flex-direction: row;
 } */
 
-.container {
+.grid {
 
   height: 100%;
   width: 100%;
-  display: grid; 
-  grid-template-columns: 25% 50% 25%; 
-  grid-template-rows: 15% 80%; 
-  gap: 40px 20px; 
-  grid-template-areas: 
+  display: grid;
+  grid-template-columns: 20% 45% 25%;
+  grid-template-rows: 15% 80%;
+  gap: 5% 5%;
+  grid-template-areas:
     ". profile ."
-    "menu game chat"; 
+    "menu game chat ";
 }
+
 @media screen and (max-width: 1000px) {
-  .container {
+  .grid {
 
     height: 100%;
     width: 100%;
-    display: grid; 
-    grid-template-columns: 100%; 
-    grid-template-rows: 10% 50% 40%; 
-    gap: 40px 20px; 
-    grid-template-areas: 
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 10% 50% 40%;
+    gap: 40px 20px;
+    grid-template-areas:
       "logo"
-      "game" 
-      "chat"; 
+      "game"
+      "chat";
   }
 }
 
 .menu { grid-area: menu; }
 .game { grid-area: game; }
-.chat { grid-area: chat; background-color: #fee154; border-radius: 30px 30px 0px 30px;}
+/* .chat { grid-area: chat; background-color: #333333; border-radius: 35px 35px 0px 35px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px;} */
 .profile { grid-area: profile; }
 .logo { grid-area: logo; }

@@ -22,30 +22,32 @@ import Logo from './components/Homepage/Logo'
 function App() {
 		return (
 			<Switch>
-			<Route exact path="/game">
-			</Route>
-			<Route exact path="/dev" >
-				<div className="container">
-					<Chat />
-				<div className="game">
-					<IGame />
-				</div>
-				<div className="menu"></div>
-				<div className="logo">
-				</div>
-				<div className="profile"></div>
-					{/* <Banner />
-					<Route path="/auth" component={Auth} />
-						<div className="horizontal">
-							<div className="limit"> 
-								
-							</div>
-						</div> 
-					<Route exact path="/" component={Homepage}/> */}
-			</div>
-			</Route>
+				<Route exact path="/">
+						<Homepage />
+				</Route>
+				<Route exact path="/game">
+						<IGame />
+				</Route>
+				<Route exact path="/dev" >
+					<div className="grid">
+						<Chat />
+						<div className="game">
+							<IGame />
+						</div>
+						<div className="menu"></div>
+						<div className="logo"></div>
+						<div className="profile"></div>
+					</div>
+				</Route>
 			</Switch>
 		)
 }
 
+					{/* <Banner />
+					<Route path="/auth" component={Auth} />
+						<div className="horizontal">
+							<div className="limit">
+
+							</div>
+					</div>*/}
 export default App

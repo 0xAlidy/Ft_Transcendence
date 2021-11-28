@@ -56,6 +56,7 @@ export class Game extends Scene {
 
 	preload ()
 	{
+		this.cameras.main.backgroundColor.setTo(31, 31, 31);
 		this.load.image('bar1', 'http://localhost:667/bar.png');
 		this.load.image('background', 'http://localhost:667/background.png');
 		this.load.image('ball1', 'http://localhost:667/ball.png');
