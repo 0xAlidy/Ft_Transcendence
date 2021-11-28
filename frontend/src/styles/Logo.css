@@ -5,14 +5,17 @@
   background: rgba(255, 255, 255, 0.2);
   border-radius: 30px;
 }
+
 .logo
 {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .item {
   width: 50vw;
+  min-width: 300px;
 	margin-top: 35vh;
   overflow: visible;
   stroke: #6A7985;

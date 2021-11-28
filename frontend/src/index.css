@@ -20,32 +20,26 @@ body {
 .link{
   visibility: hidden;
 }
+
 .loginButton
 {
   visibility: visible;
   background-color: #fee154;
-  width: 120%;
   border: #1f1f1f;
   border-radius: 60px;
-  height: 98px;
-  font-size: 500%;
+  padding: 15px;
+  font-size: calc(20px + 2vw);;
   color: #1f1f1f;
   font-weight: bold;
   align-self: center;
   margin-top: 15vh;
+  animation: 3s opacite ease-in;
 }
+
 .loginButton:hover
 {
   background-color: #fee254a4;
-  width: 120%;
-  border: #1f1f1f;
-  border-radius: 60px;
-  height: 98px;
-  font-size: 500%;
-  color: #1f1f1f;
-  font-weight: bold;
-  align-self: center;
-  margin-top: 15vh;
+  cursor: pointer;
 }
 
 html, body {
@@ -58,18 +52,18 @@ code {
     monospace;
 }
 
-
-
-
-
-
-
-
+@keyframes opacite {
+  0%   {opacity: 0%;}
+  25%  {opacity: 0%;}
+  50%  {opacity: 50%;}
+  75% {opacity: 100%;}
+}
 
 
 
 #root{
-  width: 100%;;
+  width: 100%;
+  box-sizing: border-box;
 }
 /*
  .game{
