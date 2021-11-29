@@ -1,22 +1,18 @@
 import Logo from './Logo'
 import React from 'react'
-import '../../styles/Homepage/Homepage.css'
+import '../../styles/HomePage/HomePage.css'
 
-const Homepage = () => {
+interface HomePageProps {
+  setIsConnect(value:boolean):void;
+}
+const Homepage = (props:HomePageProps) => {
   
   function handleButtonClick(){
-    console.log("HIT");
-        /*this.setState({
-          div1Shown: false,
-        });
-        if (this.state.div1Shown)
-          (document.getElementById('item') as HTMLElement).style.marginTop = '5%';
-        else
-          (document.getElementById('item') as HTMLElement).style.marginTop = '25%';*/
+    props.setIsConnect(true);
   }
 
   return (
-    <div id="Homepage">
+    <div id="HomePage">
       <Logo />
       <button id="loginButton" onClick={handleButtonClick}>PLAY</button>
     </div>

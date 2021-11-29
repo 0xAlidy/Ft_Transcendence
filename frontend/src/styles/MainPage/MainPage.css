@@ -1,0 +1,43 @@
+#MainPage {
+    background: #1F1F1F;
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 20% 45% 25%;
+    grid-template-rows: 15% 80%;
+    gap: 5% 5%;
+    grid-template-areas:
+      ". profile ."
+      "menu game chat ";
+}
+
+  
+.menu { grid-area: menu; }
+.game { grid-area: game; }
+/* .chat { grid-area: chat; background-color: #333333; border-radius: 35px 35px 0px 35px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px;} */
+.profile { grid-area: profile; }
+.logo { grid-area: logo; }
+
+/*              */        
+/*  Responsive  */
+/*              */
+
+@media screen and (max-width: 1000px) {
+    #MainPage {
+  
+      height: 100%;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 100%;
+      grid-template-rows: 10% 50% 40%;
+      gap: 40px 20px;
+      grid-template-areas:
+        "logo"
+        "game"
+        "chat";
+    }
+}
+
+/*              */        
+/*  Animations  */
+/*              */

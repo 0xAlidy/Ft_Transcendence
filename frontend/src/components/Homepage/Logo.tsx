@@ -1,4 +1,4 @@
-import '../../styles/Homepage/logo.css'
+import '../../styles/HomePage/logo.css'
 import { motion } from "framer-motion";
 import React from 'react'
 
@@ -30,8 +30,8 @@ function Logo() {
         initial="hidden"
         animate="visible"
         transition={{
-          default: { duration: 2, ease: "easeInOut" },
-          fill: { duration: 2, ease: [1, 0, 0.8, 1] }
+          default: {duration: 2, ease: "easeInOut"},
+          fill: {duration: 2, ease: [1, 0, 0.8, 1]}
         }}
       />
         <motion.path
