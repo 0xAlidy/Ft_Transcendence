@@ -1,22 +1,24 @@
 import * as React from 'react'
-//import queryString from 'query-string';
-//import axios from 'axios';
+import queryString from 'query-string';
+import axios from 'axios'
+import { useLocation } from 'react-router';
 
-class Auth extends React.Component {
-    /*componentDidMount() {
-    const { location: { search } } = this.props;
-    const values = queryString.parse(search);
-    console.log(values);
+function Auth(){
+    console.log(queryString.parse(useLocation().search));
     const data = {
-        code: values.code,
+        code: queryString.parse(useLocation().search).code,
     }
     axios.get('http://localhost:667/app/token/?code=' + data.code)
     .then(response => console.log(response));
-    //Use the values to whatever you want.
-  }
+    return(<div/>)
+//     componentDidMount() {
+//     const data = {
+//         code: values.code,
+//     }
+//     axios.get('http://localhost:667/app/token/?code=' + data.code)
+//     .then(response => console.log(response));
+//     //Use the values to whatever you want.
+//   }
 
-  render() {
-      return(<div><h1>Title</h1></div>)
-  }*/
 }
 export default Auth

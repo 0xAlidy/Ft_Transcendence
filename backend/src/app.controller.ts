@@ -18,7 +18,7 @@ export class AppController {
             client_id: 'd42d44ee8052b31b332b4eb135916c028f156dbb4d3c7e277030f3b2bc08d87c',
             client_secret: '516c1e7a1740a373e17e3c9479a383135671934c408e191cd7aec9b0a996f10e',
             code: code,
-            redirect_uri: 'http://localhost:3000/auth/'
+            redirect_uri: 'http://localhost:3000/code/'
         }
         try{
             resp = await this.httpService
