@@ -11,11 +11,11 @@ export class Lobby extends Scene {
     preload()
     {
 		this.cameras.main.backgroundColor.setTo(31, 31, 31);
-        this.load.html('hostform', 'http://localhost:667/hostForm.html');
-        this.load.html('joinform', 'http://localhost:667/joinForm.html');
-        this.load.html('joinItem', 'http://localhost:667/joinItem.html');
-        this.load.html('specItem', 'http://localhost:667/specItem.html');
-        this.load.image('background', 'http://localhost:667/background.png');
+        this.load.html('hostform', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/hostForm.html');
+        this.load.html('joinform', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/joinForm.html');
+        this.load.html('joinItem', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/joinItem.html');
+        this.load.html('specItem', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/specItem.html');
+        this.load.image('background', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/background.png');
     }
     create()
     {

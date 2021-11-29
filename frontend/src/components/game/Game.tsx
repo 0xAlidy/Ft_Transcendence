@@ -7,7 +7,7 @@ import { Game } from "./scene/gameScene";
 
 export interface IGameProps {}
 export var USERNAME = '';
-export const socket = io('http://localhost:667');
+export const socket = io('http://'+window.location.href.split('/')[2].split(':')[0]+':667');
 export default class IGame extends React.Component<IGameProps, any> {
   componentDidMount() {
     const config: Phaser.Types.Core.GameConfig = {

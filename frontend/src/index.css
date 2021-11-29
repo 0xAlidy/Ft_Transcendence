@@ -1,107 +1,24 @@
-body {
-  width: 100vw;
-  	height: 100vh;
-	overflow: hidden;
-	padding: 0;
-	margin: 0;
-	display: flex;
+@import url("./normalize.css");
 
-	justify-content: center;
-	perspective: 500px;
-	background: #1f1f1f;
-  margin: 0;
+* {
+  box-sizing: border-box;
+}
+
+body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-.link{
-  visibility: hidden;
-}
-.iframe{
-  border-radius: 35px;
-  overflow: hidden;
-}
-
-@-webkit-keyframes fadeIn {
-  0% {opacity: 0;}
-  50% {opacity: 0;}
-  100% {opacity: 1;}
-  }
-  @keyframes fadeIn {
-  0% {opacity: 0;}
-  50% {opacity: 0;}
-  100% {opacity: 1;}
-  }
-.loginButton
-{
-  visibility: visible;
-  background-color: #fee154;
-  width: 20%;
-  border: #1f1f1f;
-  border-radius: 20px;
-  padding: 15px;
-  font-size: calc(20px + 2vw);;
-  color: #1f1f1f;
-  font-weight: bold;
-  align-self: center;
-  margin-top: 15vh;
-    -webkit-animation-name: fadeIn;
-    animation-name: fadeIn;
-    -webkit-animation-duration: 5s;
-    animation-duration: 5s;
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
-}
-
-.loginButton:hover
-{
-  width: 20%;
-  background-color: #fee254a4;
-  border: #1f1f1f;
-  border-radius: 60px;
-  height: 98px;
-  font-size: 500%;
-  color: #1f1f1f;
-  font-weight: bold;
-  align-self: center;
-  margin-top: 15vh;
-}
-
-html, body {
-  height: auto;
-  min-height: 100%;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-@keyframes opacite {
-  0%   {opacity: 0%;}
-  25%  {opacity: 0%;}
-  50%  {opacity: 50%;}
-  75% {opacity: 100%;}
-}
-
-
-
-#root{
-  width: 100%;
-  box-sizing: border-box;
-}
-/*
+ /*
  .game{
   width: 31%;
   height: 100%;
   position: relative;
   top: 50%;
-  left: 35%; */
-/* } */
-/*
+  left: 35%; 
+} 
 .horizontal{
   display:flex;
   height: 100%;
@@ -121,6 +38,17 @@ code {
     "menu game chat ";
 }
 
+.menu { grid-area: menu; }
+.game { grid-area: game; }
+/* .chat { grid-area: chat; background-color: #333333; border-radius: 35px 35px 0px 35px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px;} */
+.profile { grid-area: profile; }
+.logo { grid-area: logo; }
+
+
+/*              */        
+/*  Responsive  */
+/*              */
+
 @media screen and (max-width: 1000px) {
   .grid {
 
@@ -137,8 +65,13 @@ code {
   }
 }
 
-.menu { grid-area: menu; }
-.game { grid-area: game; }
-/* .chat { grid-area: chat; background-color: #333333; border-radius: 35px 35px 0px 35px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px;} */
-.profile { grid-area: profile; }
-.logo { grid-area: logo; }
+/*              */        
+/*  Animations  */
+/*              */
+
+@keyframes opacite {
+  0%   {opacity: 0%;}
+  25%  {opacity: 0%;}
+  50%  {opacity: 50%;}
+  75%  {opacity: 100%;}
+}
