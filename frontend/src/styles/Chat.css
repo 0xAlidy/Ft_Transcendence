@@ -58,6 +58,10 @@
   .chatmessage { grid-area: 2 / 1 / 3 / 3; overflow-y:scroll }
 
 
+.chatMenu{
+  display: none;
+}
+
 .inputChat{
   border-radius: 15px 15px 15px 15px;
   background-color: #333333;
