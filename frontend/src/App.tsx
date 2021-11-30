@@ -1,9 +1,8 @@
 import { Route, Switch, Redirect } from "react-router-dom"
-import HomePage from './components/HomePage/HomePage'
+import HomePage from './components/HomePage/Homepage'
 import MainPage from './components/MainPage/MainPage'
 import React, {useState} from 'react'
 import Auth from "./components/HomePage/Auth/Auth";
-
 
 
 function App() {

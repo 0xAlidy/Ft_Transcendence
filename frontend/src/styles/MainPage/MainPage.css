@@ -3,11 +3,11 @@
     height: 100%;
     width: 100%;
     display: grid;
-    grid-template-columns: 20% 45% 25%;
+    grid-template-columns: 15% 60% 15%;
     grid-template-rows: 15% 80%;
     gap: 5% 5%;
     grid-template-areas:
-      ". profile ."
+      ". profile chat"
       "menu game chat ";
 }
 

@@ -1,5 +1,5 @@
 import { Scene } from "phaser";
-import { socket } from "../Game";
+import { socket } from "../../MainPage";
 export class Login extends Scene {
 	username : any ;
 	constructor() {

@@ -1,5 +1,5 @@
 import { Scene } from "phaser";
-import { socket } from "../Game";
+import { socket } from "../../MainPage";
 
 export class Lobby extends Scene {
     list = [];

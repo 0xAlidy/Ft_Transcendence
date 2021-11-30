@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import * as React from "react";
-import { io } from "socket.io-client";
 import { Login } from "./scene/loginScene";
 import { Lobby } from "./scene/lobbyScene";
 import { Game } from "./scene/gameScene";
@@ -8,8 +7,6 @@ import { Game } from "./scene/gameScene";
 export interface IGameProps {}
 
 export var USERNAME = '';
-
-export const socket = io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667');
 
 export default class IGame extends React.Component<IGameProps, any> {
   componentDidMount() {

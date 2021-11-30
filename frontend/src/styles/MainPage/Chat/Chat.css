@@ -10,7 +10,7 @@
     display: grid;
     background-color: #333333;
     border-radius: 35px;
-    height: 70%;
+    height: 100%;
     grid-area: chat;
     grid-template-columns: 70% 30%;
     grid-template-rows: 10% 80% 10%;

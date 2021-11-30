@@ -2,7 +2,7 @@ import * as React from "react";
 import "../../../styles/MainPage/Chat/Chat.css"
 import room from './class';
 import Send from '../../../assets/send.png'
-import { socket } from "../Game/Game";
+import { socket } from "../MainPage";
 // import Select from 'react-select';
 
 // export const socket = io('http://localhost:667');
