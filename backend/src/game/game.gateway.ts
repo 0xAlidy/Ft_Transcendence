@@ -1,9 +1,8 @@
 import { Logger } from "@nestjs/common";
 import {OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse} from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import { arrayBuffer } from "stream/consumers";
-import { clientClass } from "./client.class";
-import { roomClass } from "./room.class";
+import { clientClass } from "./class/client.class";
+import { roomClass } from "./class/room.class";
 
 @WebSocketGateway({cors: true})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {

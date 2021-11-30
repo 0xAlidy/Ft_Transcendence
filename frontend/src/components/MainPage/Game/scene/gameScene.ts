@@ -58,10 +58,10 @@ export class Game extends Scene {
 	preload ()
 	{
 		this.cameras.main.backgroundColor.setTo(31, 31, 31);
-		this.load.image('bar1', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/bar.png');
-		this.load.image('background', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/background.png');
-		this.load.image('ball1', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/ball.png');
-		this.load.audio('pop', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/popPong.mp3')
+		this.load.image('bar1', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/assets/png/bar.png');
+		this.load.image('background', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/assets/png/background.png');
+		this.load.image('ball1', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/assets/png/ball.png');
+		this.load.audio('pop', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/assets/sound/popPong.mp3')
 	}
 
 	create ()

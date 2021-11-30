@@ -8,8 +8,8 @@ export class Login extends Scene {
 	preload ()
 	{
 		this.cameras.main.backgroundColor.setTo(31, 31, 31);
-		this.load.html('nameform', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/loginForm.html');
-		this.load.image('background', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/background.png');
+		this.load.html('nameform', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/assets/html/loginForm.html');
+		this.load.image('background', 'http://'+window.location.href.split('/')[2].split(':')[0]+':667/assets/png/background.png');
 	}
 	create ()
 	{

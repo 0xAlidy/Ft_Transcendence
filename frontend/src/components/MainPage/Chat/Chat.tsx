@@ -40,7 +40,7 @@ export default class Chat extends React.Component{
 	// lol: opt = {label:"yo", value:"yo"}
 	roomOpt: opt[] = [];
 	rooooom:any;
-	
+
 	//---------//
 
 	constructor(props:any) {
@@ -66,10 +66,10 @@ export default class Chat extends React.Component{
 		var menu = (document.getElementById("chatMenu") as HTMLDivElement);
 		if (menu.style.getPropertyValue("display") === "block")
 			menu.style.setProperty("display", "none");
-		else 
+		else
 			menu.style.setProperty("display", "block");
 	};
-	
+
 	sendUsername = () => {
 		var user = document.getElementById("usernameInput") as HTMLInputElement;
 		if (user){
@@ -132,14 +132,14 @@ export default class Chat extends React.Component{
 
 					<div className="select">
 						{//<select options={this.roomOpt} />;    Select
-							} 
+							}
 						{/* <select className="menu-input" onClick={this.select} id="selectroom">
 							{this.roomOpt.map(fbb =>
       							<option key={fbb.key} value={fbb.key}>{fbb.value}</option>
     						)};
 						</select> */}
 						<button className="menu-button" id="joinSelected">join</button>
-					</div> 
+					</div>
 
 					{/* <div className="password" id="password">
 						<input className="menu-input" type="password" id="passRoom" placeholder="this room need a password"/>

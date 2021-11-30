@@ -1,8 +1,7 @@
-import { SubscribeMessage, WebSocketGateway, OnGatewayInit, WebSocketServer, OnGatewayConnection } from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway, OnGatewayInit, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { Logger } from '@nestjs/common';
-import { Room } from './entities/Room.entity';
-import { ClientRequest } from 'http';
+import { Room } from './class/Room.class';
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayInit {

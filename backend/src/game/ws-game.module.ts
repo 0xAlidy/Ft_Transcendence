@@ -4,4 +4,4 @@ import { GameGateway } from './game.gateway';
 @Module({
 	providers: [GameGateway],
 })
-export class WsModule {}
+export class WSGame {}

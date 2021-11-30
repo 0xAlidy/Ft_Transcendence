@@ -1,7 +1,7 @@
 @import url("./logo.css");
 @import url("./loginButton.css");
 
-#Homepage{
+#HomePage{
     height: 100%;
     background: #333333;
     display: flex;
@@ -10,11 +10,11 @@
     align-items: center;
 }
 
-/*              */        
+/*              */
 /*  Responsive  */
 /*              */
 
 
-/*              */        
+/*              */
 /*  Animations  */
 /*              */
