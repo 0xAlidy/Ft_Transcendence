@@ -38,7 +38,12 @@ export class AppController {
             console.log("Invalid auth")
             return ('error');
         }
+        var userInfo={
+            pseudo : user.data.login,
+            image_url: user.data.image_url,
+            token: resp.data.access_token,
+        }
         console.log(user.data);
-        return(resp.data.access_token);
+        return(userInfo);
     }
 }

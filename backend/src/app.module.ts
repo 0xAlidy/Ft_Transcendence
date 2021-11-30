@@ -8,10 +8,10 @@ import { HttpModule} from '@nestjs/axios';
 import { Connection } from 'typeorm';
 
 @Module({
-  imports: [WsModule, ChatGateway, HttpModule], //TypeOrmModule.forRoot(config)
+  imports: [WsModule, ChatGateway, HttpModule, TypeOrmModule.forRoot(config)],
   controllers: [AppController],
   providers: [],
 })
 export class AppModule {
- // constructor(private connection: Connection) {}
+ constructor(private connection: Connection) {}
 }

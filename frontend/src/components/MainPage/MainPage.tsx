@@ -6,14 +6,14 @@ import '../../styles/MainPage/MainPage.css'
 const MainPage = () => {
     return (
         <div id="MainPage">
-					<Chat />
-					<div className="game">
-						<IGame />
-					</div>
-					<div className="menu"></div>
-					<div className="logo"></div>
-					<div className="profile"></div>
-				</div>
+			<Chat />
+			<div className="game">
+				<IGame />
+			</div>
+			<div className="menu"></div>
+			<div className="logo"></div>
+			<div className="profile"></div>
+		</div>
     )
 };
 
