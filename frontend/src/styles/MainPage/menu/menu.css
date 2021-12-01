@@ -1,4 +1,54 @@
 .menuContainer{
-    width:100%;
-    padding-bottom:75%; 
+    width:75%;
+    height:auto;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    /* justify-content: center; */
+}
+.menuButton{
+    border-radius: 20px;
+    text-align: left;
+    overflow: hidden;
+    margin-left: 50%;
+    margin-top: 10px;
+    width: 40%;
+    height: 76px;
+    /* border: 3px solid #fee154; */
+    color: #1f1f1f;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.5s ease ;
+}
+.menuButton:hover{
+    margin-left: 5%;
+    background-color: #fee154;
+    width: 200px;
+    color: #000;
+}
+.menuButton .menuIcon{
+    filter: invert(73%) sepia(44%) saturate(523%) hue-rotate(7deg) brightness(109%) contrast(104%);
+    width: 50px;
+    margin-left: 10px;
+    margin-right: 13px;
+}
+.menuButton:hover .menuIcon {
+    width: 40px;
+    transition: all .5s ease ;
+    filter:none;
+}
+.horizontal{
+    display: flex;
+    color: #1f1f1f;
+    flex-direction: row;
+    font-size: 0pt;
+}
+.menuButton:hover .horizontal {
+    font-size: 23pt;
+    transition: all .5s ease ;
+}
+.PP{
+margin: 20px 0 0 20px;
+   border-radius: 50%;
 }

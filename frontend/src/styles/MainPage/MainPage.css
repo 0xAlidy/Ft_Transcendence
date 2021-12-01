@@ -3,28 +3,32 @@
     height: 100%;
     width: 100%;
     display: grid;
-    grid-template-columns: 15% 60% 15%;
-    grid-template-rows: 15% 80%;
-    gap: 5% 5%;
+    grid-template-columns: 20% 50% 20%;
+    grid-template-rows: 20% 80%;
+    gap: 0% 5%;
     grid-template-areas:
-      ". profile chat"
+      "menu logo chat"
       "menu game chat ";
 }
 
-  
-.menu { grid-area: menu; }
+
+.menu { grid-area: menu;
+  justify-content: left;
+  width: 75%;}
 .game { grid-area: game; }
 /* .chat { grid-area: chat; background-color: #333333; border-radius: 35px 35px 0px 35px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px;} */
 .profile { grid-area: profile; }
-.logo { grid-area: logo; }
+.logo { grid-area: logo;
+text-align: center;
+}
 
-/*              */        
+/*              */
 /*  Responsive  */
 /*              */
 
 @media screen and (max-width: 1000px) {
     #MainPage {
-  
+
       height: 100%;
       width: 100%;
       display: grid;
@@ -38,6 +42,6 @@
     }
 }
 
-/*              */        
+/*              */
 /*  Animations  */
 /*              */

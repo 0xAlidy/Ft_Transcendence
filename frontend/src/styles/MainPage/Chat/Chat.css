@@ -9,17 +9,16 @@
 .chatContainer {
     display: grid;
     background-color: #333333;
-    border-radius: 35px;
     height: 100%;
     grid-area: chat;
     grid-template-columns: 70% 30%;
-    grid-template-rows: 10% 80% 10%;
+    grid-template-rows: 50px auto 40px;
     gap: 0px 0px;
 }
 .chatMenu {
     justify-self: stretch;
     grid-area: chatMenu;
-    background-color: #fee154; border-radius: 0px 35px 0px 0px;
+    background-color: #fee154;
 }
 
 .chatMenu {
@@ -50,11 +49,10 @@
   grid-area: 3 / 1 / 4 / 3;
   background-color: #fee154;
   z-index: 0;
-  border-radius: 0 0 35px 35px;
 }
 .chattext { grid-area: 3 / 1 / 4 / 3; align-self: center; z-index: 1;}
   .chatsend { grid-area: 3 / 2 / 4 / 3;  align-self: center; height: 30px; z-index: 1; }
-  .chatinfo { grid-area: 1 / 1 / 2 / 3; justify-content: center; align-content: center; font-weight: bold;  text-align: center; background-color: #fee154; border-radius: 35px 35px 0px 0px;}
+  .chatinfo { grid-area: 1 / 1 / 2 / 3; justify-content: center; align-content: center; font-weight: bold;  text-align: center; background-color: #fee154;}
   .chatmessage { grid-area: 2 / 1 / 3 / 3; overflow-y:scroll }
 
 
