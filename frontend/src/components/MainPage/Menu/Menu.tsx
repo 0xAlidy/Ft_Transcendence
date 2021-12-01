@@ -10,7 +10,6 @@ export default class Menu extends React.Component{
 	render(){
 			return (
 				<div className="menu">
-					<img src="https://cdn.intra.42.fr/users/medium_default.png" height="100px"  className="PP"/>
 					<div className="menuContainer">
 						<div className="menuButton">
 							<div className="horizontal">

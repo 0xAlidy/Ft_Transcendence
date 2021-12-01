@@ -6,6 +6,7 @@ import LOGO from '../../assets/logo.png'
 import { io } from "socket.io-client";
 import Menu from './Menu/Menu';
 export const socket = io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667');
+    
 const MainPage = () => {
     return (
         <div id="MainPage">
@@ -15,7 +16,7 @@ const MainPage = () => {
 			</div>
 				<Menu/>
 			<div className="logo">
-				<img src={LOGO} height="90%"/>
+				<img src={LOGO} className="mainLogo"/>
 			</div>
 			<div className="profile"></div>
 		</div>

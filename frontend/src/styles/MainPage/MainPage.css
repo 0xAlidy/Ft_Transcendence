@@ -14,12 +14,20 @@
 
 .menu { grid-area: menu;
   justify-content: left;
-  width: 75%;}
+  width: 75%;
+display: flex;
+flex-direction: column;
+justify-content: center;}
 .game { grid-area: game; }
 /* .chat { grid-area: chat; background-color: #333333; border-radius: 35px 35px 0px 35px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px;} */
 .profile { grid-area: profile; }
 .logo { grid-area: logo;
 text-align: center;
+}
+.mainLogo{
+  min-height: 50px;
+  height: 90%;
+  max-height: 200px;
 }
 
 /*              */

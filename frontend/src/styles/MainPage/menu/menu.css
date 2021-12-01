@@ -8,11 +8,13 @@
 }
 .menuButton{
     border-radius: 20px;
+    cursor: pointer;
     text-align: left;
     overflow: hidden;
     margin-left: 50%;
     margin-top: 10px;
-    width: 40%;
+    min-width: 70px;
+    width: 35%;
     height: 76px;
     /* border: 3px solid #fee154; */
     color: #1f1f1f;

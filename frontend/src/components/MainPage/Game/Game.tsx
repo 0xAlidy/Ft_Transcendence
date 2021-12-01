@@ -9,6 +9,7 @@ export interface IGameProps {}
 export var USERNAME = '';
 
 export default class IGame extends React.Component<IGameProps, any> {
+  
   componentDidMount() {
     const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
