@@ -20,7 +20,6 @@ flex-direction: column;
 justify-content: center;}
 .game { grid-area: game; }
 /* .chat { grid-area: chat; background-color: #333333; border-radius: 35px 35px 0px 35px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px;} */
-.profile { grid-area: profile; }
 .logo { grid-area: logo;
 text-align: center;
 }

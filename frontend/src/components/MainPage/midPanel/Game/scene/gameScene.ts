@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { Scene } from "phaser";
-import { socket } from "../../MainPage";
+import { socket } from "../../../MainPage";
 
 export class Game extends Scene {
 	Ready = false;

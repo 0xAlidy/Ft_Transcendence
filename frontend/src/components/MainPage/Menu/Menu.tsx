@@ -4,44 +4,86 @@ import ACHIEVEMENT from '../../../assets/trophy.png'
 import USER from '../../../assets/user.png'
 import HISTORY from '../../../assets/scroll.png'
 import ADMIN from '../../../assets/admin.png'
-import SEARCH from '../../../assets/search.png'
-export default class Menu extends React.Component{
-
+import VERSUS from '../../../assets/versus.png'
+export default class Menu extends React.Component<{onChange : any}, { isProfileOpen: boolean, isGameOpen: boolean, isAchievOpen: boolean, isHistoryOpen: boolean, isAdminOpen: boolean}>{
+	constructor(props :any) {
+		super(props);
+		this.handleProfileClick = this.handleProfileClick.bind(this);
+		this.handleGameClick = this.handleGameClick.bind(this);
+		this.handleHistoryClick = this.handleHistoryClick.bind(this);
+		this.handleAdminClick = this.handleAdminClick.bind(this);
+		this.handleAchievClick = this.handleAchievClick.bind(this);
+		this.state = {isProfileOpen: false, isGameOpen: true, isAchievOpen: false, isHistoryOpen: false, isAdminOpen: false};
+	  }
+	async handleProfileClick() {
+		await this.setState({isProfileOpen: true, isGameOpen: false, isAchievOpen: false, isHistoryOpen: false, isAdminOpen: false });
+		this.props.onChange(this.state);
+	}
+	async handleGameClick() {
+		await this.setState({isProfileOpen: false, isGameOpen: true, isAchievOpen: false, isHistoryOpen: false, isAdminOpen: false });
+		this.props.onChange(this.state);
+	}
+	async handleAchievClick(){
+		await this.setState({isProfileOpen: false, isGameOpen: false, isAchievOpen: true, isHistoryOpen: false, isAdminOpen: false });
+		this.props.onChange(this.state);
+	}
+	async handleHistoryClick(){
+		await this.setState({isProfileOpen: false, isGameOpen: false, isAchievOpen: false, isHistoryOpen: true, isAdminOpen: false });
+		this.props.onChange(this.state);
+	}
+	async handleAdminClick(){
+		await this.setState({isProfileOpen: false, isGameOpen: false, isAchievOpen: false, isHistoryOpen: false, isAdminOpen: true });
+		this.props.onChange(this.state);
+	}
+		getState(){
+			return this.state;
+		}
 	render(){
-			return (
+
+		var isProfileOpen = this.state.isProfileOpen;
+		var isGameOpen = this.state.isGameOpen;
+		var isAchievOpen = this.state.isAchievOpen;
+		var isHistoryOpen = this.state.isHistoryOpen;
+		var isAdminOpen = this.state.isAdminOpen;
+		const renderProfile = () => {
+			if (!isProfileOpen) {
+				return <div className="menuButton"onClick={this.handleProfileClick}><div className="horizontal"><img src={USER}  alt="" className="menuIcon"/>PROFILE</div></div>;
+			}
+			return;
+		  }
+		  const renderVersus = () => {
+				if (!isGameOpen) {
+					return <div className="menuButton" onClick={this.handleGameClick}><div className="horizontal"><img src={VERSUS}  alt="" className="menuIcon"/>VERSUS</div></div>
+				}
+				return;
+			}
+			const renderTrophy = () => {
+				if (!isAchievOpen) {
+					return <div className="menuButton" onClick={this.handleAchievClick}><div className="horizontal"><img src={ACHIEVEMENT}  alt="" className="menuIcon"/>TROPHY</div></div>
+				}
+				return;
+			}
+			const renderHistory = () => {
+				if (!isHistoryOpen) {
+					return <div className="menuButton" onClick={this.handleHistoryClick}><div className="horizontal"><img src={HISTORY} alt=""  className="menuIcon"/>HISTORY</div></div>
+				}
+				return;
+			}
+			const renderAdmin = () => {
+				if (!isAdminOpen) {
+					return <div className="menuButton" onClick={this.handleAdminClick}><div className="horizontal"><img src={ADMIN}  alt="" className="menuIcon"/>ADMIN</div></div>
+				}
+				return;
+				}
+		return (
 				<div className="menu">
 					<div className="menuContainer">
-						<div className="menuButton">
-							<div className="horizontal">
-								<img src={USER} className="menuIcon"/>
-								PROFILE
-							</div>
+						{renderProfile()}
+						{renderVersus()}
+						{renderTrophy()}
+						{renderHistory()}
+						{renderAdmin()}
 						</div>
-						<div className="menuButton">
-							<div className="horizontal">
-								<img src={SEARCH} className="menuIcon"/>
-								SEARCH
-							</div>
-						</div>
-						<div className="menuButton">
-							<div className="horizontal">
-								<img src={ACHIEVEMENT} className="menuIcon"/>
-								TROPHY
-							</div>
-						</div>
-						<div className="menuButton">
-							<div className="horizontal">
-								<img src={HISTORY} className="menuIcon"/>
-								HISTORY
-							</div>
-						</div>
-						<div className="menuButton">
-							<div className="horizontal">
-								<img src={ADMIN} className="menuIcon"/>
-								ADMIN
-							</div>
-						</div>
-					</div>
 				</div>
 		)
 	}
