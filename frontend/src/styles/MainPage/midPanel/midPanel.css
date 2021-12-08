@@ -1,5 +1,11 @@
 .midPanel{
 	background-color: #333333;
-	padding-top:75%;
-	border-radius: 4.7%/6.26%;
+	width: 50%;
+	max-height: 80%;
+	border-radius: 40px;
+	border: 5px solid #3c3c3c;
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	align-content: center;
 }
