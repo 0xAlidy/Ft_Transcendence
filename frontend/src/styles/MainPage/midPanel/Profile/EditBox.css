@@ -1,21 +1,30 @@
 .editBox{
-    margin-top: 10%;
+    margin-top: 5%;
     width: 100%;
     color: #ffffff;
     display: flex;
     flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 .editButton{
-    height: 20px;
+    height: 25px;
+    margin-left: 4%;
   filter: invert(90%) sepia(44%) saturate(2847%) hue-rotate(317deg) brightness(113%) contrast(99%);
 }
 .ProfileInput{
     background-color: #1f1f1f;
     border: 0px none #00fada00;
     width: 50%;
+    height: 25px;
     margin-left: 4%;
     margin-right: 1%;
     border-radius: 10px;
     color: #ffffff;
     text-align: center;
+}
+.ProfileLogin{
+    font-size: 35px;
+    font-weight: bolder;
 }

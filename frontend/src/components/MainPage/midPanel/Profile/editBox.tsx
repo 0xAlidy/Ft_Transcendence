@@ -20,7 +20,7 @@ export default class EditBox extends React.Component<{value:string, placeHolder:
 		return (
         <div className="editBox">
 			{
-				this.state.editMode === true ? <input placeholder={this.props.placeHolder} className="ProfileInput"/>: <div className="ProfileInput">{this.props.value}</div>
+				this.state.editMode === true ? <input placeholder={this.props.placeHolder} className="ProfileInput" />: <div className="ProfileLogin">{this.props.value}</div>
 			}
 			{
 				this.state.editMode === false ? <img src={EDIT} alt="" className="editButton" onClick={this.click}/>: <img src={DONE} alt="" onClick={this.click} className="editButton"/>

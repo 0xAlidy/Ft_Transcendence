@@ -8,7 +8,7 @@ import { HttpModule } from '@nestjs/axios';
 import { Connection } from 'typeorm';
 
 @Module({
-  imports: [ChatModule, WSGame, TypeOrmModule.forRoot(config), HttpModule],
+  imports: [ChatModule, WSGame, TypeOrmModule.forRoot(config), HttpModule, userModule],
   controllers: [AppController],
   providers: [],
 })
