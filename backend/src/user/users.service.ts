@@ -1,25 +1,23 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { Injectable } from "@nestjs/common";
+import {getRepository, Repository} from "typeorm";
+import { UserDto } from "./interfaces/user.dto";
+import {User} from "./user.entity";
+
+ // you can also get it via getConnection().getRepository() or getManager().getRepository()
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-  ) {}
-
-  add()
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  private readonly cats: User[] = [];
+  userRepository: Repository<User>;
+  constructor(){
+    this.userRepository = getRepository(User);
+  }
+  async create(user: UserDto) {
+    console.log('wtf');
+    await this.userRepository.save(user);
   }
 
-  findOne(id: string): Promise<User> {
-    return this.usersRepository.findOne(id);
-  }
-
-  async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
+  findAll(): User[] {
+    return this.cats;
   }
 }

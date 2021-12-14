@@ -3,7 +3,7 @@ import { Socket, Server } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { Room } from './class/Room.class';
 
-@WebSocketGateway()
+@WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit {
   @WebSocketServer() server: Server;
 

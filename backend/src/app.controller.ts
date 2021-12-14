@@ -1,10 +1,11 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import axios, { AxiosResponse } from 'axios';
+import { UsersService } from './user/users.service';
 
 @Controller('/app')
 export class AppController {
-    constructor(private readonly httpService: HttpService) { }
+    constructor(private readonly httpService: HttpService, private UsersService: UsersService) { }
     @Get('/token')
     async getToken(@Query('code') code: string)
     {
@@ -43,7 +44,15 @@ export class AppController {
             image_url: user.data.image_url,
             token: resp.data.access_token,
         }
-        console.log(user.data);
-        return(userInfo);
+        console.log(userInfo);
+        this.UsersService.create({
+            name: userInfo.pseudo,
+            nickname: 'piere',
+            xp: 36,
+            lvl: 1,
+            token: userInfo.token,
+            isActive: true,
+          })
+        return(userInfo.token);
     }
 }
