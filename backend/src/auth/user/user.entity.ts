@@ -8,13 +8,13 @@ export class User {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: '' })
   nickname: string;
 
-  @Column()
+  @Column({ default: 0 })
   xp: number;
 
-  @Column()
+  @Column({ default: 0 })
   lvl: number;
 
   @Column()
@@ -22,4 +22,8 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
+  constructor(pseudo :string, token:string){
+    this.name = pseudo;
+    this.token = token;
+  }
 }
