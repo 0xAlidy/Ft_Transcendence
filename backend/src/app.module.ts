@@ -9,6 +9,8 @@ import {UsersModule} from './auth/user/user.module'
 import { User } from './auth/user/user.entity';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [ChatModule, WSGame, TypeOrmModule.forRoot({
@@ -20,7 +22,7 @@ import { AuthModule } from './auth/auth.module';
     database: 'database',
     entities: [User],
     synchronize: true,
-  }), HttpModule , UsersModule, AuthModule],
+  }), HttpModule , UsersModule, AuthModule,],
   controllers: [AppController],
   providers: [AuthService],
 })

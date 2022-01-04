@@ -11,7 +11,6 @@ function App() {
 		<Switch>
 			<Route exact path="/code">
 				<Auth/>
-				<MainPage />
 			</Route>
 			<Route exact path="/">
 				{ isConnect ? <MainPage />: <HomePage setIsConnect={setIsConnect}/> }

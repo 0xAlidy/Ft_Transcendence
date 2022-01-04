@@ -13,7 +13,6 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
 });
-  app.useStaticAssets(join(__dirname, '..', 'static'));
   await app.listen(667);
 }
 bootstrap();
