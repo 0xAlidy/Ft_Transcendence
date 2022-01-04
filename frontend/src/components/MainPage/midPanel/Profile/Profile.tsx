@@ -13,7 +13,7 @@ export default class Profile extends React.Component<{},{editMode:boolean}>{
 		return (
         <div className="midPanel" id="profile">
 			<img src="https://cdn.intra.42.fr/users/medium_default.png" className="profileImg"/>
-			<EditBox value="login" placeHolder="nickname"/>
+			<EditBox value="sass" placeHolder="nickname"/>
 			<Gauge percent="56" lvl="45"/>
 			{/* <img src={LEAVE} alt="" width="50px"/>
 			<img src={DELETE} alt="" width="50px" /> */}

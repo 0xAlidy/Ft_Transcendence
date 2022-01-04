@@ -27,7 +27,7 @@ export class AppController {
         }
         catch(error){
             console.log("Invalid auth")
-            return ('error');
+            return (null);
         }
         try{
             user = await this.httpService
@@ -36,7 +36,7 @@ export class AppController {
         }
         catch(error){
             console.log("Invalid auth")
-            return ('error');
+            return (null);
         }
         var userInfo={
             pseudo : user.data.login,
@@ -46,5 +46,20 @@ export class AppController {
         console.log(userInfo);
         this.UsersService.create(userInfo.pseudo, userInfo.token);
         return(userInfo.token);
+    }
+    @Get('/me')
+    async GetMe(@Query('token') token :string)
+    {
+        var user;
+        try{
+            user = await this.httpService
+            .get('https://api.intra.42.fr/v2/me', { headers: { Authorization: `Bearer ${token}`}})
+            .toPromise();
+        }
+        catch(error){
+            console.log("Invalid auth")
+            return (null);
+        }
+        return user.data.login;
     }
 }
