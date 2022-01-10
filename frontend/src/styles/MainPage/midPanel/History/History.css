@@ -1,0 +1,37 @@
+.itemMatch{
+	display:flex;
+	flex-direction: row;
+	height: 14%;
+	width: 95%;
+	border-radius: 50px;
+	margin-bottom: 1%;
+	background-color: #7C7C7C;
+	align-items: center;
+}
+
+.imgProfile{
+	margin-right: 0.5%;
+	margin-left: 0.5%;
+	border-radius: 50%;
+	border: 1px solid black;
+}
+
+.name{
+	flex:2;
+	font-size: 1.5vw;
+} 
+.score{
+	flex:1;
+	font-size: 2vw;
+}
+
+.midPanel{
+	align-items: center;
+	width: 90%;
+	padding-top: 3%;
+	padding-bottom: 3%;
+	overflow-y: scroll;
+}
+.midPanel::-webkit-scrollbar {
+    display: none;
+}
