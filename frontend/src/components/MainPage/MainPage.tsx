@@ -11,7 +11,7 @@ import History from './midPanel/History/History';
 import AdminPanel from './midPanel/AdminPanel/AdminPanel';
 export const socket = io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667');
 
-export default class MainPage extends React.Component<{},{selector: string}>{
+export default class MainPage extends React.Component<{token: string},{selector: string}>{
 	menuState: any
 	selector : any;
 	constructor(props :any) {

@@ -2,7 +2,7 @@ import React from 'react'
 import '../../../../styles/MainPage/midPanel/Profile/EditBox.css'
 import EDIT from '../../../../assets/edit-button.png'
 import DONE from '../../../../assets/check.png'
-export default class EditBox extends React.Component<{value:string, placeHolder:string},{editMode:boolean}>{
+export default class EditBox extends React.Component<{ value:any, placeHolder:string},{editMode:boolean}>{
 	constructor(props :any){
 		super(props)
 		this.state = {editMode: false}
