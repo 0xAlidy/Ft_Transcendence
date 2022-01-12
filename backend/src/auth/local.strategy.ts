@@ -13,9 +13,9 @@ export class FTStrategy extends PassportStrategy(Strategy, '42')
 			callbackURL: "http://localhost:667/auth/redirect"
 		  });
 	}
-	async validate(accessToken: string, refreshToken: string, profile: Profile, done: (err: any, user: any, info?: any) => void): Promise<any> {
+	validate(accessToken: string, refreshToken: string, profile: Profile, done: (err: any, user: any, info?: any) => void): Promise<any> {
 		console.log(profile);
-		const user = await this.authServe.validateUser(accessToken, profile.username);
+		const user =  this.authServe.validateUser(accessToken, profile.username);
 		console.log(user);
 		const payload = {
 		  user,
