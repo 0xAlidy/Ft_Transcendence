@@ -22,7 +22,7 @@ export class AuthService {
 		const ret = await this.usersService.create(username, token);
 		const { ...result } = ret;
 		console.log(result);
-	return result;
+		return result;
 	  }
 	  return null;
 	}
