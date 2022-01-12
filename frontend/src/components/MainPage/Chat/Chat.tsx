@@ -2,7 +2,7 @@ import * as React from "react";
 import "../../../styles/MainPage/Chat/Chat.css"
 import room from './class';
 import Send from '../../../assets/send.png'
-import { socket } from "../MainPage";
+import { Socket } from "socket.io-client";
 // import Select from 'react-select';
 
 // export const socket = io('http://localhost:667');
@@ -29,7 +29,7 @@ class opt{
 	}
 }
 
-export default class Chat extends React.Component{
+export default class Chat extends React.Component<{socket:Socket},{}>{
 
 	//---------//
 
@@ -48,14 +48,14 @@ export default class Chat extends React.Component{
 		this.roomList.push(this.general);
 		this.roomList.push(this.general2);
 		// this.roomOpt.push(this.lol);
-		socket.on('sendRoomlist', function (data:any) {
+		this.props.socket.on('sendRoomlist', function (data:any) {
 			console.log(data.rooms)
 		});
 	};
 
 	getRoomList = () => {
 		console.log("update roomList")
-		socket.emit("getRoomList");
+		this.props.socket.emit("getRoomList");
 	};
 	sendMessage = () => {
 		var input = (document.getElementById('inputText') as HTMLInputElement).value;

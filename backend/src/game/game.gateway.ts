@@ -1,11 +1,15 @@
 import { Logger } from "@nestjs/common";
 import {OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse} from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+import { User } from "src/auth/user/user.entity";
+import { UsersService } from "src/auth/user/users.service";
 import { clientClass } from "./class/client.class";
 import { roomClass } from "./class/room.class";
 
 @WebSocketGateway({cors: true})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+    constructor(private userService: UsersService){
+    }
     private logger: Logger = new Logger('WS-game');
     rooms = new Map<string, roomClass>() ;
     i : number;
@@ -26,8 +30,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     handleDisconnect(client: Socket) {
         this.logger.log("Disconnect:    "+ client.id.slice(0, 4));
         var keys : string[] = Array.from( this.clients.keys());
+
         if (this.clients.get(client.id))
         {
+            this.userService.changeWSId(this.clients.get(client.id)._pseudo, 'null');
+            this.userService.setIsActive(this.clients.get(client.id)._pseudo, false);
             var roomtoleave : string = this.clients.get(client.id)._room;
             this.rooms.forEach(element => {
                 this.logger.log(element._name);
@@ -47,13 +54,19 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.clients.delete(client.id);
         this.server.emit('updateUser', keys);
     }
+
+    @SubscribeMessage('setID')
+    async setID(client: Socket, data: any){
+        this.logger.log(data.token +" " + client.id);
+        this.userService.changeWSId( data.name, client.id);
+        var user: User;
+        await this.userService.findOneByName(data.name).then(res => {this.clients.get(client.id).setToken(data.token);this.setPlayerName(client, res.name)});
+    }
+
     @SubscribeMessage('setPlayerName')
-    setPlayerName(client: Socket, message: string): WsResponse<string> {
+    setPlayerName(client: Socket, message: string){
         this.logger.log(client.id + " is " + message);
         this.clients.get(client.id).setName(message);
-        var keys : string[] = Array.from( this.clients.keys() );
-        this.server.emit('updateUser', keys);
-        return {event: 'hello', data: 'hello'};
     }
     @SubscribeMessage('createRoom')
     createRoom(client: Socket): void {
@@ -138,8 +151,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
     @SubscribeMessage('waiting')
         waitingMsg(client: Socket): void {
+            client.emit('me', this.clients.get(client.id)._pseudo)
+            this.userService.setIsActive(this.clients.get(client.id)._token, true);
             this.clients.get(client.id)._room = 'lobby'
             client.join('lobby');
+            this.logger.log('salut');
             this.updateRoom();
     }
     @SubscribeMessage('ready')
@@ -172,7 +188,24 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     Score(client: Socket, data: any): void {
         this.rooms.forEach(element => {
             if(element._name == data.room){
-                element.goal(data.goalID);
+                var res = element.goal(data.goalID);
+                if(res!= 0)
+                {
+                    if(res == 1)
+                    {
+                        this.userService.win(element._player._token);
+                        this.userService.xp(element._player._token, 50);
+                        this.userService.xp(element._guest._token, 25);
+                        this.userService.loose(element._guest._token);
+                    }
+                    if(res == 2)
+                    {
+                        this.userService.win(element._guest._token);
+                        this.userService.xp(element._player._token, 25);
+                        this.userService.xp(element._guest._token, 50);
+                        this.userService.loose(element._player._token);
+                    }
+                }
             }
         });
     }
@@ -183,7 +216,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         var spec : string[] = [];
 
         this.rooms.forEach(element => {
-            console.log(element._name)
             if (element._isJoinable == false)
                 spec.push(element._name);
             else

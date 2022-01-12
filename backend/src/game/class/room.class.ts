@@ -69,7 +69,7 @@ export class roomClass{
 		var y = Math.floor(Math.random() * 600);
 		this._room.emit('ballThrow', {velx: velX, vely: velY , y: y});
 	}
-	goal(id: number){
+	goal(id: number):number{
 		if(id == 1)
 			this._scoreA += 1;
 		else
@@ -80,9 +80,13 @@ export class roomClass{
 			this._room.emit('winner', {id:id, winner: id == 1? this._player._pseudo : this._guest._pseudo});
 			this._guest._nbOfGames +=1;
 			this._player._nbOfGames +=1;
-		}else
+			this._room.emit('scoreUpdate', { a: this._scoreA.toString(), b: this._scoreB.toString()})
+			return id == 1? 1: 2;
+		}else{
 			this.throwBall();
-		this._room.emit('scoreUpdate', { a: this._scoreA.toString(), b: this._scoreB.toString()})
+			this._room.emit('scoreUpdate', { a: this._scoreA.toString(), b: this._scoreB.toString()})
+			return 0;
+		}
 	}
 	playerMoved(moved: Socket){
 		if(moved.id == this._player._socket.id)

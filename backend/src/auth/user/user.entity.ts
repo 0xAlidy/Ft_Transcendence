@@ -17,8 +17,17 @@ export class User {
   @Column({ default: 0 })
   lvl: number;
 
+  @Column({ default: 0 })
+  numberOfWin: number;
+
+  @Column({ default: 0 })
+  numberOfLoose: number;
+
   @Column()
   token: string;
+
+  @Column({default: 'null'})
+  WSId: string;
 
   @Column({ default: true })
   isActive: boolean;

@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { Scene } from "phaser";
-import { socket } from "../../../MainPage";
+import { Socket } from "socket.io-client";
 
 export class Game extends Scene {
 	Ready = false;
@@ -40,6 +40,7 @@ export class Game extends Scene {
 	rect2 = new Phaser.Geom.Rectangle();
 	rectball = new Phaser.Geom.Rectangle();
 	textInfo: any;
+	socket:any;
 	constructor() {
 	  super("Game");
 	  this.update = this.update.bind(this);
@@ -52,7 +53,6 @@ export class Game extends Scene {
 		this.nameB = data.nameB;
 		this.uready = false;
 		this.Ready = false;
-        console.log('init', data);
     }
 
 	preload ()
@@ -67,6 +67,7 @@ export class Game extends Scene {
 	create ()
 	{
 		//variables init
+		this.socket = this.data.get('socket') as Socket;
 		this.uready = false;
 		this.Ready = false;
 		this.cursor = this.input.keyboard.createCursorKeys();
@@ -91,16 +92,16 @@ export class Game extends Scene {
 		//socket events
 		var keyObj = this.input.keyboard.addKey('ESC');  // Get key object
 		keyObj.on('down', function() {
-			socket.emit('leaveRoom');
+			self.socket.emit('leaveRoom');
 			self.backToLobby();
 		});
-		socket.on('readyPlayer', function(data){
+		self.socket.on('readyPlayer', function(data:any){
 			if(data.id=== 1)
 				self.textReadyA.setText('Ready!');
 			if(data.id=== 2)
 				self.textReadyB.setText('Ready!');
 		});
-		socket.on('go', function()
+		self.socket.on('go', function()
 		{
 			if (self.PLAYERID !== 3)
 			{
@@ -114,7 +115,7 @@ export class Game extends Scene {
 				self.Ready = true;
 			}
 		});
-		socket.on('ballThrow', function(data)
+		self.socket.on('ballThrow', function(data:any)
 		{
 				self.ball.setPosition(400, data.y);
 				self.x = data.velx;
@@ -122,13 +123,13 @@ export class Game extends Scene {
 				self.speedball = 250;
 				self.ball.setVelocity(data.velx, data.vely);
 		});
-		socket.on('updateBall', function(data)
+		self.socket.on('updateBall', function(data:any)
 		{
 				self.sound.play('pop');
 				self.ball.setPosition(data.posx, data.posy);
 				self.ball.setVelocity(data.velx, data.vely);
 		});
-		socket.on('updatePos', function(data)
+		self.socket.on('updatePos', function(data:any)
 		{
 			if (self.PLAYERID=== 3)
 			{
@@ -142,7 +143,7 @@ export class Game extends Scene {
 			else
 				self.barA.setPosition(40, data.y);
 		});
-		socket.on('backToLobby', function () {
+		self.socket.on('backToLobby', function () {
 			if (!self.end)
 			{
 				self.winnerText.setFontSize('30px');
@@ -151,11 +152,11 @@ export class Game extends Scene {
 				self.winnerText.setText('your opponent left..');
 			}
         });
-		socket.on('scoreUpdate', function (score) {
+		self.socket.on('scoreUpdate', function (score:any) {
 			self.displayA.setText(score.a);
 			self.displayB.setText(score.b);
 		});
-		socket.on('winner', function (data) {
+		self.socket.on('winner', function (data:any) {
 			self.end = true;
 			self.textInfo.setText('Press ESC!');
 			if (self.PLAYERID=== 3)
@@ -176,7 +177,6 @@ export class Game extends Scene {
 
 	update ()
 	{
-		console.log('update');
 		this.rectball = this.ball.getBounds();
 		if (this.Ready=== true && this.PLAYERID !== 3)
 		{
@@ -184,22 +184,22 @@ export class Game extends Scene {
 			{
 				this.rect1 = this.barA.getBounds();
 				if (this.x < 0 && this.checkOverlap(this.rectball, this.rect1)){
-					this.bounceSide(socket, this.barA, this.ball, false);
+					this.bounceSide(this.socket, this.barA, this.ball, false);
 				}
 				this.rect2 = this.barB.getBounds();
 				if (this.x > 0 && this.checkOverlap(this.rectball, this.rect2)){
-					this.bounceSide(socket, this.barB, this.ball, true);
+					this.bounceSide(this.socket, this.barB, this.ball, true);
 				}
 				if(this.ball.x <= 10 && this.x <= 0)
 				{
-					socket.emit('score', {
+					this.socket.emit('score', {
 						goalID: 2,
 						room: this.room
 					});
 				}
 				if(this.ball.x >= 790 && this.x >= 0)
 				{
-					socket.emit('score', {
+					this.socket.emit('score', {
 						goalID: 1,
 						room: this.room
 					});
@@ -225,7 +225,7 @@ export class Game extends Scene {
 					else
 						this.barB.setPosition(this.barB.x, 40);
 				}
-				socket.emit('playerMovement', {
+				this.socket.emit('playerMovement', {
 					y: (this.PLAYERID=== 1) ? this.barA.y : this.barB.y ,
 					id: this.PLAYERID,
 					room: this.room
@@ -247,7 +247,7 @@ export class Game extends Scene {
 					else
 						this.barB.setPosition(this.barB.x, 560);
 				}
-					socket.emit('playerMovement', {
+					this.socket.emit('playerMovement', {
 						y: (this.PLAYERID=== 1) ? this.barA.y : this.barB.y ,
 						id: this.PLAYERID,
 						room: this.room
@@ -260,7 +260,7 @@ export class Game extends Scene {
 			{
 				if (this.cursor.up.isDown || this.cursor.down.isDown)
 				{
-					socket.emit('ready', {id: this.PLAYERID, room: this.room});
+					this.socket.emit('ready', {id: this.PLAYERID, room: this.room});
 					this.uready = true;
 				}
 			}
@@ -300,7 +300,7 @@ export class Game extends Scene {
 	bounceTopBot()
 	{
 		this.y *= -1;
-		socket.emit('ball', {
+		this.socket.emit('ball', {
 			room: this.room,
 			velx: this.x,
 			vely: this.y,

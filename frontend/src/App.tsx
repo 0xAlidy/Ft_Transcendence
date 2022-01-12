@@ -9,14 +9,15 @@ import Auth from "./components/HomePage/Auth/Auth";
 function App() {
 	const [isConnect, setIsConnect] = useState(false);
 	const [token, setToken] = useState("null") // remplacer le token de l'intra par le notre (jwt) cote back
+	const [name, setName] = useState("null") // remplacer le token de l'intra par le notre (jwt) cote back
 
 	return (
 		<Switch>
-			<Route exact path="/code">
-				<Auth token={setToken}connect={setIsConnect} location={useLocation().search}/>
+			<Route path="/auth">
+				<Auth token={setToken} name={setName} connect={setIsConnect} location={useLocation().search}/>
 			</Route>
 			<Route exact path="/">
-				{ isConnect ? <MainPage token={token}/>: <HomePage/> }
+				{ isConnect ? <MainPage name={name} token={token}/>: <HomePage/> }
 			</Route>
 			<Route render={() => <Redirect to={{pathname: "/"}} />} />
 		</Switch>

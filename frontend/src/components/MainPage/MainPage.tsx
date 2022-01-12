@@ -2,23 +2,25 @@ import React from 'react'
 import Chat from './Chat/Chat'
 import '../../styles/MainPage/MainPage.css'
 import LOGO from '../../assets/logo.png'
-import { io } from "socket.io-client";
+import { io, Socket} from "socket.io-client";
 import Menu from './Menu/Menu';
 import IGame from './midPanel/Game/Game';
 import Profile from './midPanel/Profile/Profile';
 import Achievement from './midPanel/Achievement/Achievement';
 import History from './midPanel/History/History';
 import AdminPanel from './midPanel/AdminPanel/AdminPanel';
-export const socket = io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667');
 
-export default class MainPage extends React.Component<{token: string},{selector: string}>{
+
+export default class MainPage extends React.Component<{token: string, name:string},{selector: string, socket: Socket}>{
 	menuState: any
 	selector : any;
 	constructor(props :any) {
 		super(props);
 		this.state = {
-			selector: 'game'
+			selector: 'game',
+			socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667')
 		};
+		this.state.socket.emit('setID', {token: this.props.token, name:this.props.name});
 	}
 
 	render(){
@@ -50,9 +52,9 @@ export default class MainPage extends React.Component<{token: string},{selector:
 				<img src={LOGO} alt="" className="mainLogo"/>
 			</div>
 			<Menu onChange={Ref}/>
-			<Chat />
+			<Chat socket={this.state.socket} />
 			<div className="game" id="game">
-				{this.state.selector === 'game' && <IGame/>}
+				{this.state.selector === 'game' && <IGame socket={this.state.socket}/>}
 				{this.state.selector === 'profile' && <Profile/>}
 				{this.state.selector === 'achievement' && <Achievement />}
 				{this.state.selector === 'history' && <History />}

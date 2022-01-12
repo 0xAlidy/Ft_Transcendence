@@ -1,15 +1,16 @@
 import Phaser from "phaser";
 import * as React from "react";
-import { Login } from "./scene/loginScene";
+// import { Login } from "./scene/loginScene";
 import { Lobby } from "./scene/lobbyScene";
 import { Game } from "./scene/gameScene";
+import { Socket } from "socket.io-client";
 
 export interface IGameProps {}
 
 export var USERNAME = '';
 
-export default class IGame extends React.Component<IGameProps, any> {
-  
+export default class IGame extends React.Component<{socket:Socket}, any> {
+
   componentDidMount() {
     const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
@@ -38,9 +39,11 @@ export default class IGame extends React.Component<IGameProps, any> {
         dom: {
             createContainer: true
         },
-        scene: [Login, Lobby, Game]
+        scene: [Lobby, Game]
     };
-    new Phaser.Game(config);
+    var game = new Phaser.Game(config);
+    game.scene.start('Lobby', {SOCKET: this.props.socket})
+
   }
 
   shouldComponentUpdate() {
