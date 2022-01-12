@@ -5,3 +5,13 @@
 	border-radius: 50%;
 	align-self: center;
 }
+
+.midPannel{
+	background-color: #333333;
+	width: 50%;
+	max-height: 80%;
+	border-radius: 40px;
+	border: 5px solid #3c3c3c;
+	display: flex;
+	margin:10px;
+}

@@ -1,0 +1,8 @@
+.winRate{
+    background-color: #7c7c7c;
+    border-radius: 40px;
+    flex-direction: row;
+    width: 90%;
+    color: white;
+    top :100px;
+}
