@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Post, Redirect, Req, Request, Res, UseGuards, Response } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Post, Redirect, Req, Request, Res, UseGuards, Response, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import querystring from 'querystring'
 import { UsersService } from './user/users.service';
@@ -13,17 +13,15 @@ export class AuthController {
 		return req.user;
 	}
 
-	@Get()
-	saybute()
-	{
-		console.log('bute');
-	}
-
 	@Get("/redirect")
 	@UseGuards(AuthGuard("42"))
 	async FTLoginRedirect(@Req() req: any, @Res() res:any): Promise<any> {
-		console.log(req.user.name +"    "+ req.user.token );
         this.UsersService.create(req.user.name, req.user.token);
 	  return res.redirect('http://localhost:3000/auth'+ '?token='+ req.user.token+'&name='+ req.user.name);
 		}
+	@Get("/me")
+	async me(@Query('token') token: string): Promise<any> {
+		console.log(token);
+		return await this.UsersService.findOne(token);
+	}
 }

@@ -3,15 +3,15 @@ import { AppModule } from './app.module';
 import * as requestIp from 'request-ip';
 import { NestExpressApplication} from '@nestjs/platform-express';
 import { join } from 'path'
-import { Logger } from '@nestjs/common';
-import cors from 'cors';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {cors: true});
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
-    origin: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "X-Access-Token", "Authorization"],
     credentials: true,
+    methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
+    origin: "*",
+    preflightContinue: true,
 });
   await app.listen(667);
 }

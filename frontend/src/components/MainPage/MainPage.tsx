@@ -9,6 +9,9 @@ import Profile from './midPanel/Profile/Profile';
 import Achievement from './midPanel/Achievement/Achievement';
 import History from './midPanel/History/History';
 import AdminPanel from './midPanel/AdminPanel/AdminPanel';
+import axios from 'axios';
+// import axios from 'axios';
+
 
 
 export default class MainPage extends React.Component<{token: string, name:string},{selector: string, socket: Socket}>{
@@ -22,11 +25,15 @@ export default class MainPage extends React.Component<{token: string, name:strin
 		};
 		this.state.socket.emit('setID', {token: this.props.token, name:this.props.name});
 	}
+	componentDidMount() {
+		axios.get("HTTP://localhost:667/auth/me?token="+this.props.token).then(res => {console.log('iccccciiiiiii   '+res)})
+		// axios.get("https://cors-anywhere.herokuapp.com/http://localhost:667/auth/me", {headers:{'Access-Control-Allow-Origin': '*'}}).then(res => {console.log('iccccciiiiiii   '+res)})
+	   }
+	  
 
 	render(){
-		// var menu = this.menu.current;
-		// var state = menu.getState();
-		// console.log(menu.getState());
+		// fetch("http://localhost:667/auth/me", {headers:{'Access-Control-Allow-Origin': '*'}}).then(res => {console.log('iccccciiiiiii   '+res)})
+		// fetch("http://localhost:667/auth/me").then(res => console.log('iccccciiii'+ res));
 		const Ref = (e: any) => {
 			console.log('update', e)
 			document.getElementById('game');
@@ -48,6 +55,7 @@ export default class MainPage extends React.Component<{token: string, name:strin
 		}
 		return (
         <div id="MainPage">
+			<img src={LOGO} alt="" className="mainLogo" />
 			<div className="logo">
 				<img src={LOGO} alt="" className="mainLogo"/>
 			</div>
