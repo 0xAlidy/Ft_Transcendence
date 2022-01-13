@@ -1,95 +1,91 @@
-.chatApp {
-    width: 20vw;
-    height: 30vh;
-    position: relative;
-    top: 400px;
-    left: 90%;
-    background: #831D1D;
-}
+
 .chatContainer {
-    display: grid;
-    background-color: #333333;
-    height: 100%;
-    grid-area: chat;
-    grid-template-columns: 70% 30%;
-    grid-template-rows: 50px auto 40px;
-    gap: 0px 0px;
-}
-.chatMenu {
-    justify-self: stretch;
-    grid-area: chatMenu;
-    background-color: #fee154;
+  display: grid;
+  background-color: #333333;
+  height: 100%;
+  grid-area: chat;
+  grid-template-columns: 70% 20% 10%;
+  grid-template-rows: 4% auto 40px;
+  grid-template-areas:
+      "chatTOP chatTOP chatTOP"
+      "chatMID chatMID chatMID" 
+      "chatBOT chatBOT chatSEND";
+  gap: 0px 0px;
 }
 
-.chatMenu {
-  justify-self: stretch;
-  grid-area: 1 / 2 / 2 / 3;
-}
 .send{
-  margin: 3px 0 0 3px;
-  z-index:1;
-  position:relative;
-  left:50%;
-  top:4%;
-  filter: invert(90%) sepia(44%) saturate(2847%) hue-rotate(317deg) brightness(113%) contrast(99%);
+position:relative;
+top:20%;
 }
-.send:hover{
-  margin: 4px 0 0 4px;
-  z-index:1;
-  width: 20px;
-  height: 20px;
-  position:relative;
-  left:50%;
-  top:4%;
-  filter: invert(90%) sepia(44%) saturate(2847%) hue-rotate(317deg) brightness(113%) contrast(99%);
+
+.topbar{
+display: inline-flex;
+width:100%;
+/* align-items: left;
+margin-right: 3%;
+margin-top: 3%; */
+margin-bottom: 5%; 
+margin-left: 3%; 
 }
+
+.tittle{
+margin-left: 28%;
+color: Black;
+margin-top: 1%;
+font-size: 30px;
+font-weight: bold
+}
+
+.iconMenu{
+ margin-top:3%;
+}
+
 .back{
-  justify-self: stretch;
-  align-self: stretch;
-  grid-area: 3 / 1 / 4 / 3;
-  background-color: #fee154;
-  z-index: 0;
+justify-self: stretch;
+align-self: stretch;
+grid-area: 3 / 1 / 4 / 4;
+background-color: #fee154;
+z-index: 0;
 }
-.chattext { grid-area: 3 / 1 / 4 / 3; align-self: center; z-index: 1;}
-  .chatsend { grid-area: 3 / 2 / 4 / 3;  align-self: center; height: 30px; z-index: 1; }
-  .chatinfo { grid-area: 1 / 1 / 2 / 3; justify-content: center; align-content: center; font-weight: bold;  text-align: center; background-color: #fee154;}
-  .chatmessage { grid-area: 2 / 1 / 3 / 3; overflow-y:scroll }
+.chattext { grid-area:chatBOT; ;align-self: center; z-index: 1;}
+.chatsend { grid-area: chatSEND ; align-self: left; height: 30px; z-index: 1; }
+.chatmessage { grid-area: chatMID ; overflow-y:scroll; display: flex; flex-direction: column; top: 10%; }
 
-
-.chatMenu{
+.chatMessage::-webkit-scrollbar {
   display: none;
 }
 
+.chatinfo {
+  overflow:hidden;
+  grid-area: chatTOP;
+  font-weight: bold;
+  background-color: #fee154;
+}
+
 .inputChat{
-  border-radius: 15px 15px 15px 15px;
-  background-color: #333333;
-  padding-left: 60px;
-  color: #ffffff;
-  margin: 0 0 0 5%;
-  height:30px;
+border-radius: 15px 15px 15px 15px;
+background-color: #333333;
+padding: auto;
+color: #ffffff;
+margin: 0 0 0 5%;
+height:30px;
+width: 90%;
+border-style: none;
+}
+
+.menuInput{
+  width: 75%!important;
+}
+
+.SelectRoom{
   width: 90%;
-  border-style: none;
-  padding: 0;
+  padding-left: 40px;
+  text-align: center;
+  height: 35;
 }
 
-.chat-body {
-	width: 90vw;
-	height: 70vh;
-	display: flex;
-	place-content: center;
-	align-items: flex-end;
-	overflow: hidden;
-  }
-
-.chat-separate {
-    display: flex;
-    width: 50vw;
-    border: 3px solid #6A7985;
-    margin-top: 2vh;
-    margin-left: 4vw;
-}
-
-.chat-text {
-    display: flex;
-    margin-top: 1vh;
+.hiddenMenu{
+  display: inline-flex;
+  flex-direction: column;
+  width: 100%;
 }
