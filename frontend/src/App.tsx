@@ -14,7 +14,7 @@ function App() {
 	return (
 		<Switch>
 			<Route path="/auth">
-				<Auth token={setToken} name={setName} connect={setIsConnect} location={useLocation().search}/>
+				<Auth  token={setToken} name={setName} connect={setIsConnect} location={useLocation().search}/>
 			</Route>
 			<Route exact path="/">
 				{ isConnect ? <MainPage name={name} token={token}/>: <HomePage/> }
