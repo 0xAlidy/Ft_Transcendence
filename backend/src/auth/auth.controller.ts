@@ -20,8 +20,9 @@ export class AuthController {
 	  return res.redirect('http://localhost:3000/auth'+ '?token='+ req.user.token+'&name='+ req.user.name);
 		}
 	@Get("/me")
-	async me(@Query('token') token: string): Promise<any> {
+	async me(@Query('token') token: string){
 		console.log(token);
-		return await this.UsersService.findOne(token);
+		const {...result} = await this.UsersService.findOne(token);
+		return  result;
 	}
 }

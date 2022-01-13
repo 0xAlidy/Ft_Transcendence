@@ -24,21 +24,6 @@ export default class Auth extends React.Component<{name:any, token: any, connect
     }
 	}
 	render(){
-            const data = {
-              token: queryString.parse(this.props.location).token,
-              name: queryString.parse(this.props.location).name,
-            }
-            if (data === null)
-            {
-
-                this.props.connect(false);
-            }
-            else
-            {
-                this.props.token(data.token);
-                this.props.name(data.name);
-                this.props.connect(true);
-            }
         return <Redirect to={'/'} />
 	}
 }

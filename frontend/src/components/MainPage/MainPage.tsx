@@ -14,21 +14,21 @@ import axios from 'axios';
 
 
 
-export default class MainPage extends React.Component<{token: string, name:string},{selector: string, socket: Socket}>{
+export default class MainPage extends React.Component<{token: string, name:string},{selector: string, socket: Socket, username:string}>{
 	menuState: any
 	selector : any;
 	constructor(props :any) {
 		super(props);
 		this.state = {
 			selector: 'game',
-			socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667')
+			socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667'),
+			username: 'null',
 		};
 		this.state.socket.emit('setID', {token: this.props.token, name:this.props.name});
 	}
-	componentDidMount() {
-		axios.get("HTTP://localhost:667/auth/me?token="+this.props.token).then(res => {console.log('iccccciiiiiii   '+res)})
-		// axios.get("https://cors-anywhere.herokuapp.com/http://localhost:667/auth/me", {headers:{'Access-Control-Allow-Origin': '*'}}).then(res => {console.log('iccccciiiiiii   '+res)})
-	   }
+	async componentDidMount() {
+		await axios.get("HTTP://localhost:667/auth/me?token="+this.props.token).then(res => this.setState({username: res.data.name}))
+	}
 	  
 
 	render(){
@@ -55,7 +55,7 @@ export default class MainPage extends React.Component<{token: string, name:strin
 		}
 		return (
         <div id="MainPage">
-			<img src={LOGO} alt="" className="mainLogo" />
+			<img src={"https://cdn.intra.42.fr/users/medium_"+ this.state.username +".jpg"} alt="" />
 			<div className="logo">
 				<img src={LOGO} alt="" className="mainLogo"/>
 			</div>
