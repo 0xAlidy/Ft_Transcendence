@@ -26,10 +26,10 @@ export default class MainPage extends React.Component<{token: string, name:strin
 		};
 		this.state.socket.emit('setID', {token: this.props.token, name:this.props.name});
 	}
+
 	async componentDidMount() {
 		await axios.get("HTTP://localhost:667/auth/me?token="+this.props.token).then(res => this.setState({username: res.data.name}))
 	}
-	  
 
 	render(){
 		// fetch("http://localhost:667/auth/me", {headers:{'Access-Control-Allow-Origin': '*'}}).then(res => {console.log('iccccciiiiiii   '+res)})
@@ -55,7 +55,9 @@ export default class MainPage extends React.Component<{token: string, name:strin
 		}
 		return (
         <div id="MainPage">
-			<img src={"https://cdn.intra.42.fr/users/medium_"+ this.state.username +".jpg"} alt="" />
+			<div className="divimg">
+				<img src={"https://cdn.intra.42.fr/users/medium_"+ this.state.username +".jpg"} className='menuprofileImg' alt="" />
+			</div>
 			<div className="logo">
 				<img src={LOGO} alt="" className="mainLogo"/>
 			</div>
