@@ -31,6 +31,9 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ default: ' null' })
+  secret: string;
   constructor(pseudo :string, token:string){
     this.name = pseudo;
     this.token = token;
