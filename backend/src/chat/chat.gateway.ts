@@ -41,9 +41,11 @@ export class ChatGateway implements OnGatewayInit {
   addRoom(client:Socket, data:any){
     var id = this.rooms.length + 1;
     var rr = new Room({name: data.name, id: id, creator: data.username, password: data.pass})
-    this.rooms.push(rr);
+    if(this.findRoomByName(rr.name) == -1){
+      this.rooms.push(rr);
+      this.server.emit('sendRoomList',{rooms: this.rooms});
+    }
     console.log(this.rooms);
-    this.server.emit('sendRoomlist',{rooms: this.rooms});
   }
 
   @SubscribeMessage('joinRoom')
