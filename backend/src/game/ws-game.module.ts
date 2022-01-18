@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from 'src/auth/user/user.module';
+import { MatchsModule } from 'src/matchs/matchs.module';
+import { UsersModule } from 'src/user/user.module';
 import { GameGateway } from './game.gateway';
 
 @Module({
-	imports:[UsersModule],
+	imports:[UsersModule, MatchsModule],
 	providers: [GameGateway],
 })
 export class WSGame {}

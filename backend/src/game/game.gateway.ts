@@ -1,14 +1,15 @@
 import { Logger } from "@nestjs/common";
-import {OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse} from "@nestjs/websockets";
+import {OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer} from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import { User } from "src/auth/user/user.entity";
-import { UsersService } from "src/auth/user/users.service";
+import { MatchsService } from "src/matchs/matchs.service";
+import { User } from "src/user/user.entity";
+import { UsersService } from "src/user/users.service";
 import { clientClass } from "./class/client.class";
 import { roomClass } from "./class/room.class";
 
 @WebSocketGateway({cors: true})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-    constructor(private userService: UsersService){
+    constructor(private userService: UsersService,private readonly matchsService: MatchsService){
     }
     private logger: Logger = new Logger('WS-game');
     rooms = new Map<string, roomClass>() ;
@@ -197,6 +198,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         this.userService.xp(element._player._token, 50);
                         this.userService.xp(element._guest._token, 25);
                         this.userService.loose(element._guest._token);
+                        this.matchsService.create(element._player._pseudo, 5, element._guest._pseudo, element._scoreB);
                     }
                     if(res == 2)
                     {
@@ -204,6 +206,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         this.userService.xp(element._player._token, 25);
                         this.userService.xp(element._guest._token, 50);
                         this.userService.loose(element._player._token);
+                        this.matchsService.create(element._guest._pseudo, 5, element._player._pseudo, element._scoreA);
                     }
                 }
             }

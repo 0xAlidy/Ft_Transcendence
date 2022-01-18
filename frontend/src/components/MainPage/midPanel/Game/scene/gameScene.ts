@@ -47,6 +47,8 @@ export class Game extends Scene {
 	}
 	init(data: any)
     {
+
+        this.socket = data.socket as Socket;
         this.PLAYERID = data.id;
 		this.room = data.room;
 		this.nameA = data.nameA;
@@ -67,7 +69,6 @@ export class Game extends Scene {
 	create ()
 	{
 		//variables init
-		this.socket = this.data.get('socket') as Socket;
 		this.uready = false;
 		this.Ready = false;
 		this.cursor = this.input.keyboard.createCursorKeys();
@@ -95,13 +96,13 @@ export class Game extends Scene {
 			self.socket.emit('leaveRoom');
 			self.backToLobby();
 		});
-		self.socket.on('readyPlayer', function(data:any){
+		this.socket.on('readyPlayer', function(data:any){
 			if(data.id=== 1)
 				self.textReadyA.setText('Ready!');
 			if(data.id=== 2)
 				self.textReadyB.setText('Ready!');
 		});
-		self.socket.on('go', function()
+		this.socket.on('go', function()
 		{
 			if (self.PLAYERID !== 3)
 			{
@@ -115,7 +116,7 @@ export class Game extends Scene {
 				self.Ready = true;
 			}
 		});
-		self.socket.on('ballThrow', function(data:any)
+		this.socket.on('ballThrow', function(data:any)
 		{
 				self.ball.setPosition(400, data.y);
 				self.x = data.velx;
@@ -123,13 +124,13 @@ export class Game extends Scene {
 				self.speedball = 250;
 				self.ball.setVelocity(data.velx, data.vely);
 		});
-		self.socket.on('updateBall', function(data:any)
+		this.socket.on('updateBall', function(data:any)
 		{
 				self.sound.play('pop');
 				self.ball.setPosition(data.posx, data.posy);
 				self.ball.setVelocity(data.velx, data.vely);
 		});
-		self.socket.on('updatePos', function(data:any)
+		this.socket.on('updatePos', function(data:any)
 		{
 			if (self.PLAYERID=== 3)
 			{
@@ -143,7 +144,7 @@ export class Game extends Scene {
 			else
 				self.barA.setPosition(40, data.y);
 		});
-		self.socket.on('backToLobby', function () {
+		this.socket.on('backToLobby', function () {
 			if (!self.end)
 			{
 				self.winnerText.setFontSize('30px');
@@ -152,11 +153,11 @@ export class Game extends Scene {
 				self.winnerText.setText('your opponent left..');
 			}
         });
-		self.socket.on('scoreUpdate', function (score:any) {
+		this.socket.on('scoreUpdate', function (score:any) {
 			self.displayA.setText(score.a);
 			self.displayB.setText(score.b);
 		});
-		self.socket.on('winner', function (data:any) {
+		this.socket.on('winner', function (data:any) {
 			self.end = true;
 			self.textInfo.setText('Press ESC!');
 			if (self.PLAYERID=== 3)

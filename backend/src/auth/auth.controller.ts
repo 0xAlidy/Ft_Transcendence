@@ -1,7 +1,7 @@
 import { Controller, Get, HttpStatus, Post, Redirect, Req, Request, Res, UseGuards, Response, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import querystring from 'querystring'
-import { UsersService } from './user/users.service';
+import { UsersService } from '../user/users.service';
 
 @Controller('/auth')
 export class AuthController {

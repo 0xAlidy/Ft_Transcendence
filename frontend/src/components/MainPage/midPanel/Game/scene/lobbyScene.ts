@@ -111,6 +111,7 @@ export class Lobby extends Scene {
             // });
         });
         this.socket.on('startGame', function (data:any) {
+            data.socket = self.socket;
             if (data.bool)
             {
                 console.log('wtf')

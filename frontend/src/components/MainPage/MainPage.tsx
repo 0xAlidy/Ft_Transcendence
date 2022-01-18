@@ -56,7 +56,7 @@ export default class MainPage extends React.Component<{token: string, name:strin
 		return (
         <div id="MainPage">
 			<div className="divimg">
-				<img src={"https://cdn.intra.42.fr/users/medium_"+ this.state.username +".jpg"} className='menuprofileImg' alt="" />
+				<img src={"https://cdn.intra.42.fr/users/small_"+ this.state.username +".jpg"} className='menuprofileImg' alt="" />
 			</div>
 			<div className="logo">
 				<img src={LOGO} alt="" className="mainLogo"/>
@@ -67,7 +67,7 @@ export default class MainPage extends React.Component<{token: string, name:strin
 				{this.state.selector === 'game' && <IGame socket={this.state.socket}/>}
 				{this.state.selector === 'profile' && <Profile/>}
 				{this.state.selector === 'achievement' && <Achievement />}
-				{this.state.selector === 'history' && <History />}
+				{this.state.selector === 'history' && <History name={this.state.username}/>}
 				{this.state.selector === 'admin' && <AdminPanel/>}
 			</div>
 		</div>

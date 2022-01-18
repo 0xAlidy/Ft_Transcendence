@@ -1,44 +1,40 @@
 import * as React from "react";
-import  Logo from '../../../../../assets/versus.png'
 
 interface Match {
-	NameA:string;
-	NameB:string;
-	ScoreA:number;
-	ScoreB:number;
-	Time:number;
 	id:number;
+	WinnerName:string;
+	WinnerScore:number;
+	LooserName:string;
+	LooserScore:number;
 }
 
 
-export default class ItemMatch extends React.Component<{match:Match, id:number},{color:string}>{
+export default class ItemMatch extends React.Component<{match:Match, name:string},{}>{
 	constructor(props:any) {
 		super(props)
-		if (this.props.match.ScoreA > this.props.match.ScoreB)
-			this.state = {color:"#fee154"};
-		else
-			this.state = {color:"none"};
 	};
-	defineColor = () => {
-		var items:any = document.getElementsByClassName('itemMatch');
-        for (let i = 0; i < items.length; i++) {
-			console.log("efrejnzngvezrjnfeivzrniverz");
-			items[i].style.background = '#2B2B2B'
-        }
-	}
 	render(){
 		return (
-
-			<div className="itemMatch" style={{backgroundColor:this.state.color}} id="itemMatch" >
+			<div className="itemMatch" style={{color : this.props.name === this.props.match.WinnerName ? '#fee154': '#2c2c2c'}} id="itemMatch" >
 				<img src="https://cdn.intra.42.fr/users/medium_default.png"  className="imgProfile" height="80%" alt=""/>
-				<div className="name">{this.props.match.NameA}</div>
-				<div className="Score">{this.props.match.ScoreA}</div>
-				<img src={Logo} height="80%" alt="" className="Logo"/>
-				<div className="Score">{this.props.match.ScoreB}</div>
-				<div className="name">{this.props.match.NameB}</div>
+				<div className="name">
+					{this.props.name === this.props.match.WinnerName ? this.props.match.WinnerName: this.props.match.LooserName}
+				</div>
+				<div className="Score">
+					{this.props.name === this.props.match.WinnerName ? this.props.match.WinnerScore: this.props.match.LooserScore}
+				</div>
+				<div className="vs" style={{fontSize:'80%', textAlign:'center'}}>
+					VS
+				</div>
+				<div className="Score">
+					{this.props.name === this.props.match.WinnerName ? this.props.match.LooserName: this.props.match.WinnerName}
+				</div>
+				<div className="name">
+					{this.props.name === this.props.match.WinnerName ? this.props.match.LooserScore: this.props.match.WinnerScore}
+				</div>
 				<img src="https://cdn.intra.42.fr/users/medium_default.png"  className="imgProfile" height="80%" alt=""/>
 		</div>
-				
+
     	)
 	}
 };
