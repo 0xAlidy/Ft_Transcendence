@@ -65,7 +65,7 @@ export default class MainPage extends React.Component<{token: string, name:strin
 			<Chat socket={this.state.socket} />
 			<div className="game" id="game">
 				{this.state.selector === 'game' && <IGame socket={this.state.socket}/>}
-				{this.state.selector === 'profile' && <Profile/>}
+				{this.state.selector === 'profile' && <Profile token={this.props.token}/>}
 				{this.state.selector === 'achievement' && <Achievement />}
 				{this.state.selector === 'history' && <History name={this.state.username}/>}
 				{this.state.selector === 'admin' && <AdminPanel/>}

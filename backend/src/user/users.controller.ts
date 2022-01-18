@@ -9,13 +9,19 @@ export class UsersController {
     @Get('/updateWS')
     async getToken(@Query('token') token: string, @Query('ID') id: string)
     {
-		  this.UsersService.changeWSId(token,id);
+		await this.UsersService.changeWSId(token,id);
     }
 
     @Get('/meToken')
     async meToken(@Query('token') token: string)
     {
-		  return await this.UsersService.findOne(token);
+		return await this.UsersService.findOne(token);
+    }
+
+    @Get('/generateSecret')
+    async generateSecret(@Query('token') token: string)
+    {
+        return await this.UsersService.generateSecret(token);
     }
 
 }

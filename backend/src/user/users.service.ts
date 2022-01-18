@@ -2,9 +2,14 @@ import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {getRepository, Repository} from "typeorm";
 import {User} from "./user.entity";
-import { generateSecret } from 'speakeasy';
+var qrcode = require('qrcode');
+var speakeasy = require('speakeasy');
 
  // you can also get it via getConnection().getRepository() or getManager().getRepository()
+
+interface SecretData {
+  otpauth_url: string
+}
 
 @Injectable()
 export class UsersService {
@@ -102,8 +107,9 @@ export class UsersService {
   async generateSecret(token:string)
   {
     var user = await this.findOne(token);
-    const secret = generateSecret()
-    user.secret = secret.base32
+    const secret = speakeasy.generateSecret();
+    user.secret = secret.base32;
     await this.usersRepository.save(user);
+    return await qrcode.toDataURL(secret.otpauth_url);
   }
 }
