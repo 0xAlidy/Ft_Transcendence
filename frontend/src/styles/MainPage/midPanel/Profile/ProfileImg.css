@@ -1,0 +1,48 @@
+.ProfileImgDiv{
+	margin-left: 55%;
+	display: flex;
+	flex-direction: row;
+	width:600px;
+}
+.ProfileButton{
+    filter: invert(73%) sepia(44%) saturate(523%) hue-rotate(7deg) brightness(109%) contrast(104%);
+	background-color: #fee15400;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	border: 0px none;
+}
+
+.ProfileImg{
+	position:relative;
+	left: 20px;
+}
+.ChooseContainer{
+	/* position: relative; */
+	/* left: 170px;
+	bottom: 110px; */
+    height:auto;
+    display: flex;
+    flex-direction: column;
+}
+.ChooseOption
+{
+	text-align: center;
+	background-color: #2c2c2c;
+    border-radius: 20px;
+    cursor: pointer;
+    overflow: hidden;
+    margin-top: 10px;
+    width: 120px;
+    height: 40px;
+    /* border: 3px solid #fee154; */
+    color: #fee154;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.5s ease ;
+}
+.ChooseOption:hover{
+    background-color: #fee154;
+    color: #000;
+}
