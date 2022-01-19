@@ -20,10 +20,14 @@ export class MatchsService {
   async MatchsByName(name:string)
   {
     var array = await this.MatchRepository.find();
-    var ret:Match[] = [];
+    var askerMatchs:Match[] = [];
+    var ret:string[] = [];
     array.forEach(element => {
       if (element.WinnerName === name || element.LooserName === name)
-        ret.push(element);
+        askerMatchs.push(element);
+    });
+    askerMatchs.forEach(element => {
+      ret.push(element.WinnerName +'/'+ element.WinnerScore  +'/'+ element.LooserName +'/'+ element.LooserScore + '/' + name);
     });
     return ret;
   }
