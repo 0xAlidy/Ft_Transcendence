@@ -33,6 +33,9 @@ export class User {
   isActive: boolean;
 
   @Column({ default: 'null' })
+  imgUrl: string;
+
+  @Column({ default: 'null' })
   secret: string;
 
   @Column({ default: false })

@@ -21,6 +21,7 @@ export class UsersController {
     @Post('/upload')
     uploadFile(@Body() data:any) {
       console.log(data);
+      this.UsersService.changeImgUrl(data);
     }
 
     @Post('/generateSecret')

@@ -41,9 +41,10 @@ export class UsersService {
 
   async changeWSId(name:string, id:string){
       var user = await this.findOneByName(name);
+      if(user != null){
       this.logger.log(user.name + ' his WSid change for ' + id);
       user.WSId = id;
-      await this.usersRepository.save(user);
+      await this.usersRepository.save(user);}
   }
   async changetoken(username: any, newToken:any){
     var user = await this.findOneByName(username);
@@ -51,6 +52,13 @@ export class UsersService {
     await this.usersRepository.save(user);
     return await this.findOneByName(username)
 }
+
+  async changeImgUrl(data:any)
+  {
+    var user = await this.findOneByName(data.name);
+    user.imgUrl = data.url;
+    await this.usersRepository.save(user);
+  }
 
   async findOne(token: string): Promise<User | undefined> {
     const user = await this.usersRepository.findOne(
@@ -116,8 +124,8 @@ export class UsersService {
   async verifyNumber(data:any)
   {
     var user = await this.findOne(data.token);
-    const verified = speakeasy.totp.verify({ 
-      secret: user.secret, 
+    const verified = speakeasy.totp.verify({
+      secret: user.secret,
       encoding: 'base32',
       token: data.number
     })
