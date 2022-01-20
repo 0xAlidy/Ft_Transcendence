@@ -104,12 +104,23 @@ export class UsersService {
     await this.usersRepository.save(user);
   }
 
-  async generateSecret(token:string)
+  async generateSecret(data:any)
   {
-    var user = await this.findOne(token);
+    var user = await this.findOne(data.token);
     const secret = speakeasy.generateSecret();
     user.secret = secret.base32;
     await this.usersRepository.save(user);
     return await qrcode.toDataURL(secret.otpauth_url);
+  }
+
+  async verifyNumber(data:any)
+  {
+    var user = await this.findOne(data.token);
+    const verified = speakeasy.totp.verify({ 
+      secret: user.secret, 
+      encoding: 'base32',
+      token: data.number
+    })
+    return verified;
   }
 }

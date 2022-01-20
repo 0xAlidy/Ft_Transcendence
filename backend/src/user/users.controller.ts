@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import axios, { AxiosResponse } from 'axios';
 import { UsersService } from './users.service';
@@ -15,13 +15,24 @@ export class UsersController {
     @Get('/meToken')
     async meToken(@Query('token') token: string)
     {
-		return await this.UsersService.findOne(token);
+		  return await this.UsersService.findOne(token);
     }
 
-    @Get('/generateSecret')
-    async generateSecret(@Query('token') token: string)
+    @Post('/upload')
+    uploadFile(@Body() data:any) {
+      console.log(data);
+    }
+
+    @Post('/generateSecret')
+    async generateSecret(@Body() data:any)
     {
-        return await this.UsersService.generateSecret(token);
+      return await this.UsersService.generateSecret(data);
+    }
+
+    @Post('/verifyNumber')
+    async verifyNumber(@Body() data:any)
+    {
+      return await this.UsersService.verifyNumber(data);
     }
 
 }
