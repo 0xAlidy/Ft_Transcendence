@@ -25,12 +25,14 @@
     "phaser": "^3.55.2",
     "query-string": "^7.0.1",
     "react": "^17.0.2",
+    "react-avatar-editor": "^12.0.0",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.19.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-select": "^5.2.1",
     "react-webcam": "^6.0.0",
+    "reactjs-popup": "^2.0.5",
     "socket.io-client": "^4.4.0"
   },
   "scripts": {
@@ -59,6 +61,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-avatar-editor": "^10.3.6",
     "typescript": "^3.9.10"
   }
 }

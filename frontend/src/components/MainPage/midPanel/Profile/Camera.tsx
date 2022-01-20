@@ -1,61 +1,66 @@
 // import axios from "axios";
 import React from "react";
 import Webcam from "react-webcam";
+// import AvatarEditor from 'react-avatar-editor'
 import '../../../../styles/MainPage/midPanel/Profile/camera.css'
 
 const videoConstraints = {
-  width: 150,
-  facingMode: "environment"
+width: 150,
+height:100,
+facingMode: "environment"
 };
 
-export default class Camera extends React.Component<{name:any},{url:string | null}>{
-    webcam:Webcam | null;
-    constructor(props :any){
-        super(props)
-        this.state= {url: null};
-        this.webcam = null;
-    }
+export default class Camera extends React.Component<{name:any, validate:any},{url:string | null}>{
+	webcam:Webcam | null;
+	constructor(props :any){
+		super(props)
+		this.state= {url: null};
+		this.webcam = null;
+	}
 
-    setRef = (webcam: Webcam) => {
-        this.webcam = webcam;
-      };
-    capturePhoto = () => {
-      var imgSrc: any;
-      if(this.webcam){
-        imgSrc = this.webcam.getScreenshot();}
-        this.setState({url:imgSrc});
-    };
-//   validate(){
-//       console.log(this.state.url);
-//   }
+	setRef = (webcam: Webcam) => {
+		this.webcam = webcam;
+	};
+	capturePhoto = () => {
+	var imgSrc: any;
+	if(this.webcam){
+		imgSrc = this.webcam.getScreenshot();}
+		this.setState({url:imgSrc});
+	};
+// validate(){
+//	 console.log(this.state.url);
+// }
 render(){
-    const validate = async () => {
-        var headers = {
-            'Content-Type': 'application/json;charset=UTF-8',
-            "Access-Control-Allow-Origin": "*"
-        }
-        console.log(this.state.url);
-        // axios.post('HTTP://localhost:667/user/upload', {url:this.state.url, name:this.props.name},{headers:headers})
-        fetch('HTTP://localhost:667/user/upload', {
-            method: "post",
-            headers: headers,
-            body: JSON.stringify({url:this.state.url, name:this.props.name}),
-          })
-    }
-  return (
-    <div className="cameraWidget">
-        {this.state.url === null ?<Webcam ref={this.setRef} audio={false} screenshotFormat="image/jpeg" videoConstraints={videoConstraints} />:<img src={this.state.url} alt="Screenshot" />}
-        {this.state.url === null ?<button onClick={this.capturePhoto}>Capture</button>:
-                        <>
-                            <button onClick={() => this.setState({url:null})}>Retry</button>
-                            <button onClick={validate}>validate</button>
-                        </>}
-      {/* {url && (
-        <div>
-          <img src={url} alt="Screenshot" />
-        </div>
-      )} */}
-    </div>
-  );
+	const good = () => {
+		// var imageURL;
+			// var headers = {
+			// 	'Content-Type': 'application/json;charset=UTF-8',
+			// 	"Access-Control-Allow-Origin": "*"
+			// }
+			console.log(this.state.url);
+			// axios.post('HTTP://localhost:667/user/upload', {url:this.state.url, name:this.props.name},{headers:headers})
+			this.props.validate(this.state.url);
+			this.setState({url: null});
+			// fetch('HTTP://localhost:667/user/upload', {
+			// 	method: "post",
+			// 	headers: headers,
+			// 	body: JSON.stringify({url:this.editor.getImageScaledToCanvas().toDataURL(), name:this.props.name}),
+			// })
+	}
+return (
+	<div className="cameraWidget">
+		{this.state.url === null ?
+		<>
+			<div style={{height:'10px'}}/>
+			<Webcam className="webcam" ref={this.setRef} audio={false} screenshotFormat="image/jpeg" videoConstraints={videoConstraints} />
+		</>:<img src={this.state.url}/>}
+		{this.state.url === null ?
+		<button className='buttonCapture' onClick={this.capturePhoto}>[o]</button>
+		:<>
+			<button className='buttonCapture' onClick={() => this.setState({url:null})}>Retry</button>
+			<button className='buttonCapture' onClick={good}>validate</button>
+		</>}
+	</div>
+);
 }
 };

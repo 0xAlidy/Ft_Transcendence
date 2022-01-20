@@ -46,3 +46,7 @@
     background-color: #fee154;
     color: #000;
 }
+
+input[type="file"] {
+    display: none;
+}
