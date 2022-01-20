@@ -13,3 +13,7 @@
     border: 4px solid #3c3c3c;
     cursor: pointer;
 }
+
+#number {
+    width: 150px;
+}

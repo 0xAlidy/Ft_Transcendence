@@ -11,7 +11,7 @@ async function bootstrap() {
     credentials: true,
     methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
     origin: "*",
-    preflightContinue: true,
+    preflightContinue: false,
 });
   await app.listen(667);
 }

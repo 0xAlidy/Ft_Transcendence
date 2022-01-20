@@ -1,11 +1,11 @@
 import * as React from "react";
 import '../../../styles/MainPage/menu/menu.css'
 import ACHIEVEMENT from '../../../assets/trophy.png'
-import USER from '../../../assets/user.png'
+// import USER from '../../../assets/user.png'
 import HISTORY from '../../../assets/scroll.png'
 import ADMIN from '../../../assets/admin.png'
 import VERSUS from '../../../assets/versus.png'
-export default class Menu extends React.Component<{onChange : any}, { isProfileOpen: boolean, isGameOpen: boolean, isAchievOpen: boolean, isHistoryOpen: boolean, isAdminOpen: boolean}>{
+export default class Menu extends React.Component<{onChange : any, imgsrc:string}, { isProfileOpen: boolean, isGameOpen: boolean, isAchievOpen: boolean, isHistoryOpen: boolean, isAdminOpen: boolean}>{
 	constructor(props :any) {
 		super(props);
 		this.handleProfileClick = this.handleProfileClick.bind(this);
@@ -47,7 +47,7 @@ export default class Menu extends React.Component<{onChange : any}, { isProfileO
 		var isAdminOpen = this.state.isAdminOpen;
 		const renderProfile = () => {
 			if (!isProfileOpen) {
-				return <div className="menuButton"onClick={this.handleProfileClick}><div className="horizontal"><img src={USER}  alt="" className="menuIcon"/>PROFILE</div></div>;
+				return <div className="menuButton"onClick={this.handleProfileClick}><div className="horizontal"><img src={this.props.imgsrc}  alt="" className="menuIcon"/>PROFILE</div></div>;
 			}
 			return;
 		  }

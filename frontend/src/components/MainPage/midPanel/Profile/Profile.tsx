@@ -7,12 +7,16 @@ import EditBox from './editBox';
 import Gauge from './gauge';
 import WinRate from './winRate';
 import TwoAuth from './twoAuth';
+import ProfileImg from './ProfileImg';
 
-export default class Profile extends React.Component<{token:string},{editMode:boolean}>{
+export default class Profile extends React.Component<{token:string, name:string},{editMode:boolean}>{
+	async componentDidMount(){
+
+	}
 	render(){
 		return (
         <div className="midPanel" id="profile">
-			<img src="https://cdn.intra.42.fr/users/medium_default.png" className="profileImg"/>
+			<ProfileImg name={this.props.name}/>
 			<EditBox value="sass" placeHolder="nickname"/>
 			<Gauge percent="56" lvl="45"/>
 			<WinRate win={80} loose={45}/>
