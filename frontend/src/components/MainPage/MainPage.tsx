@@ -62,7 +62,7 @@ export default class MainPage extends React.Component<{token: string, name:strin
 				<img src={LOGO} alt="" className="mainLogo"/>
 			</div>
 			<Menu onChange={Ref}/>
-			<Chat socket={this.state.socket} />
+			<Chat socket={this.state.socket} username={this.state.username}/>
 			<div className="game" id="game">
 				{this.state.selector === 'game' && <IGame socket={this.state.socket}/>}
 				{this.state.selector === 'profile' && <Profile token={this.props.token}/>}

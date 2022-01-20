@@ -28,7 +28,7 @@ export class ChatGateway implements OnGatewayInit {
   @SubscribeMessage('getRoomList')
   roomList(client:Socket, data:any){
     console.log(this.rooms);
-    this.server.emit('sendRoomlist',{rooms: this.rooms});
+    client.emit('sendRoomList',{rooms: this.rooms});
   }
 
   @SubscribeMessage('newConnection')
