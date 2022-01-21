@@ -7,12 +7,12 @@ export default class Gauge extends React.Component<{percent:string, lvl:string},
 
 	render(){
 		return (
-		<div>
+		<>
+			<div className="lvlT"> {this.props.lvl}</div>
 			<div className="lvlGauge">
 				<div className="lvlG" style={{width:this.props.percent + '%'}}/>
-				<div className="lvlT"> {"Level :"+this.props.lvl+ " "+ this.props.percent + '%'}</div>
 			</div>
-		</div>
+		</>
     	)
 	}
 };

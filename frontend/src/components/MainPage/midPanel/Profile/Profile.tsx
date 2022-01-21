@@ -17,7 +17,7 @@ export default class Profile extends React.Component<{token:string, name:string}
 		return (
         <div className="midPanel" id="profile">
 			<ProfileImg name={this.props.name}/>
-			<EditBox value="sass" placeHolder="nickname"/>
+			<EditBox value={this.props.name} placeHolder="nickname"/>
 			<Gauge percent="56" lvl="45"/>
 			<WinRate win={80} loose={45}/>
 			<TwoAuth token={this.props.token}/>

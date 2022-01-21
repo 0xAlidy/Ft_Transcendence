@@ -1,17 +1,19 @@
 .lvlGauge{
-	margin-left: 5%;
 	flex-direction: column;
-	width: 90%;
+	width: 80%;
 	height: 10px;
-    margin-top: 3%;
+	overflow: hidden;
 	margin-bottom: 3%;
+	border-radius: 5px;
 	background-color: #3c3c3c;
 }
 .lvlG{
-	height: 5px;
+	height: 10px;
 	background-color: #fee154;
 }
 
 .lvlT{
-	color: white;
+	color: #fee154;
+	font-size: 18pt;
+	font-weight: bold;
 }

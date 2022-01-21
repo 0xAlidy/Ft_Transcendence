@@ -53,9 +53,13 @@ return (
 		<>
 			<div style={{height:'10px'}}/>
 			<Webcam className="webcam" ref={this.setRef} audio={false} screenshotFormat="image/jpeg" videoConstraints={videoConstraints} />
-		</>:<img src={this.state.url}/>}
+		</>:
+		<>
+			<div style={{height:'10px'}}/>
+			<img src={this.state.url}/>
+		</>}
 		{this.state.url === null ?
-		<button className='buttonCapture' onClick={this.capturePhoto}>[o]</button>
+			<button className='buttonCapture' onClick={this.capturePhoto}>[o]</button>
 		:<>
 			<button className='buttonCapture' onClick={() => this.setState({url:null})}>Retry</button>
 			<button className='buttonCapture' onClick={good}>validate</button>

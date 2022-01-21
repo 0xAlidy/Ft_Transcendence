@@ -79,24 +79,30 @@ export default class ProfileImg extends React.Component<{name:string},{url:null|
 			<button className='ProfileButton' onClick={this.open}>
 				<img src={this.state.displayChoices === false ? EDIT: CLOSE} alt="" width={"18px"}/>
 			</button>
-			{this.state.url === null ?
+			<div className='ChooseContainer'>
+			{
+				this.state.displayChoices === true &&
 				<>
-					{this.state.displayChoices === true &&
-					<div className='ChooseContainer'>
-						{this.state.webcamOption  && <Camera name={this.props.name} validate={validate}/>}
-						{!(this.state.webcamOption || this.state.uploadOption) &&
+					{
+						this.state.url === null ?
 						<>
-							<div className='ChooseOption'  onClick={this.openwebcam}>use webcam</div>
-							<label className='ChooseOption' htmlFor='file'>upload image</label>
-							<input type="file" id="file" name="myImage" onChange={this.onImageUpload} />
-						</>}
-					</div>}
-				</>: <>
-					<AvatarEditor ref={this.setEditorRef} image={this.state.url as string} width={100} height={100} borderRadius={100} color={[255, 255, 255, 0.6]} scale={1.1} rotate={0}/>
-					<button className='ChooseOption' onClick={this.photo}>OK</button>
+							{this.state.webcamOption  && <Camera name={this.props.name} validate={validate}/>}
+							{
+								!(this.state.webcamOption || this.state.uploadOption) &&
+								<>
+									<div className='ChooseOption'  onClick={this.openwebcam}>use webcam</div>
+									<label className='ChooseOption' htmlFor='file'>upload image</label>
+									<input type="file" id="file" name="myImage" onChange={this.onImageUpload} />
+								</>
+							}
+						</>:<>
+							<AvatarEditor ref={this.setEditorRef} image={this.state.url as string} width={100} height={100} borderRadius={100} color={[255, 255, 255, 0.6]} scale={1.1} rotate={0}/>
+							<button className='ChooseOption' onClick={this.photo}>OK</button>
+						</>
+					}
 				</>
 			}
-		</div>
-    	)
+			</div>
+		</div>)
 	}
 };
