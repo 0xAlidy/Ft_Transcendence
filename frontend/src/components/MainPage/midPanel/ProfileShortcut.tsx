@@ -23,7 +23,7 @@ export {}
 // 	render(){
 // 		return (
 //         <div className="ProfileShortCut" id="ProfileSC" key={this.props.key}>
-// 			{this.state.opened ?}
+// 			{this.state}
 // 		</div>
 //     	)
 // 	}

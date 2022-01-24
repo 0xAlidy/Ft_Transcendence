@@ -24,14 +24,17 @@ interface user{
 	token: string;
 	xp: 0;
 }
-export default class Profile extends React.Component<{User:user, name:string},{editMode:boolean}>{
+export default class Profile extends React.Component<{User:user, name:string, refreshUser:any},{}>{
 	async componentDidMount(){
 
+	}
+	handleRefresh = () => {
+		this.props.refreshUser()
 	}
 	render(){
 		return (
         <div className="midPanel" id="profile">
-			<ProfileImg User={this.props.User} refreshUser={()=> {}}/>
+			<ProfileImg User={this.props.User} refreshUser={this.handleRefresh}/>
 			<EditBox value={this.props.name} onChange={() => {}} />
 			<Gauge percent="56" lvl="45"/>
 			<WinRate win={80} loose={45}/>

@@ -55,6 +55,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 			})
 			this.setState({src: this.editor.getImageScaledToCanvas().toDataURL()});
 			this.setState({url: null, webcamOption: false, displayChoices: false});
+			this.props.refreshUser();
 		}
 
 	}

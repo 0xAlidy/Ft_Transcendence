@@ -47,9 +47,19 @@ export default class MainPage extends React.Component<{token: string, name:strin
 	}
 
 	async componentDidMount() {
-		await axios.get("HTTP://localhost:667/auth/me?token="+this.state.token).then(res => {
-			this.setState({User: res.data, url: res.data.imgUrl})})
+		console.log("debug connection error" + this.state.token)
+		if(this.state.token)
+		{
+			await axios.get("HTTP://localhost:667/auth/me?token="+this.state.token).then(res => {
+				this.setState({User: res.data, url: res.data.imgUrl})})
+		}
 	}
+
+	refreshUser = async () => {
+		await axios.get("HTTP://localhost:667/auth/me?token="+this.state.token).then(res => {
+				this.setState({User: res.data, url: res.data.imgUrl})})
+	}
+
 	CompleteProfile = (User:user) => {
 		this.setState({User: User});
 	}
@@ -87,7 +97,7 @@ export default class MainPage extends React.Component<{token: string, name:strin
 				<Chat socket={this.state.socket} username={this.state.User.name} />
 				<div className="game" id="game">
 				{this.state.selector === 'game' && <IGame socket={this.state.socket}/>}
-				{this.state.selector === 'profile' && <Profile User={this.state.User} name={this.state.User.name}/>}
+				{this.state.selector === 'profile' && <Profile User={this.state.User} name={this.state.User.name} refreshUser={this.refreshUser}/>}
 				{this.state.selector === 'achievement' && <Achievement />}
 				{this.state.selector === 'history' && <History name={this.state.User.name}/>}
 				{this.state.selector === 'admin' && <AdminPanel/>}
