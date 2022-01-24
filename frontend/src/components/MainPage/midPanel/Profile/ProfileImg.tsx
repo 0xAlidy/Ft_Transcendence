@@ -5,7 +5,23 @@ import CLOSE from '../../../../assets/exit.png'
 import '../../../../styles/MainPage/midPanel/Profile/ProfileImg.css'
 import Camera from './Camera'
 // import Upload from './upload'
-export default class ProfileImg extends React.Component<{name:string},{url:null|string, src:null|string, displayChoices:boolean, webcamOption:boolean, fileOption:boolean, uploadOption:boolean}>{
+interface user{
+	WSId: string;
+	id: number;
+	imgUrl: string;
+	isActive: false;
+	lvl: number;
+	name: string;
+	nickname: string;
+	numberOfLoose: number;
+	numberOfWin: number;
+	secret: string;
+	secretEnabled: false;
+	firstConnection: boolean;
+	token: string;
+	xp: 0;
+}
+export default class ProfileImg extends React.Component<{ User:user, refreshUser:any},{url:null|string, src:null|string, displayChoices:boolean, webcamOption:boolean, fileOption:boolean, uploadOption:boolean}>{
 	editor:AvatarEditor | null;
 	constructor(props :any){
 		super(props)
@@ -14,7 +30,7 @@ export default class ProfileImg extends React.Component<{name:string},{url:null|
 					fileOption:false,
 					uploadOption:false,
 					url:null,
-					src: "https://cdn.intra.42.fr/users/medium_"+ this.props.name +".jpg"
+					src: this.props.User.imgUrl
 				};
 		this.editor = null;
 		this.open = this.open.bind(this);
@@ -26,20 +42,21 @@ export default class ProfileImg extends React.Component<{name:string},{url:null|
 		this.editor = editor;
 	};
 
-	photo = () =>{
+	photo = async () =>{
 		var headers = {
 			'Content-Type': 'application/json;charset=UTF-8',
 			"Access-Control-Allow-Origin": "*"
 		}
 		if(this.editor){
-			fetch('HTTP://localhost:667/user/upload', {
+			await fetch('HTTP://localhost:667/user/upload', {
 					method: "post",
 					headers: headers,
-					body: JSON.stringify({url:this.editor.getImageScaledToCanvas().toDataURL(), name:this.props.name}),
+					body: JSON.stringify({url:this.editor.getImageScaledToCanvas().toDataURL(), token:this.props.User.token}),
 			})
 			this.setState({src: this.editor.getImageScaledToCanvas().toDataURL()});
 			this.setState({url: null, webcamOption: false, displayChoices: false});
 		}
+
 	}
 
 	onImageUpload = (event:any) => {
@@ -86,7 +103,7 @@ export default class ProfileImg extends React.Component<{name:string},{url:null|
 					{
 						this.state.url === null ?
 						<>
-							{this.state.webcamOption  && <Camera name={this.props.name} validate={validate}/>}
+							{this.state.webcamOption  && <Camera validate={validate}/>}
 							{
 								!(this.state.webcamOption || this.state.uploadOption) &&
 								<>

@@ -10,32 +10,51 @@ import Achievement from './midPanel/Achievement/Achievement';
 import History from './midPanel/History/History';
 import AdminPanel from './midPanel/AdminPanel/AdminPanel';
 import axios from 'axios';
+import PopupStart from './PopupStart';
 // import axios from 'axios';
 
+interface user{
+	WSId: string;
+	id: number;
+	imgUrl: string;
+	isActive: false;
+	lvl: number;
+	name: string;
+	nickname: string;
+	numberOfLoose: number;
+	numberOfWin: number;
+	secret: string;
+	secretEnabled: false;
+	token: string;
+	xp: 0;
+	firstConnection: boolean;
+}
 
-
-export default class MainPage extends React.Component<{token: string, name:string},{selector: string, socket: Socket, username:string}>{
+export default class MainPage extends React.Component<{token: string, name:string},{token:string, selector: string, socket: Socket, User:user|null, popupOpen:boolean, url:string|null}>{
 	menuState: any
 	selector : any;
 	constructor(props :any) {
 		super(props);
 		this.state = {
 			selector: 'game',
+			url:null,
 			socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667'),
-			username: 'null',
+			User: null,
+			popupOpen: false,
+			token: this.props.token
 		};
 		this.state.socket.emit('setID', {token: this.props.token, name:this.props.name});
 	}
 
 	async componentDidMount() {
-		await axios.get("HTTP://localhost:667/auth/me?token="+this.props.token).then(res => this.setState({username: res.data.name}))
+		await axios.get("HTTP://localhost:667/auth/me?token="+this.state.token).then(res => {
+			this.setState({User: res.data, url: res.data.imgUrl})})
 	}
-
+	CompleteProfile = (User:user) => {
+		this.setState({User: User});
+	}
 	render(){
-		// fetch("http://localhost:667/auth/me", {headers:{'Access-Control-Allow-Origin': '*'}}).then(res => {console.log('iccccciiiiiii   '+res)})
-		// fetch("http://localhost:667/auth/me").then(res => console.log('iccccciiii'+ res));
 		const Ref = (e: any) => {
-			console.log('update', e)
 			document.getElementById('game');
 			if (e.isAchievOpen){
 				this.setState({selector: 'achievement'});
@@ -55,21 +74,27 @@ export default class MainPage extends React.Component<{token: string, name:strin
 		}
 		return (
         <div id="MainPage">
-			<div className="divimg">
-				<img src={"https://cdn.intra.42.fr/users/small_"+ this.state.username +".jpg"} className='menuprofileImg' alt="" />
-			</div>
-			<div className="logo">
-				<img src={LOGO} alt="" className="mainLogo"/>
-			</div>
-			<Menu onChange={Ref} imgsrc={"https://cdn.intra.42.fr/users/small_"+ this.state.username +".jpg"}/>
-			<Chat socket={this.state.socket} username={this.state.username} />
-			<div className="game" id="game">
+			{this.state.User &&
+			<>
+			{this.state.url &&
+				<div className="divimg"><img src={this.state.User.imgUrl} className='menuprofileImg' alt="" />
+				</div>
+				}
+				<div className="logo">
+					<img src={LOGO} alt="" className="mainLogo"/>
+				</div>
+				<Menu onChange={Ref} imgsrc={this.state.User.imgUrl}/>
+				<Chat socket={this.state.socket} username={this.state.User.name} />
+				<div className="game" id="game">
 				{this.state.selector === 'game' && <IGame socket={this.state.socket}/>}
-				{this.state.selector === 'profile' && <Profile token={this.props.token} name={this.props.name}/>}
+				{this.state.selector === 'profile' && <Profile User={this.state.User} name={this.state.User.name}/>}
 				{this.state.selector === 'achievement' && <Achievement />}
-				{this.state.selector === 'history' && <History name={this.state.username}/>}
+				{this.state.selector === 'history' && <History name={this.state.User.name}/>}
 				{this.state.selector === 'admin' && <AdminPanel/>}
-			</div>
+				</div>
+				<PopupStart User={this.state.User} onChange={this.CompleteProfile}/>
+			</>
+			}
 		</div>
     	)
 	}

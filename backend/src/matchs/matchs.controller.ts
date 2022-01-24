@@ -6,7 +6,6 @@ export class MatchsController {
     @Get()
     async myMatchs(@Query('name') name:string)
     {
-        console.log(name);
         return await this.matchService.MatchsByName(name);
     }
 }

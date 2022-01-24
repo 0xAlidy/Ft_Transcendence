@@ -45,7 +45,7 @@ export default class TwoAuth extends React.Component<{token:string},{secretEnabl
 		);
 	}
 
-	
+
 	render(){
 		// Check secretEnabled
 		this.secretEnabled();
@@ -57,9 +57,9 @@ export default class TwoAuth extends React.Component<{token:string},{secretEnabl
 						<p>Deja activé</p>
 					:
 					<>
-						<button onClick={this.click}> 2FA </button>
+						<button onClick={this.click}>activate 2FA </button>
 						{
-							this.state.qr && 
+							this.state.qr &&
 							<div>
 								<h2>Veuillez scanner ce Qrcode sur votre application d'authentification: </h2>
 								<img src={this.state.qr} alt="QrCode" />

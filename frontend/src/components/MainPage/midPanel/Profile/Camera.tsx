@@ -10,7 +10,7 @@ height:100,
 facingMode: "environment"
 };
 
-export default class Camera extends React.Component<{name:any, validate:any},{url:string | null}>{
+export default class Camera extends React.Component<{validate:any},{url:string | null}>{
 	webcam:Webcam | null;
 	constructor(props :any){
 		super(props)
@@ -28,7 +28,6 @@ export default class Camera extends React.Component<{name:any, validate:any},{ur
 		this.setState({url:imgSrc});
 	};
 // validate(){
-//	 console.log(this.state.url);
 // }
 render(){
 	const good = () => {

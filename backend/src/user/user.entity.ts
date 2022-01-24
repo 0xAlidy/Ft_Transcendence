@@ -33,13 +33,17 @@ export class User {
   isActive: boolean;
 
   @Column({ default: 'null' })
-  imgUrl: string;
-
-  @Column({ default: 'null' })
   secret: string;
 
   @Column({ default: false })
   secretEnabled: boolean;
+
+  @Column({ default: true })
+  firstConnection: boolean;
+
+  @Column({ default: 'null' })
+  imgUrl: string;
+
 
   constructor(pseudo :string, token:string){
     this.name = pseudo;

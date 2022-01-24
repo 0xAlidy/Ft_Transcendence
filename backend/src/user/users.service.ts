@@ -55,9 +55,18 @@ export class UsersService {
 
   async changeImgUrl(data:any)
   {
-    var user = await this.findOneByName(data.name);
+    var user = await this.findOne(data.token);
     user.imgUrl = data.url;
-    await this.usersRepository.save(user);
+    return await this.usersRepository.save(user);
+  }
+
+  async completeProfile(data:any)
+  {
+    var user = await this.findOne(data.token);
+    user.firstConnection = false;
+    user.imgUrl = data.url;
+    user.nickname = data.name;
+    return await this.usersRepository.save(user);
   }
 
   async findOne(token: string): Promise<User | undefined> {

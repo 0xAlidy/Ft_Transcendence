@@ -22,6 +22,7 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-plugin-testing-library": "^3.10.2",
     "framer-motion": "^4.1.17",
+    "image-to-base64": "^2.2.0",
     "phaser": "^3.55.2",
     "query-string": "^7.0.1",
     "react": "^17.0.2",

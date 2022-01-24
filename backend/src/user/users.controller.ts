@@ -19,9 +19,14 @@ export class UsersController {
     }
 
     @Post('/upload')
-    uploadFile(@Body() data:any) {
-      console.log(data);
-      this.UsersService.changeImgUrl(data);
+    async uploadFile(@Body() data:any) {
+      return await this.UsersService.changeImgUrl(data);
+    }
+
+    @Post('/completeProfile')
+    async completeProfile(@Body() data:any) {
+      return await this.UsersService.completeProfile(data);
+
     }
 
     @Post('/generateSecret')
