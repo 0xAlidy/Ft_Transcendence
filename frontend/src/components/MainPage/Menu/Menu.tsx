@@ -47,7 +47,7 @@ export default class Menu extends React.Component<{onChange : any, imgsrc:string
 		var isAdminOpen = this.state.isAdminOpen;
 		const renderProfile = () => {
 			if (!isProfileOpen) {
-				return <div className="menuButton"onClick={this.handleProfileClick}><div className="horizontal"><img src={this.props.imgsrc}  alt="" className="menuIcon"/>PROFILE</div></div>;
+				return <div className="menuButton" onClick={this.handleProfileClick}><div className="horizontal"><img src={this.props.imgsrc}  alt="" className="menuIconProfile"/>PROFILE</div></div>;
 			}
 			return;
 		  }

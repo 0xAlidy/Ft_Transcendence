@@ -7,7 +7,7 @@ import { UsersController } from './users.controller';
 import { MatchsModule } from 'src/matchs/matchs.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), MatchsModule],
+  imports: [TypeOrmModule.forFeature([User])],
   providers: [UsersService],
   controllers: [UsersController],
   exports: [UsersService],

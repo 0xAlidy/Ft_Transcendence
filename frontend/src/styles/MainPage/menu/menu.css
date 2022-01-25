@@ -40,6 +40,17 @@
     transition: all .5s ease ;
     filter:none;
 }
+.menuButton .menuIconProfile{
+    border-radius: 50%;
+    width: 50px;
+    margin-left: 10px;
+    margin-right: 13px;
+}
+.menuButton:hover .menuIconProfile {
+    width: 40px;
+    transition: all .5s ease ;
+    filter:none;
+}
 .horizontal{
     display: flex;
     color: #1f1f1f;
@@ -49,8 +60,4 @@
 .menuButton:hover .horizontal {
     font-size: 23pt;
     transition: all .5s ease ;
-}
-.PP{
-margin: 20px 0 0 20px;
-   border-radius: 50%;
 }

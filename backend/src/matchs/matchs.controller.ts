@@ -4,8 +4,8 @@ import { MatchsService } from 'src/matchs/matchs.service';
 export class MatchsController {
     constructor(private readonly matchService: MatchsService) { }
     @Get()
-    async myMatchs(@Query('name') name:string)
+    async myMatchs(@Query('name') name:string, @Query('token') token:string)
     {
-        return await this.matchService.MatchsByName(name);
+        return await this.matchService.MatchsByName(name, token);
     }
 }

@@ -7,7 +7,7 @@
     grid-template-rows: 20% 80%;
     gap: 0% 5%;
     grid-template-areas:
-      ". logo chat"
+      "menu logo chat"
       "menu game chat ";
 }
 .divimg {

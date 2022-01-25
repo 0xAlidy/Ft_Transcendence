@@ -13,7 +13,7 @@ import axios from 'axios';
 import PopupStart from './PopupStart';
 // import axios from 'axios';
 
-interface user{
+export interface user{
 	WSId: string;
 	id: number;
 	imgUrl: string;
@@ -30,7 +30,7 @@ interface user{
 	firstConnection: boolean;
 }
 
-export default class MainPage extends React.Component<{token: string, name:string},{token:string, selector: string, socket: Socket, User:user|null, popupOpen:boolean, url:string|null}>{
+export default class MainPage extends React.Component<{token: string, name:string},{token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, url:string|null}>{
 	menuState: any
 	selector : any;
 	constructor(props :any) {
@@ -38,20 +38,26 @@ export default class MainPage extends React.Component<{token: string, name:strin
 		this.state = {
 			selector: 'game',
 			url:null,
-			socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667'),
+			socket: null,
 			User: null,
 			popupOpen: false,
 			token: this.props.token
 		};
-		this.state.socket.emit('setID', {token: this.props.token, name:this.props.name});
 	}
 
 	async componentDidMount() {
 		console.log("debug connection error" + this.state.token)
-		if(this.state.token)
+		if(this.props.token)
 		{
-			await axios.get("HTTP://localhost:667/auth/me?token="+this.state.token).then(res => {
-				this.setState({User: res.data, url: res.data.imgUrl})})
+			while (this.state.User === undefined || this.state.User === null ){
+				await axios.get("HTTP://localhost:667/auth/me?token="+this.state.token).then(res => {
+					this.setState({User: res.data, url: res.data.imgUrl})})
+			}
+			this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667')})
+			if (this.state.socket)
+				this.state.socket.emit('setID', {token: this.props.token, name:this.props.name});
+			else
+				console.log("ERROR socket")
 		}
 	}
 
@@ -86,20 +92,16 @@ export default class MainPage extends React.Component<{token: string, name:strin
         <div id="MainPage">
 			{this.state.User &&
 			<>
-			{this.state.url &&
-				<div className="divimg"><img src={this.state.User.imgUrl} className='menuprofileImg' alt="" />
-				</div>
-				}
 				<div className="logo">
 					<img src={LOGO} alt="" className="mainLogo"/>
 				</div>
 				<Menu onChange={Ref} imgsrc={this.state.User.imgUrl}/>
-				<Chat socket={this.state.socket} username={this.state.User.name} />
+				{this.state.socket && <Chat socket={this.state.socket} username={this.state.User.name} />}
 				<div className="game" id="game">
-				{this.state.selector === 'game' && <IGame socket={this.state.socket}/>}
+				{this.state.socket && this.state.selector === 'game' && <IGame socket={this.state.socket}/>}
 				{this.state.selector === 'profile' && <Profile User={this.state.User} name={this.state.User.name} refreshUser={this.refreshUser}/>}
 				{this.state.selector === 'achievement' && <Achievement />}
-				{this.state.selector === 'history' && <History name={this.state.User.name}/>}
+				{this.state.selector === 'history' && <History User={this.state.User}/>}
 				{this.state.selector === 'admin' && <AdminPanel/>}
 				</div>
 				<PopupStart User={this.state.User} onChange={this.CompleteProfile}/>

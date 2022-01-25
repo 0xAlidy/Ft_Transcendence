@@ -48,16 +48,7 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 
 			await axios.post('http://localhost:667/user/completeProfile',{	url:this.editor.getImageScaledToCanvas().toDataURL(),
 			token:this.props.User.token,
-			name:this.state.name
-			// await fetch('HTTP://localhost:667/user/completeProfile', {
-			// 		method: "post",
-			// 		headers: headers,
-			// 		body: JSON.stringify({	url:this.editor.getImageScaledToCanvas().toDataURL(),
-			// 								token:this.props.User.token,
-			// 								name:this.state.name
-			// 							})
-			// }).then(() => this.setState({options:3})).then(this.props.onChange())
-		}).then((res) => {this.props.onChange(res.data)})
+			name:this.state.name}).then((res) => {this.props.onChange(res.data)})
 		this.setState({options:3})
 		}
 	}

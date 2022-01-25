@@ -11,6 +11,16 @@ interface SecretData {
   otpauth_url: string
 }
 
+interface userPublic{
+  imgUrl: string;
+  isActive: false;
+  lvl: number;
+  name: string;
+  nickname: string;
+  numberOfLoose: number;
+  numberOfWin: number;
+  xp: number;
+}
 @Injectable()
 export class UsersService {
   private logger: Logger = new Logger('UsersService');
@@ -52,6 +62,24 @@ export class UsersService {
     await this.usersRepository.save(user);
     return await this.findOneByName(username)
 }
+  async getUserPublic(token:string, name:string){
+
+    var verif = await this.findOne(token);
+    if(verif){
+      var user = await this.findOneByName(name);
+      return({
+        imgUrl: user.imgUrl,
+        isActive: user.isActive,
+        lvl: user.lvl,
+        name: user.name,
+        nickname: user.nickname,
+        numberOfLoose: user.numberOfLoose,
+        numberOfWin: user.numberOfWin,
+        xp: user.xp,
+      })
+    }
+    return null;
+  }
 
   async changeImgUrl(data:any)
   {

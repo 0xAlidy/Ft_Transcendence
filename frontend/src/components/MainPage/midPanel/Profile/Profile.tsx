@@ -35,9 +35,9 @@ export default class Profile extends React.Component<{User:user, name:string, re
 		return (
         <div className="midPanel" id="profile">
 			<ProfileImg User={this.props.User} refreshUser={this.handleRefresh}/>
-			<EditBox value={this.props.name} onChange={() => {}} />
-			<Gauge percent="56" lvl="45"/>
-			<WinRate win={80} loose={45}/>
+			<EditBox value={this.props.User.name} onChange={() => {}} />
+			<Gauge percent={this.props.User.xp.toString()} lvl={this.props.User.lvl.toString()}/>
+			<WinRate win={this.props.User.numberOfWin} loose={this.props.User.numberOfLoose}/>
 			<TwoAuth token={this.props.User.token}/>
 			{/* <img src={LEAVE} alt="" width="50px"/>
 			<img src={DELETE} alt="" width="50px" /> */}

@@ -1,6 +1,7 @@
 import * as React from "react";
+import ProfileShortCut from "../../../ProfileShortcut";
 
-export default class ItemMatch extends React.Component<{match:string, name:any},{WinnerName:any, WinnerScore:any, LooserName:any, LooserScore:any}>{
+export default class ItemMatch extends React.Component<{match:string, name:any, token:any},{WinnerName:any, WinnerScore:any, LooserName:any, LooserScore:any}>{
 	constructor(props:any) {
 		super(props)
 		var arr = this.props.match.split('/');
@@ -13,26 +14,58 @@ export default class ItemMatch extends React.Component<{match:string, name:any},
 	};
 	render(){
 		return (
-			<div className="itemMatch" style={{backgroundColor : this.props.name === this.state.WinnerName ? '#fee154': '#2c2c2c'}} id="itemMatch" >
-				<img src={"https://cdn.intra.42.fr/users/small_"+( this.props.name === this.state.WinnerName ? this.state.WinnerName: this.state.LooserName) + ".jpg"}  className="imgProfile" height="80%" alt=""/>
-				<div className="name">
-					{this.props.name === this.state.WinnerName ? this.state.WinnerName: this.state.LooserName}
+			<>
+			{
+				this.props.name === this.state.WinnerName ?
+				<div className="itemMatch" style={{backgroundColor :'#fee154'}} id="itemMatch" >
+					<div className="pp" key={'left'}>
+						<ProfileShortCut pseudo={this.props.name} token={this.props.token} canOpen={false}/>
+					</div>
+					<div className="name">
+						{this.state.WinnerName}
+					</div>
+					<div className="Score">
+						{this.state.WinnerScore}
+					</div>
+					<div className="vs" style={{fontSize:'80%', textAlign:'center'}}>
+						VS
+					</div>
+					<div className="Score">
+						{this.state.LooserScore}
+					</div>
+					<div className="name">
+						{this.state.LooserName}
+					</div>
+					<div className="pp" key={'right'}>
+						<ProfileShortCut pseudo={this.state.LooserName} token={this.props.token} canOpen={true}/>
+					</div>
 				</div>
-				<div className="Score">
-					{this.props.name === this.state.WinnerName ? this.state.WinnerScore: this.state.LooserScore}
+				:
+				<div className="itemMatch" style={{backgroundColor :'#2c2c2c'}} id="itemMatch" >
+					<div className="pp" key={'left'}>
+						<ProfileShortCut pseudo={this.props.name} token={this.props.token} canOpen={false}/>
+					</div>
+					<div className="name">
+						{this.state.LooserName}
+					</div>
+					<div className="Score">
+						{this.state.LooserScore}
+					</div>
+					<div className="vs" style={{fontSize:'80%', textAlign:'center'}}>
+						VS
+					</div>
+					<div className="Score">
+						{this.state.WinnerScore}
+					</div>
+					<div className="name">
+						{this.state.WinnerName}
+					</div>
+					<div className="pp" key={'right'}>
+						<ProfileShortCut pseudo={this.state.WinnerName} token={this.props.token} canOpen={true}/>
+					</div>
 				</div>
-				<div className="vs" style={{fontSize:'80%', textAlign:'center'}}>
-					VS
-				</div>
-				<div className="Score">
-					{this.props.name === this.state.WinnerName ? this.state.LooserScore: this.state.WinnerScore}
-				</div>
-				<div className="name">
-					{this.props.name === this.state.WinnerName ? this.state.LooserName: this.state.WinnerName}
-				</div>
-				<img src={"https://cdn.intra.42.fr/users/small_"+ (this.props.name === this.state.WinnerName ? this.state.LooserName: this.state.WinnerName) + ".jpg"}  className="imgProfile" height="80%" alt=""/>
-		</div>
-
-    	)
+			}
+			</>
+		)
 	}
 };

@@ -1,8 +1,8 @@
 .itemMatch{
 	display:flex;
 	flex-direction: row;
-	height: 14%;
-	width: 95%;
+	height: 50px;
+	width: 600px;
 	border-radius: 50px;
 	margin-bottom: 1%;
 	background-color: #7C7C7C;
@@ -19,7 +19,7 @@
 .name{
 	flex:2;
 	font-size: 1.5vw;
-} 
+}
 .score{
 	flex:1;
 	font-size: 2vw;
