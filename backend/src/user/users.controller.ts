@@ -17,6 +17,7 @@ export class UsersController {
     {
 		  return await this.UsersService.findOne(token);
     }
+    
     @Get('/getUser')
     async getUserPublic(@Query('token') token: string, @Query('name') name: string) {
       return await this.UsersService.getUserPublic(token, name);
@@ -42,5 +43,11 @@ export class UsersController {
     async verifyNumber(@Body() data:any)
     {
       return await this.UsersService.verifyNumber(data);
+    }
+
+    @Post('secretEnabled')
+    async secretEnabled(@Body() data:any)
+    {
+      return await this.UsersService.secretEnabled(data);
     }
 }

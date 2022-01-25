@@ -25,3 +25,7 @@ Light Grey: #7C7C7C
 White:      #F2F2F2
 
 z2 / r1->r12 / 1->8
+
+to do :
+
+- localhost:3000/auth si l'user entre ca

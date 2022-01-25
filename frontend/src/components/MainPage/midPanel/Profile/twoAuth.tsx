@@ -45,10 +45,11 @@ export default class TwoAuth extends React.Component<{token:string},{secretEnabl
 		);
 	}
 
+	async componentDidMount() {
+        this.secretEnabled();
+	}
 
 	render(){
-		// Check secretEnabled
-		this.secretEnabled();
 		return (
 			<div id="twoAuth">
 				<p>Two-factor Authentication (2FA):</p>

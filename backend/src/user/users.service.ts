@@ -107,6 +107,7 @@ export class UsersService {
       return undefined;
     return user;
   }
+
   async findOneByName(name: string): Promise<User | undefined> {
     const user = await this.usersRepository.findOne(
       { where:
@@ -123,6 +124,7 @@ export class UsersService {
       await this.usersRepository.save(user);
     }
   }
+
   async xp(token:string,num: number)
   {
     var user = await this.findOne(token);
@@ -166,6 +168,17 @@ export class UsersService {
       encoding: 'base32',
       token: data.number
     })
+    if (verified)
+    {
+      user.secretEnabled = true;
+      await this.usersRepository.save(user);
+    }
     return verified;
+  }
+
+  async secretEnabled(data:any)
+  {
+    var user = await this.findOne(data.token);
+    return user.secretEnabled;
   }
 }
