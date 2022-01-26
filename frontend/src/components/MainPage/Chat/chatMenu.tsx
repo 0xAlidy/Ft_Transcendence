@@ -4,9 +4,10 @@ import { Room } from "./class";
 import MenuPng from '../../../assets/menu.png'
 
 
-export default class ChatMenu extends React.Component <{roomList:Room[], newRoom: any}, {activeRoom:string | null, inputRoomName:string, roomList:Room[], options:any}>{
+export default class ChatMenu extends React.Component <{roomList:Room[], newRoom: any, actRoom:any}, {activeRoom:string | null, inputRoomName:string, roomList:Room[], options:any}>{
 	
 	general: Room = {name:"general", id:0, password:"", userList:[]};
+	default = {value:"general", label:"general"}
 	
     constructor(props:any) {
 		super(props)
@@ -16,26 +17,18 @@ export default class ChatMenu extends React.Component <{roomList:Room[], newRoom
             inputRoomName: '',
 			roomList: this.props.roomList,
         }
-		// for (var i = 1; i < this.props.roomList.length; i++){
-		// 	this.state.options.push({value:this.props.roomList[i].name, label:this.props.roomList[i].name})
-		// }
 	};
 
 
-	componentDidUpdate(prevprops:any)
-	{
-		console.log(this.state.roomList)
+	componentDidUpdate(prevprops:any){
 		if (prevprops.roomList !== this.props.roomList){
-			console.log("dedans")
 			this.setState({roomList:this.props.roomList})
 			this.convert();
 		}
 
 	}
 	
-	componentDidMount()
-	{
-		console.log("roomlistdidmount")
+	componentDidMount(){
 		console.log(this.state.roomList)
 		this.convert();
 	}
@@ -53,8 +46,9 @@ export default class ChatMenu extends React.Component <{roomList:Room[], newRoom
 		console.log(selectValue);
 	}
 	handleChange = (selectedOption:any) => {
-		console.log(selectedOption)
-        this.setState({activeRoom:selectedOption})
+		console.log(selectedOption.value)
+        this.setState({activeRoom:selectedOption.value})
+		this.props.actRoom(selectedOption.value)
 	}
 	
     hoverEvent = () => {
@@ -85,6 +79,7 @@ export default class ChatMenu extends React.Component <{roomList:Room[], newRoom
 					        id="selectRoom"
 					        onChange={this.handleChange}
 					        placeholder="join a room"
+							defaultValue={this.state.options}
 					/>
 					<div className="divFormMenu">
                         <input onChange={this.sendRoomName} type="text" value={this.state.inputRoomName} id="newRoomInput" autoComplete="off" placeholder="New Room" className="menuInput"/>

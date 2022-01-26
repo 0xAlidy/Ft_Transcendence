@@ -92,7 +92,7 @@ export class ChatGateway implements OnGatewayInit {
   }
 
   @SubscribeMessage('chatToServer')
-  handleMessage(client: Socket, Message: { sender: string, dest: string, message: string }) {
+  handleMessage(client: Socket, Message: { sender: string, dest: string, message: string, date: string}) {
     console.log("hello message");
     console.log(Message);
 	  this.server.emit('chatToClient', Message)

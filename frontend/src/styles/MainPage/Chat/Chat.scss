@@ -9,7 +9,7 @@
   grid-template-areas:
       "chatTOP chatTOP chatTOP"
       "chatMID chatMID chatMID" 
-      "chatBOT chatBOT chatSEND";
+      "chatBOT chatEMO chatSEND";
   gap: 0px 0px;
 }
 
@@ -52,6 +52,14 @@ z-index: 0;
   display: none;
 }
 
+.chatEmoji{
+  display: block;
+  margin: auto auto;
+  grid-area: chatEMO;
+  background-color: aqua;
+  z-index: 1;
+}
+
 .chatinfo {
   overflow:hidden;
   grid-area: chatTOP;
@@ -59,15 +67,16 @@ z-index: 0;
   background-color: #fee154;
 }
 
+
 .inputChat{
-  border-radius: 15px 15px 15px 15px;
-  background-color: #333333;
-  padding: auto;
-  color: #ffffff;
-  margin: 0 0 0 5%;
-  height:30px;
-  width: 90%;
-  border-style: none;
+  border-radius: 15px 15px 15px 15px!important;
+  background-color: #333333!important;
+  padding: auto!important;
+  color: #ffffff!important;
+  margin: 0 0 0 5%!important;
+  height:30px!important;
+  width: 90%!important;
+  border-style: none!important;
 }
 
 .menuInput{
@@ -104,3 +113,44 @@ z-index: 0;
 .select {
   width: 100px;
 }
+
+
+.myMsg {
+  display: flex;
+  flex-direction: column;
+  word-wrap: break-all;
+  background-color : #edca00;
+  padding : 15px;
+  padding-bottom: 5px;
+  align-self: end;
+  border-radius : 23px 23px 0px 23px;
+  margin-bottom : 15px;
+  float : right;
+  clear: both;
+  /* line-height: 5px; */
+}
+
+.myMsg > p{
+  margin-top: 5px;
+  font-size: 9px;
+  text-align: right; 
+}
+
+.otherMsg {
+  word-wrap: break-all; 
+  width:fit-content; 
+  background-color : #636363; 
+  padding : 15px;
+  padding-bottom: 5px;
+  align-self: begin;
+  border-radius : 23px 23px 23px 0px;
+  margin-bottom : 15px;
+  clear: both;
+}
+
+.otherMsg > p{
+  margin-top: 5px;
+  font-size: 9px;
+  text-align: left; 
+}
+
