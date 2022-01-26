@@ -1,5 +1,5 @@
 
-export class MatchDto {
+export class MessageDto {
   id: number;
   sender: string;
   dest:string;

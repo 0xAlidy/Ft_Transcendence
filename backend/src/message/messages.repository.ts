@@ -1,10 +1,10 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { Match } from './match.entity';
-import { MatchDto } from './match.dto';
+import { Message } from './message.entity';
+import { MessageDto } from './message.dto';
 
-@EntityRepository(Match)
-export class UsersRepository extends Repository<Match> {
-  createUser = async (MatchDto: MatchDto) => {
+@EntityRepository(Message)
+export class UsersRepository extends Repository<Message> {
+  createUser = async (MatchDto: MessageDto) => {
     return await this.save(MatchDto);
   };
 }
