@@ -5,8 +5,10 @@ import Send from '../../../assets/send.png'
 import { Socket } from "socket.io-client";
 import ChatMenu from "./chatMenu";
 import Picker from 'emoji-picker-react';
+import {user} from '../MainPage'
+// import messageItem from "./message";
 
-class Message{
+export class Message{
 	message: string;
 	dest: string;
 	sender: string;
@@ -46,44 +48,46 @@ class Message{
 
 */
 
-// const minute = 1000 * 60;
-// const hour = minute * 60;
-// const day = hour * 24;
-// const year = day * 365;
-
-
-export default class Chat extends React.Component <{socket:Socket, username:string}, {activeRoom:string, msgInput:string, rooms:Room[], loaded:boolean, date:string, loadEmoji:boolean,chosenEmoji:any,chatInput:any}>{
+export default class Chat extends React.Component <{socket:Socket, User:user}, {activeRoom:string, msgInput:string, rooms:Room[], loaded:boolean, date:string, loadEmoji:boolean,chosenEmoji:any,chatInput:any, messages:HTMLDivElement[]}>{
 	roomList:Room[] = [];
-	ReceiveCont = (newCont:Message) =>{
-		if(this.state.activeRoom === newCont.dest){
-			var chatBox = document.getElementById("chatmessage")
-			var newDiv = document.createElement("div");
-			var time = document.createElement("p");
-			time.textContent = newCont.date;
-			// time.appendChild(document.createTextNode(newCont.date))
-			if (this.props.username === newCont.sender){
-				newDiv.className = 'myMsg';
-				newDiv.appendChild(document.createTextNode(newCont.message));
-				newDiv.append(time);
-			}
-			else if (newCont.sender === "system"){
-				newDiv.className = 'systemMsg';
-				newDiv.appendChild(document.createTextNode(newCont.message));
-			}
-			else{
-				newDiv.className = 'otherMsg';
-				newDiv.appendChild(document.createTextNode(newCont.sender + ": " + newCont.message));
-				newDiv.append(time);
-			}
-			if (chatBox)
-				chatBox.appendChild(newDiv)
-		}
-	};
+	mRef:HTMLDivElement | null;
+	// ReceiveCont = (newCont:Message) =>{
+	// 	// const myProfile = <ProfileShortCut pseudo={this.props.User.name} token={this.props.User.token} canOpen={false}/>;
+	// 	if(this.state.activeRoom === newCont.dest){
+
+	// 		var chatBox = document.getElementById("chatmessage")
+	// 		var newDiv = document.createElement("div");
+	// 		var time = document.createElement("p");
+	// 		time.textContent = newCont.date;
+	// 		// time.appendChild(document.createTextNode(newCont.date))
+	// 		if (this.props.User.name === newCont.sender){
+	// 			newDiv.className = 'myMsg';
+	// 			// newDiv.appendComponent(myProfile)
+	// 			// newDiv.appendChild(<ProfileShortCut pseudo={this.props.User.name} token={this.props.User.token} canOpen={false}/>)
+	// 			newDiv.appendChild(document.createTextNode(newCont.message));
+	// 			newDiv.append(time);
+	// 		}
+	// 		else if (newCont.sender === "system"){
+	// 			newDiv.className = 'systemMsg';
+	// 			newDiv.appendChild(document.createTextNode(newCont.message));
+	// 		}
+	// 		else{
+	// 			newDiv.className = 'otherMsg';
+	// 			// newDiv.append(<ProfileShortCut pseudo={newCont.sender} token={this.props.User.token} canOpen={false}/>)
+	// 			newDiv.appendChild(document.createTextNode(newCont.sender + ": " + newCont.message));
+	// 			newDiv.append(time);
+	// 		}
+	// 		if (chatBox)
+	// 			chatBox.appendChild(newDiv)
+	// 	}
+	// };
 
 	constructor(props:any) {
 		super(props);
+		this.mRef = null;
 		this.roomList = [];
 		this.state = {
+			messages: [],
 			chatInput:"",
 			loadEmoji:false,
 			chosenEmoji: null,
@@ -96,7 +100,7 @@ export default class Chat extends React.Component <{socket:Socket, username:stri
 		};
 		this.props.socket.emit('getRoomList')
 		this.props.socket.on('chatToClient',  (data:any) => {
-			this.ReceiveCont(data);
+			this.setState({messages:data.message})
         });
 		this.props.socket.on('sendRoomList', (data:any) => {
 			console.log("update roomList")
@@ -105,22 +109,33 @@ export default class Chat extends React.Component <{socket:Socket, username:stri
 		});
 	}
 
+	messagesRef = (ref:HTMLDivElement) => {
+		this.mRef = ref;
+	}
+
 	sendMessage = () => {
-		 var input = (document.getElementById('inputText') as HTMLInputElement).value;
+		var input = (document.getElementById('inputText') as HTMLInputElement).value;
 		var date = new Date().toTimeString().slice(0,5)
+		var test = new Date()
+		console.log(test)
 		if (this.state.activeRoom) {
-			var ne = new Message(input, this.state.activeRoom, this.props.username, date); 
+			var ne = new Message(input, this.state.activeRoom, this.props.User.name, date); 
 			this.props.socket.emit('chatToServer', ne);
 		}
 	}
 	
 	sendNewRoom = (name:any) => {
-		this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.username,password:""});
+		this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.name,password:""});
 		console.log("new room " + name + " has been sent");
-	};
+	}
 	
-	updateRoom = (newOne:any) => {
+	updateRoom = (newOne:string) => {
 		this.setState({activeRoom:newOne})
+		if (this.mRef)
+			this.mRef.innerHTML = "";
+		var date = new Date().toTimeString().slice(0,5)
+		var ne = new Message("you are now logged to : " + newOne, this.state.activeRoom, "system", date); 
+		this.ReceiveCont(ne);
 	}
 
 	onEmojiClick = (emojiObject:any) => {
@@ -153,7 +168,12 @@ export default class Chat extends React.Component <{socket:Socket, username:stri
 				</div>
 				<div className="back"></div>
 				{this.state.loaded === true && <ChatMenu newRoom={this.sendNewRoom}  actRoom={this.updateRoom} roomList={this.state.rooms} />}
-				<div id="chatmessage" className="chatmessage"/>
+				<div id="chatmessage" ref={this.messagesRef} className="chatmessage"/>
+					{
+						this.state.messages.map((function(item, idx){
+							return (<messageItem/>)
+						}))
+					}
 				</div>
 		)
 	}
