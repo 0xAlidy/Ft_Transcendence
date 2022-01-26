@@ -11,4 +11,4 @@ import { UsersModule } from 'src/user/user.module';
   providers: [MessagesService],
   exports: [MessagesService],
 })
-export class messagesModule {}
+export class MessagesModule {}

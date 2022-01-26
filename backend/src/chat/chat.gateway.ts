@@ -2,9 +2,18 @@ import { SubscribeMessage, WebSocketGateway, OnGatewayInit, WebSocketServer } fr
 import { Socket, Server } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { Room } from './class/Room.class';
+import { MessagesService } from 'src/message/messages.service';
+import { clientClass } from "../game/class/client.class";
+// import { Message } from '../../../frontend/src/components/MainPage/Chat/Chat';
 
 @WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit {
+
+  constructor(private readonly messagesService: MessagesService){
+  }
+
+  clients = new Map<string, clientClass>();
+
   @WebSocketServer() server: Server;
 
   rooms: Room[];
@@ -17,8 +26,9 @@ export class ChatGateway implements OnGatewayInit {
   }
 
   handleConnection(client:Socket, ...args: any[]){
-     this.logger.log("New Conection !");
-      client.join("general")
+    this.logger.log("New Conection !");
+    client.join("general")
+    this.clients.set(client.id,new clientClass(client));
   }
 
   handleDisconnect(client: Socket) {
@@ -91,11 +101,12 @@ export class ChatGateway implements OnGatewayInit {
     return -1;
   }
 
-  @SubscribeMessage('chatToServer')
+  @SubscribeMessage('sendMessage')
   handleMessage(client: Socket, Message: { sender: string, dest: string, message: string, date: string}) {
     console.log("hello message");
     console.log(Message);
-	  this.server.emit('chatToClient', Message)
+    this.messagesService.create(Message.sender, Message.dest, Message.message, Message.date)
+	  this.server.emit('refreshMsg', Message)
       //this.server.to(message.room).emit('chatToClient', message);
   }
 }
