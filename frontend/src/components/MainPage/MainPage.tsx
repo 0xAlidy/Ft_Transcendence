@@ -50,10 +50,10 @@ export default class MainPage extends React.Component<{token: string, name:strin
 		if(this.props.token)
 		{
 			while (this.state.User === undefined || this.state.User === null ){
-				await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" +this.state.token).then(res => {
+				await axios.get("HTTP://localhost:667/auth/me?token="+this.state.token).then(res => {
 					this.setState({User: res.data, url: res.data.imgUrl})})
 			}
-			this.setState({socket: io('http://' + window.location.host.split(":").at(0) + ':667')})
+			this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667')})
 			if (this.state.socket)
 				this.state.socket.emit('setID', {token: this.props.token, name:this.props.name});
 			else
@@ -62,7 +62,7 @@ export default class MainPage extends React.Component<{token: string, name:strin
 	}
 
 	refreshUser = async () => {
-		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token="+this.state.token).then(res => {
+		await axios.get("HTTP://localhost:667/auth/me?token="+this.state.token).then(res => {
 				this.setState({User: res.data, url: res.data.imgUrl})})
 	}
 
@@ -96,7 +96,7 @@ export default class MainPage extends React.Component<{token: string, name:strin
 					<img src={LOGO} alt="" className="mainLogo"/>
 				</div>
 				<Menu onChange={Ref} imgsrc={this.state.User.imgUrl}/>
-				{this.state.socket && <Chat socket={this.state.socket} username={this.state.User.name} />}
+				{this.state.socket && <Chat socket={this.state.socket} User={this.state.User} />}
 				<div className="game" id="game">
 				{this.state.socket && this.state.selector === 'game' && <IGame socket={this.state.socket}/>}
 				{this.state.selector === 'profile' && <Profile User={this.state.User} name={this.state.User.name} refreshUser={this.refreshUser}/>}
