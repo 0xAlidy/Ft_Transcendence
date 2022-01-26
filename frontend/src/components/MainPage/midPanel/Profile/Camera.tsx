@@ -37,10 +37,10 @@ render(){
 			// 	"Access-Control-Allow-Origin": "*"
 			// }
 			console.log(this.state.url);
-			// axios.post('HTTP://localhost:667/user/upload', {url:this.state.url, name:this.props.name},{headers:headers})
+			// axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/upload", {url:this.state.url, name:this.props.name},{headers:headers})
 			this.props.validate(this.state.url);
 			this.setState({url: null});
-			// fetch('HTTP://localhost:667/user/upload', {
+			// fetch("HTTP://" + window.location.host.split(":").at(0) + ":667/user/upload", {
 			// 	method: "post",
 			// 	headers: headers,
 			// 	body: JSON.stringify({url:this.editor.getImageScaledToCanvas().toDataURL(), name:this.props.name}),

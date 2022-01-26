@@ -50,7 +50,7 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 		// }
 		if(this.editor){
 
-			await axios.post('http://localhost:667/user/completeProfile',{	url:this.editor.getImageScaledToCanvas().toDataURL(),
+			await axios.post("http://" + window.location.host.split(":").at(0) + ":667/user/completeProfile",{	url:this.editor.getImageScaledToCanvas().toDataURL(),
 			token:this.props.User.token,
 			name:this.state.name}).then((res) => {this.props.onChange(res.data)})
 		this.setState({options:3})
@@ -67,7 +67,7 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 
 	async handleSubmit(event:any) {
 		event.preventDefault();
-		await axios.post("HTTP://localhost:667/user/verifyNumber", {token: this.props.User.token, number: this.state.number}).then(resp =>
+		await axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/verifyNumber", {token: this.props.User.token, number: this.state.number}).then(resp =>
 			this.setState({ verify:resp.data })
 		);
 		if (this.state.verify)

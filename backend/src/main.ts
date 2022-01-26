@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import * as requestIp from 'request-ip';
 import { NestExpressApplication} from '@nestjs/platform-express';
 import { join } from 'path'
+require('dotenv').config()
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);

@@ -20,7 +20,7 @@ export default class TwoAuth extends React.Component<{token:string},{secretEnabl
 	};
 
 	async secretEnabled(){
-		await axios.post("HTTP://localhost:667/user/secretEnabled", {token: this.props.token}).then(resp =>
+		await axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/secretEnabled", {token: this.props.token}).then(resp =>
 				this.setState({ secretEnabled: resp.data })
 			);
 	}
@@ -28,7 +28,7 @@ export default class TwoAuth extends React.Component<{token:string},{secretEnabl
 	async click(){
 		if (!this.state.qr)
 		{
-			await axios.post("HTTP://localhost:667/user/generateSecret", {token: this.props.token}).then(resp =>
+			await axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/generateSecret", {token: this.props.token}).then(resp =>
 				this.setState({ qr: resp.data })
 			);
 		}
@@ -40,7 +40,7 @@ export default class TwoAuth extends React.Component<{token:string},{secretEnabl
 
 	async handleSubmit(event:any) {
 		event.preventDefault();
-		await axios.post("HTTP://localhost:667/user/verifyNumber", {token: this.props.token, number: this.state.number}).then(resp =>
+		await axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/verifyNumber", {token: this.props.token, number: this.state.number}).then(resp =>
 			this.setState({ verify:resp.data })
 		);
 	}

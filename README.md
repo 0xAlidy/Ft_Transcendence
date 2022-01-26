@@ -26,6 +26,6 @@ White:      #F2F2F2
 
 z2 / r1->r12 / 1->8
 
-to do :
 
-- localhost:3000/auth si l'user entre ca
+
+backend/.env  ==> IP={IP_HOST}  # Localhost ou 10.2.2.8 par exemple

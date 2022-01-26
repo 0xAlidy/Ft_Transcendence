@@ -48,7 +48,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 			"Access-Control-Allow-Origin": "*"
 		}
 		if(this.editor){
-			await fetch('HTTP://localhost:667/user/upload', {
+			await fetch("HTTP://" + window.location.host.split(":").at(0) + ":667/user/upload", {
 					method: "post",
 					headers: headers,
 					body: JSON.stringify({url:this.editor.getImageScaledToCanvas().toDataURL(), token:this.props.User.token}),

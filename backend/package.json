@@ -33,6 +33,7 @@
     "@types/socket.io": "^3.0.2",
     "axios": "^0.24.0",
     "cors": "^2.8.5",
+    "dotenv": "^14.3.2",
     "passport-42": "^1.2.6",
     "passport-local": "^1.0.0",
     "pg": "^8.7.1",

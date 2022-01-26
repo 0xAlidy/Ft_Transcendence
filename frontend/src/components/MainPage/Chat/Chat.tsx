@@ -1,5 +1,5 @@
 import * as React from "react";
-import "../../../styles/MainPage/Chat/Chat.scss"
+import "../../../styles/MainPage/Chat/Chat.css"
 import {Room} from './class';
 import Send from '../../../assets/send.png'
 import { Socket } from "socket.io-client";

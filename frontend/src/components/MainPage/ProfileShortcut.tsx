@@ -23,7 +23,7 @@ export default class ProfileShortCut extends React.Component<{pseudo:string, tok
 			}
 	};
 	async componentDidMount() {
-		await axios.get("http://localhost:667/user/getUser?token="+ this.props.token +'&name='+ this.props.pseudo)
+		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.token +'&name='+ this.props.pseudo)
 		.then(res => this.setState({User: res.data}))
 	}
 
