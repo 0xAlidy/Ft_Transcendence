@@ -41,12 +41,51 @@ export class UsersService {
         ok = false;
       }
       });
-    if (ok)
+    if (ok){
       return await this.usersRepository.save(user);
+    }
     else
     {
       return await this.usersRepository.save(existing);
     }
+  }
+
+  async addRoom(token:string, room:string)
+  {
+    var user = await this.findOne(token);
+    user.rooms.push(room);
+    await this.usersRepository.save(user);
+  }
+  async leaveRoom(token:string, room:string)
+  {
+    var user = await this.findOne(token);
+    const index = user.rooms.indexOf(room);
+    user.rooms.splice(index, 1);
+    await this.usersRepository.save(user);
+  }
+  async addFriend(token:string, room:string)
+  {
+    var user = await this.findOne(token);
+    user.rooms.push(room);
+    await this.usersRepository.save(user);
+  }
+  async removeFriend(token:string, room:string)
+  {
+    var user = await this.findOne(token);
+    user.rooms.push(room);
+    await this.usersRepository.save(user);
+  }
+  async addBlocked(token:string, room:string)
+  {
+    var user = await this.findOne(token);
+    user.rooms.push(room);
+    await this.usersRepository.save(user);
+  }
+  async removeBlocked(token:string, room:string)
+  {
+    var user = await this.findOne(token);
+    user.rooms.push(room);
+    await this.usersRepository.save(user);
   }
 
   async changeWSId(name:string, id:string){

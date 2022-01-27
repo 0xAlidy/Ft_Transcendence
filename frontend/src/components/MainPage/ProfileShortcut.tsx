@@ -31,7 +31,7 @@ export default class ProfileShortCut extends React.Component<{pseudo:string, tok
 		return (
 			<>
 				{this.state.User &&
-					<>
+					<div>
 						<Popup open={this.state.opened && this.props.canOpen} closeOnEscape={true} closeOnDocumentClick={true} onClose={() =>{this.setState({opened:false})}}>
 							<div className="PopupContainer">
 								<img src={this.state.User.imgUrl} style={{borderRadius:"50%"}}/>
@@ -50,7 +50,7 @@ export default class ProfileShortCut extends React.Component<{pseudo:string, tok
 							</div>
 						</Popup>
 						<img src={this.state.User.imgUrl} style={{maxHeight:'100%'}} onClick={() =>{this.setState({opened:true})}}/>
-					</>
+					</div>
 				}
 			</>
     	)

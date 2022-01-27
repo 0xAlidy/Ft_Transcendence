@@ -103,8 +103,6 @@ export class ChatGateway implements OnGatewayInit {
 
   @SubscribeMessage('sendMessage')
   handleMessage(client: Socket, Message: { sender: string, dest: string, message: string, date: string}) {
-    console.log("hello message");
-    console.log(Message);
     this.messagesService.create(Message.sender, Message.dest, Message.message, Message.date)
 	  this.server.emit('refreshMsg', Message)
       //this.server.to(message.room).emit('chatToClient', message);

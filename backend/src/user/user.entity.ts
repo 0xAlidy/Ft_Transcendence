@@ -23,6 +23,15 @@ export class User {
   @Column({ default: 0 })
   numberOfLoose: number;
 
+  @Column("text",{ array:true, default: []})
+  friends: string[];
+
+  @Column("text",{ array:true, default: []})
+  blockedUsers: string[];
+
+  @Column("text",{ array:true, default: ['general']})
+  rooms: string[];
+
   @Column()
   token: string;
 

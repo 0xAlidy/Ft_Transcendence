@@ -75,6 +75,7 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 	}
 
 	async componentDidMount(){
+		console.log(this.props.User)
 		let file = await fetch("https://cdn.intra.42.fr/users/medium_"+ this.props.User.name +".jpg").then(r => r.blob()).then(blobFile => new File([blobFile], "fileNameGoesHere", { type: "image/png" }))
 		this.setState({src: file});
 	}

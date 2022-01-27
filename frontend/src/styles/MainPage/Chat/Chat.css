@@ -45,7 +45,7 @@ z-index: 0;
 }
 .chattext { grid-area:chatBOT; ;align-self: center; z-index: 1;}
 .chatsend { grid-area: chatSEND ; align-self: left; height: 30px; z-index: 1; }
-.chatmessage { grid-area: chatMID ; padding: 5%; overflow-y:scroll; display: flex; flex-direction: column; top: 10%; }
+.chatmessage { grid-area: chatMID; overflow-y:scroll; display: flex; flex-direction: column; top: 10%; }
 
 .chatMessage::-webkit-scrollbar {
   display: none;
@@ -112,8 +112,8 @@ z-index: 0;
 
 
 .myMsg {
-  display: flex;
-  flex-direction: column;
+  /* display: flex; */
+  /* flex-direction: column; */
   word-wrap: break-all;
   background-color : #edca00;
   padding : 15px;
@@ -121,9 +121,10 @@ z-index: 0;
   padding-bottom: 5px;
   align-self: end;
   border-radius : 23px 23px 0px 23px;
-  margin-bottom : 15px;
-  float : right;
   clear: both;
+  float : right;
+  /* margin-bottom : 15px; */
+  /* clear: both; */
   /* line-height: 5px; */
 }
 
@@ -161,26 +162,100 @@ z-index: 0;
   margin-bottom : 15px;
   clear: both;
 }
-.msgItem{
 
+
+
+/* my Message  */
+
+.msgItem{
+  display: grid;
+  width: 100%;
+  grid-template-columns: 82% 15%;
+  grid-template-areas: "bubble img";
+  margin-bottom: 20px;
+  justify-items: end
+}
+
+.msgItem img {
+  width: 50px;
+  border-radius: 50%;
+}
+
+.msgItem .bubble{
+  text-align: right;
+  clear: left;
   word-wrap: break-all;
   background-color : #edca00;
   padding : 15px;
   padding-top: 8px;
   padding-bottom: 5px;
-  align-self: end;
   border-radius : 23px 23px 0px 23px;
-  margin-bottom : 15px;
-  float : right;
-  clear: both;
 }
 
-.msgItem > img {
+.bubble > p{
+  margin-top: 5px;
+  font-size: 9px;
+  text-align: start;
+}
+
+/***********************/
+
+
+/* other Message  */
+
+.msgOtherItem{
+  display: grid;
+  width: 100%;
+  grid-template-columns: 15% 82%;
+  grid-template-areas: "iPP iBUBBLE";
+  margin-bottom: 20px;
+  justify-items: start
+}
+
+.msgOtherItem img {
+  grid-area: iPP;
+  width: 55px;
+  margin: 1px;
+  margin-top: 4px;
+  border-radius: 50%;
+}
+
+.msgOtherItem .bubble{
+  grid-area: iBUBBLE;
+  text-align: left;
+  margin-left: 1px;
+  clear: right;
+  word-wrap: break-all;
+  background-color : #636363;
+  padding : 15px;
+  padding-top: 8px;
+  padding-bottom: 0px;
+  border-radius : 23px 23px 23px 0px;
+}
+
+.bubble > p{
+  margin-top: 2px;
+  font-size: 9px;
+  text-align: left;
+}
+
+/***********************/
+
+
+
+
+
+/* word-wrap: break-all;
+padding : 15px;
+background-color : #edca00;
+padding-bottom: 5px;
+border-radius : 23px 23px 0px 23px; */
+/* .msgItem > img {
   position: relative;
   width: "1px";
   border-radius: "50%";
-}
+} */
 
-.imgBlock{
-  width:10px
-}
+/* .imgBlock{
+  
+} */

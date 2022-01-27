@@ -80,7 +80,8 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 		this.props.socket.emit('getRoomList')
 		this.props.socket.on('refreshMsg',  (data:any) => {
 			this.setState({messages: this.state.messages.concat([data])})
-			console.log(this.state.messages);
+			if (this.mRef)
+				this.mRef.scrollTop = this.mRef.scrollHeight;
         });
 		this.props.socket.on('sendRoomList', (data:any) => {
 			console.log("update roomList")
@@ -102,10 +103,14 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 
 	sendMessage = () => {
 		var date = new Date().toTimeString().slice(0,5)
-		if (this.state.activeRoom && this.inputRef) {
-			var toSend = {sender:this.props.User.name, dest:this.state.activeRoom, message:this.inputRef.value, date:date};
-			this.props.socket.emit('sendMessage', toSend);
-		}
+
+		if (this.inputRef)
+			if (this.state.activeRoom && this.inputRef.value !== "") {
+				var toSend = {sender:this.props.User.name, dest:this.state.activeRoom, message:this.inputRef.value, date:date};
+				this.props.socket.emit('sendMessage', toSend);
+				this.inputRef.value = "";
+			}
+		//this.setState({chatInput:""});
 	}
 
 	sendNewRoom = (name:any) => {
@@ -148,7 +153,7 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 
 				{/* {this.state.loadEmoji === true && <Picker pickerStyle={{width: "300px", position: "relative"}} onEmojiClick={this.onEmojiClick}/>} */}
 				<div className="chattext">
-					<input onKeyPress={this.inputEnter} onChange={(e:any) => this.setState({chatInput: this.state.chatInput + e.target.value})} ref={this.setInputRef} type="text" placeholder="     Text message" id='inputText' className="inputChat" />
+					<input onKeyPress={this.inputEnter} onChange={(e:any) => this.setState({chatInput: this.state.chatInput + e.target.value})} ref={this.setInputRef} type="text" placeholder="     Text message" autoComplete="off" id='inputText' className="inputChat" />
 					{/* <input onChange={(msg:any) => console.log(msg)} placeholder="     Text message" id='inputText' className="inputChat" /> */}
 
 				</div>
@@ -162,9 +167,12 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 				<div id="chatmessage" ref={this.messagesRef} className="chatmessage">
 					{
 						this.state.messages.map(( (item, idx) => {
-							console.log(item.sender+' '+ item.message)
+							if (item.sender === this.props.User.name)
+								var classForItem = "msgItem"
+							else 
+								var classForItem = "msgOtherItem"
 							return (
-								<MessageItem msg={item} User={this.props.User} activeRoom={this.state.activeRoom}/>
+								<MessageItem msg={item} User={this.props.User} activeRoom={this.state.activeRoom} class={classForItem}/>
 							)
 						}))
 					}
