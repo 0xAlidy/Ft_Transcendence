@@ -4,11 +4,11 @@ import { Room } from "./class";
 import MenuPng from '../../../assets/menu.png'
 
 
-export default class ChatMenu extends React.Component <{roomList:Room[], newRoom: any, actRoom:any}, {activeRoom:string | null, inputRoomName:string, roomList:Room[], options:any}>{
-	
+export default class ChatMenu extends React.Component <{roomList:Room[], newRoom: any, actRoom:any, onMenuOpen:any}, {activeRoom:string | null, inputRoomName:string, roomList:Room[], options:any}>{
+	chatMenu:HTMLDivElement|null;
 	general: Room = {name:"general", id:0, password:"", userList:[]};
 	default = {value:"general", label:"general"}
-	
+	flipflap:boolean;
     constructor(props:any) {
 		super(props)
         this.state = {
@@ -17,8 +17,12 @@ export default class ChatMenu extends React.Component <{roomList:Room[], newRoom
             inputRoomName: '',
 			roomList: this.props.roomList,
         }
+		this.chatMenu= null;
+		this.flipflap = true;
 	};
-
+	setChatMenu = (r:HTMLDivElement) =>{
+		this.chatMenu =  r;
+	}
 
 	componentDidUpdate(prevprops:any){
 		if (prevprops.roomList !== this.props.roomList){
@@ -27,7 +31,7 @@ export default class ChatMenu extends React.Component <{roomList:Room[], newRoom
 		}
 
 	}
-	
+
 	componentDidMount(){
 		console.log(this.state.roomList)
 		this.convert();
@@ -50,14 +54,15 @@ export default class ChatMenu extends React.Component <{roomList:Room[], newRoom
         this.setState({activeRoom:selectedOption.value})
 		this.props.actRoom(selectedOption.value)
 	}
-	
-    hoverEvent = () => {
-        var chatMenu = document.getElementById("chatContainer") as HTMLDivElement;
-        chatMenu.setAttribute('style', "grid-template-rows: 90% auto 40px;");
-    };
-    hoverLeaveEvent = () => {
-        var chatMenu = document.getElementById("chatContainer") as HTMLDivElement;
-        chatMenu.setAttribute('style', "grid-template-rows: 4% auto 40px;");
+
+    openMenu = () => {
+		if(this.flipflap){
+			this.flipflap = false;
+			this.props.onMenuOpen('180px auto 40px')
+		}else{
+			this.flipflap = true;
+			this.props.onMenuOpen('40px auto 40px')
+		}
     };
     sendRoomName = (event:any) => {
             this.setState({inputRoomName:event.target.value})
@@ -68,21 +73,20 @@ export default class ChatMenu extends React.Component <{roomList:Room[], newRoom
 
 	render(){
 		return (
-			<div className="chatinfo" id ="chatinfo" onMouseEnter={this.hoverEvent} onMouseLeave={this.hoverLeaveEvent}> 
+			<div className="chatinfo" id ="chatinfo" style={{}} ref={this.setChatMenu}>
 					<div className="topbar">
-						<img src={MenuPng} alt="maqueue" className="iconMenu" width='22px' height='22px' />
+						<img src={MenuPng} alt="maqueue" className="iconMenu" width='22px' height='22px' onClick={this.openMenu} />
 						<div className="tittle">Chat</div>
-				
 					</div>
-			        <Select className="SelectRoom" 
+			        <Select className="SelectRoom"
 					        options={this.state.options}
 					        id="selectRoom"
 					        onChange={this.handleChange}
 					        placeholder="join a room"
-							defaultValue={this.state.options}
+							defaultValue={this.state.options[0]}
 					/>
 					<div className="divFormMenu">
-                        <input onChange={this.sendRoomName} type="text" value={this.state.inputRoomName} id="newRoomInput" autoComplete="off" placeholder="New Room" className="menuInput"/>
+                        <input onChange={this.sendRoomName} type='text'  value={this.state.inputRoomName} id="newRoomInput" autoComplete="off" placeholder="New Room" className="menuInput"/>
 	   					<button className="pseudoButton" onClick={() => this.props.newRoom(this.state.inputRoomName)}>Add</button>
 	   				</div>
 				</div>

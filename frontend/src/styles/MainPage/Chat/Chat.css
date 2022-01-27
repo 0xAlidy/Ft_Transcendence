@@ -4,10 +4,10 @@
   height: 100%;
   grid-area: chat;
   grid-template-columns: 70% 20% 10%;
-  grid-template-rows: 4% auto 40px;
+  grid-template-rows: auto auto 40px;
   grid-template-areas:
       "chatTOP chatTOP chatTOP"
-      "chatMID chatMID chatMID" 
+      "chatMID chatMID chatMID"
       "chatBOT chatEMO chatSEND";
   gap: 0px 0px;
 }
@@ -20,8 +20,8 @@ top:20%;
 .topbar{
 display: inline-flex;
 width:100%;
-margin-bottom: 5%; 
-margin-left: 3%; 
+margin-bottom: 5%;
+margin-left: 3%;
 }
 
 .tittle{
@@ -64,6 +64,7 @@ z-index: 0;
   grid-area: chatTOP;
   font-weight: bold;
   background-color: #fee154;
+  text-align: center;
 }
 
 
@@ -79,28 +80,24 @@ z-index: 0;
 }
 
 .menuInput{
-  width: 75%!important;
-  height: 5% !important;
-  border-top-left-radius: 20px!important;
-  border-bottom-left-radius: 20px!important;
-  border-top-right-radius: 0px!important;
-  border-bottom-right-radius: 0px!important;
+  width: 180px;
+  height: 40px;
+  margin-top: 20px;
+  border-radius: 20px 0px 0px 20px;
+  padding-left: 20px;
 }
 
 .pseudoButton{
   width: 15%!important;
-  height: 5% !important;
-  border-top-left-radius: 0px!important;
-  border-bottom-left-radius: 0px!important;
-  border-top-right-radius: 20px!important;
-  border-bottom-right-radius: 20px!important;
+  height: 40px;
+  border-radius: 0px 20px 20px 0px;
 }
 
 .SelectRoom{
   width: 90%;
   padding-left: 40px;
   text-align: center;
-  height: 35;
+  height: 30px ;
 }
 
 .hiddenMenu{
@@ -133,13 +130,13 @@ z-index: 0;
 .myMsg > p{
   margin-top: 5px;
   font-size: 9px;
-  text-align: right; 
+  text-align: right;
 }
 
 .otherMsg {
-  word-wrap: break-all; 
-  width:fit-content; 
-  background-color : #636363; 
+  word-wrap: break-all;
+  width:fit-content;
+  background-color : #636363;
   padding : 15px;
   padding-bottom: 5px;
   align-self: begin;
@@ -151,11 +148,11 @@ z-index: 0;
 .otherMsg > p{
   margin-top: 5px;
   font-size: 9px;
-  text-align: left; 
+  text-align: left;
 }
 
 .systemMsg {
-  word-wrap: break-all; 
+  word-wrap: break-all;
   width:fit-content;
   color: aliceblue;
   padding : 15px;
@@ -163,4 +160,27 @@ z-index: 0;
   border-radius : 23px 23px 23px 23px;
   margin-bottom : 15px;
   clear: both;
+}
+.msgItem{
+
+  word-wrap: break-all;
+  background-color : #edca00;
+  padding : 15px;
+  padding-top: 8px;
+  padding-bottom: 5px;
+  align-self: end;
+  border-radius : 23px 23px 0px 23px;
+  margin-bottom : 15px;
+  float : right;
+  clear: both;
+}
+
+.msgItem > img {
+  position: relative;
+  width: "1px";
+  border-radius: "50%";
+}
+
+.imgBlock{
+  width:10px
 }

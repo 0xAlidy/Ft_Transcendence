@@ -43,12 +43,10 @@ export default class MessageItem extends React.Component <{msg:Msg, User:user,ac
 	render(){
 		return (
             <div className="msgItem">
-                {this.props.msg.message}
-                <p>hello</p>
-                <div style={{width:"1px", borderRadius:"50%"}}>
+                <div className="imgBlock">
                     <ProfileShortCut pseudo={this.props.User.name} token={this.props.User.token} canOpen={true}/>
                 </div>
-
+                {this.props.msg.message}
             </div>
 		)
 	}

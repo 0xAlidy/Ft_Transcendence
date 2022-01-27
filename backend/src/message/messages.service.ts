@@ -10,7 +10,7 @@ import {Message} from "./message.entity";
 export class MessagesService
 {
 	private logger: Logger = new Logger('UsersService');
-	constructor(@InjectRepository(Message) private MatchRepository: Repository<Message>, private usersService: UsersService){
+	constructor(@InjectRepository(Message) private MatchRepository: Repository<Message>){
 	}
 	async create(sender :string, dest:string, message:string, date:string) {
 		var match = new Message(sender, dest, message, date)

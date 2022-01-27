@@ -2,8 +2,8 @@ import { SubscribeMessage, WebSocketGateway, OnGatewayInit, WebSocketServer } fr
 import { Socket, Server } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { Room } from './class/Room.class';
-import { MessagesService } from 'src/message/messages.service';
 import { clientClass } from "../game/class/client.class";
+import { MessagesService } from 'src/message/messages.service';
 // import { Message } from '../../../frontend/src/components/MainPage/Chat/Chat';
 
 @WebSocketGateway({cors: true})

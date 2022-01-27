@@ -13,6 +13,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MatchsModule } from './matchs/matchs.module';
 import { Match } from './matchs/match.entity';
+import { MessagesModule } from './message/messages.module';
+import { Message } from './message/message.entity';
 
 @Module({
   imports: [ChatModule, WSGame, TypeOrmModule.forRoot({
@@ -22,9 +24,9 @@ import { Match } from './matchs/match.entity';
     username: 'user42',
     password: 'password',
     database: 'database',
-    entities: [User,Match],
+    entities: [User,Match, Message],
     synchronize: true,
-  }), HttpModule , UsersModule, AuthModule, MatchsModule,],
+  }), HttpModule , UsersModule, AuthModule, MatchsModule, MessagesModule],
   controllers: [AppController],
   providers: [AuthService],
 })

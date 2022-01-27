@@ -8,8 +8,8 @@ import { ChatGateway } from './chat.gateway';
 import { Room } from './class/Room.class';
 
 @Module({
-    imports: [ChatGateway, MessagesModule],
+    imports: [MessagesModule],
     controllers: [],
-    providers: [],
+    providers: [ChatGateway],
 })
 export class ChatModule { }
