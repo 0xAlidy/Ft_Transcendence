@@ -11,6 +11,7 @@ import History from './midPanel/History/History';
 import AdminPanel from './midPanel/AdminPanel/AdminPanel';
 import axios from 'axios';
 import PopupStart from './PopupStart';
+import FriendPanel from './midPanel/FriendsPanel/FriendPanel';
 // import axios from 'axios';
 
 export interface user{
@@ -70,7 +71,6 @@ export default class MainPage extends React.Component<{token: string, name:strin
 	}
 	render(){
 		const Ref = (e: any) => {
-			document.getElementById('game');
 			if (e.isAchievOpen){
 				this.setState({selector: 'achievement'});
 			}
@@ -85,6 +85,9 @@ export default class MainPage extends React.Component<{token: string, name:strin
 			}
 			else if (e.isProfileOpen){
 				this.setState({selector: 'profile'});
+			}
+			else if (e.isFriendListOpen){
+				this.setState({selector: 'friends'});
 			}
 		}
 		return (
@@ -102,6 +105,7 @@ export default class MainPage extends React.Component<{token: string, name:strin
 				{this.state.selector === 'achievement' && <Achievement />}
 				{this.state.selector === 'history' && <History User={this.state.User}/>}
 				{this.state.selector === 'admin' && <AdminPanel/>}
+				{this.state.selector === 'friends' && <FriendPanel/>}
 				</div>
 				<PopupStart User={this.state.User} onChange={this.CompleteProfile}/>
 			</>
