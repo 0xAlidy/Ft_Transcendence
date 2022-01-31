@@ -21,13 +21,14 @@ export class ChatGateway implements OnGatewayInit {
   async afterInit(server: any) {
     this.logger.log('Initialized!');
     this.rooms = await this.chatService.getAllRoomName()
-    this.chatService.create('general', 'system', '');
+    this.chatService.create('general', 'system', null);
   }
 
   async handleConnection(client:Socket, ...args: any[]){
     this.logger.log("New Conection ! token:" + client.handshake.query.token);
     client.join("general");
     this.clients.set(client.id,new clientClass(client, client.handshake.query.token as string));
+    client.emit('updateRooms',{rooms: this.rooms});
     client.emit('LoadRoom', {room: 'general', msg:await this.chatService.getMessagesByRoom('general')})
   }
 
@@ -41,10 +42,10 @@ export class ChatGateway implements OnGatewayInit {
     client.emit('updateRooms',{rooms: this.rooms});
   }
 
-  @SubscribeMessage('getMessage')
-  getMessage(client:Socket, data:any){
-    this.rooms
-  }
+  // @SubscribeMessage('getMessage')
+  // getMessage(client:Socket, data:any){
+  //   this.rooms
+  // }
 
   // @SubscribeMessage('changeRoom')
   // async askAuthorization(client:Socket, data:any){
@@ -57,10 +58,10 @@ export class ChatGateway implements OnGatewayInit {
 
   @SubscribeMessage('password')
   async password(client:Socket, data:any){
-    if(this.chatService.isAuthorized(this.clients.get(client.id)._token, data.name))
-      client.emit('LoadRoom', {room: data.room, msg:await this.chatService.getMessagesByRoom('general')})
-    else
-      client.emit('needPassword')
+    
+
+
+    //loadroom
   }
 
   // @SubscribeMessage('newConnection')
@@ -72,7 +73,7 @@ export class ChatGateway implements OnGatewayInit {
   @SubscribeMessage('newRoom')
   async addRoom(client:Socket, data:any){
     // console.log( data)
-    var update = await this.chatService.create(data.name, data.creator, data.pass);
+    var update = await this.chatService.create(data.name, data.creator, data.password);
     console.log(update);
     this.server.emit('updateRooms',{rooms: update})
     // var id = this.rooms.length + 1;

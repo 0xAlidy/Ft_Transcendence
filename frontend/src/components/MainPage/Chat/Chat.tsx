@@ -18,7 +18,7 @@
 
 import * as React from "react";
 import "../../../styles/MainPage/Chat/Chat.css"
-import {Room} from './class';
+// import {Room} from './class';
 import Send from '../../../assets/send.png'
 import { Socket } from "socket.io-client";
 import ChatMenu from "./chatMenu";
@@ -57,8 +57,18 @@ export interface opt{
 	label:string;
 }
 
-export default class Chat extends React.Component <{socket:Socket, User:user}, {RowsStyle:string;activeRoom:string, msgInput:string, rooms:opt[], loaded:boolean, date:string, loadEmoji:boolean,chosenEmoji:any,chatInput:any, messages:Msg[]}>{
-	roomList:Room[] = [];
+const Popup = (props:any) => {
+    return (
+      <div className="popup-box">
+        <div className="box">
+          {props.content}
+        </div>
+      </div>
+    );
+  };
+
+export default class Chat extends React.Component <{socket:Socket, User:user}, {openNewPass:boolean,openNewRoom:boolean,RowsStyle:string;activeRoom:string, msgInput:string, rooms:opt[], loaded:boolean, date:string, loadEmoji:boolean,chosenEmoji:any,chatInput:any, messages:Msg[]}>{
+	// roomList:Room[] = [];
 	mRef:HTMLDivElement | null;
 	inputRef:HTMLInputElement | null;
 
@@ -66,8 +76,10 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 		super(props);
 		this.mRef = null;
 		this.inputRef = null;
-		this.roomList = [];
+		// this.roomList = [];
 		this.state = {
+			openNewPass:false,
+			openNewRoom:false,
 			messages: [],
 			chatInput:"",
 			loadEmoji:false,
@@ -82,6 +94,7 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 		};
 		this.props.socket.emit('getRoomList')
 		this.props.socket.on('LoadRoom',  (data:any) => {
+			console.log(data.msg)
 			this.setState({messages: data.msg, activeRoom: data.room})
         });
 		this.props.socket.on('ReceiveMessage',  (data:any) => {
@@ -97,9 +110,11 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			});
 			this.setState({rooms:arr, loaded:true});
 		});
-		this.props.socket.on('moveToChannel', (data:any) => {
-
-		})
+		// this.props.socket.on('needPassword', () => {
+		// 	console.log("needPass")
+		// 	this.setState({openNewPass:true})
+		// })
+		
 	}
 
 	messagesRef = (ref:HTMLDivElement) => {
@@ -125,9 +140,20 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 		//this.setState({chatInput:""});
 	}
 
-	sendNewRoom = (name:any) => {
-		this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.name,password:""});
-		console.log("new room " + name + " has been sent");
+	sendNewRoom = () => {
+		var name = (document.getElementById("nameNewRoom") as HTMLInputElement).value;
+        var pass = (document.getElementById("passNewRoom") as HTMLInputElement).value;
+        if (pass != "")
+		{
+			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.name,password:pass})
+			console.log("pass")
+		}
+		else{
+			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.name,password:null})
+			console.log("no pass")
+		} 
+        this.togglePopupRoom();
+        console.log("name " + name + "                " + pass)
 	}
 
 	updateRoom = (newOne:string) => {
@@ -147,10 +173,6 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			this.sendMessage();
 	}
 
-	changeRoom = (room:string) =>{
-		this.props.socket.emit('askAuthorisation',{ room:room, token:this.props.User})
-	}
-
 	// onEmojiClick = (emojiObject:any) => {
 
 	// 	this.setState({chatInput: this.state.chatInput + emojiObject.emoji})
@@ -162,6 +184,31 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 	// 	if (this.state.loadEmoji === false)
 	// 		this.setState({loadEmoji:true})
 	// }
+
+
+	handlePopUpRoom = () => {
+		this.setState({messages: []})
+        this.setState({openNewRoom:true})
+
+		console.log("handle popup room")
+        // // var chatMsg = document.getElementById("chatmessage") as HTMLDivElement;
+        // // chatMsg.setAttribute("display", "none");
+		// console.log(this.state.activeRoom)
+		// this.props.socket.emit('joinRoom', {room:this.state.activeRoom})
+
+    };
+
+	togglePopupRoom = () => {
+        this.setState({openNewRoom:false});
+		this.props.socket.emit('joinRoom', {room:this.state.activeRoom})
+        // var chatMsg = document.getElementById("chatmessage") as HTMLDivElement;
+        // chatMsg.setAttribute("display", "flex");
+    };
+
+	sendPass = () => {
+		var pass = document.getElementById("passRequest") as HTMLDivElement;
+		console.log(pass)
+	}
 
 	render(){
 
@@ -180,8 +227,29 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 					<img src={Send} alt="" className="send" defaultValue='NULL' width='25px' height='25px' onClick={this.sendMessage} />
 				</div>
 				<div className="back"></div>
-				<ChatMenu onRoomChange={this.changeRoom} newRoom={this.sendNewRoom}  actRoom={this.state.activeRoom} socket={this.props.socket} roomList={this.state.rooms} onMenuOpen={this.menuOpen}/>
+				<ChatMenu newRoom={this.handlePopUpRoom}  actRoom={this.state.activeRoom} socket={this.props.socket} roomList={this.state.rooms} onMenuOpen={this.menuOpen}/>
 				<div id="chatmessage" ref={this.messagesRef} className="chatmessage">
+					{this.state.openNewRoom === true && <Popup
+                    content={<>
+                        <b>Create a New Room :</b>
+                        <input type="text" placeholder="name" id="nameNewRoom" className="inputPopUp"/>
+                        <input type="password" placeholder="password (optionnal)" id="passNewRoom" className="inputPopUp"/>
+                        <button onClick={this.sendNewRoom} className="buttonPopUp1">Send</button>
+                        <button onClick={this.togglePopupRoom} className="buttonPopUp">Cancel</button>
+                      </>}
+                	/>}
+					
+
+					{/* popUp NewPass */}
+					{/* {this.state.openNewPass === true && <Popup
+						content={<>
+							<b>This room require a password :</b>
+                        	<input type="password" placeholder="password" id="passRequest" className="inputPopUp"/>
+                        	<button onClick={this.sendPass} className="buttonPopUp1">Send</button>
+                        	<button onClick={this.togglePopupRoom} className="buttonPopUp">Cancel</button>
+						</>}
+					/>} */}
+			
 					{
 						this.state.messages.map(( (item, idx) => {
 							if (item.sender === this.props.User.name)

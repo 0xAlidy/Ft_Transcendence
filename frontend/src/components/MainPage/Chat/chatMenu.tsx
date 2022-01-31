@@ -5,7 +5,7 @@ import MenuPng from '../../../assets/menu.png'
 import { Socket } from "socket.io-client";
 
 
-export default class ChatMenu extends React.Component <{socket:Socket , roomList:any, newRoom: any, actRoom:any, onMenuOpen:any, onRoomChange:any}, {activeRoom:string | null, inputRoomName:string, options:{value:string,label:string}[]}>{
+export default class ChatMenu extends React.Component <{socket:Socket , roomList:any, newRoom: any, actRoom:any, onMenuOpen:any}, {activeRoom:string | null, inputRoomName:string, options:{value:string,label:string}[]}>{
 	chatMenu:HTMLDivElement|null;
 	general: Room = {name:"general", id:0, password:"", userList:[]};
 	default = {value:"general", label:"general"}
@@ -49,7 +49,6 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
 	handleChange = (selectedOption:any) => {
 		console.log(selectedOption.value)
         this.setState({activeRoom:selectedOption.value})
-		this.props.onRoomChange(selectedOption.value)
 		this.props.socket.emit('joinRoom',{room:selectedOption.value})
 	}
 
@@ -66,13 +65,18 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
             this.setState({inputRoomName:event.target.value})
     }
 
+	handleButtonAdd = () => {
+        this.openMenu();
+        this.props.newRoom(true)
+    };
+
 	render(){
-		console.log(this.props.roomList)
+		// console.log(this.props.roomList)
 		var opt:any = [];
-		console.log(opt)
+		// console.log(opt)
 		for (var key in this.props.roomList){
 			opt.push({value:this.props.roomList[key], label:this.props.roomList[key]})
-			console.log(this.props.roomList[key])
+			// console.log(this.props.roomList[key])
 		}
 		return (
 			<div className="chatinfo" id ="chatinfo" style={{}} ref={this.setChatMenu}>
@@ -80,17 +84,16 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
 						<img src={MenuPng} alt="maqueue" className="iconMenu" width='22px' height='22px' onClick={this.openMenu} />
 						<div className="tittle">Chat</div>
 					</div>
-			        <Select className="SelectRoom"
-					        options={this.props.roomList}
-					        id="selectRoom"
-					        onChange={this.handleChange}
-					        placeholder="join a room"
-							defaultValue={{value:this.props.actRoom, label:this.props.actRoom}}
-					/>
-					<div className="divFormMenu">
-                        <input onChange={this.sendRoomName} type='text'  value={this.state.inputRoomName} id="newRoomInput" autoComplete="off" placeholder="New Room" className="menuInput"/>
-	   					<button className="pseudoButton" onClick={() => this.props.newRoom(this.state.inputRoomName)}>Add</button>
-	   				</div>
+					<div className="hiddenMenu">
+			        	<Select className="SelectRoom"
+						        options={this.props.roomList}
+						        id="selectRoom"
+						        onChange={this.handleChange}
+						        placeholder="join a room"
+								defaultValue={{value:this.props.actRoom, label:this.props.actRoom}}
+								/>
+						<button className="buttonAdd" onClick={this.handleButtonAdd} >+</button>
+					</div>
 				</div>
 		)
 	}
