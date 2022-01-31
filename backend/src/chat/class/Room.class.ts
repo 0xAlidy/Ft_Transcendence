@@ -1,3 +1,7 @@
+import axios from "axios";
+import { BroadcastOperator } from "socket.io";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { roomClass } from "src/game/class/room.class";
 
 export class Room{
 	id: number;
@@ -5,17 +9,18 @@ export class Room{
 	password: string;
 	userList: Array<string>;
 	adminList: Array<string>;
+	_room: BroadcastOperator<DefaultEventsMap>; // permet de faire room.emit("x", x)
 
-	constructor({name = "", id = 0, creator = "", password = ""}){
-		if (name)
+	constructor(name:string, id:number, creator:string , password:string, room:BroadcastOperator<DefaultEventsMap>){
         	this.name = name;
-		if (id != 0)
        		this.id = id;
-		if (password)
 			this.password = password;
-		if (creator)
 			this.userList =[creator];
-		else
-			this.userList = [];
+			this._room = room;
     }
+
+	Send(sender: string, dest: string, message: string, date: string){
+		this._room.emit('ReceiveMessage', { sender: sender, dest: dest, message: message, date: message})
+	}
+
 }

@@ -52,9 +52,12 @@ export interface Msg{
 	message:string;
 	date:string;
 }
+export interface opt{
+	value:string;
+	label:string;
+}
 
-
-export default class Chat extends React.Component <{socket:Socket, User:user}, {RowsStyle:string;activeRoom:string, msgInput:string, rooms:Room[], loaded:boolean, date:string, loadEmoji:boolean,chosenEmoji:any,chatInput:any, messages:Msg[]}>{
+export default class Chat extends React.Component <{socket:Socket, User:user}, {RowsStyle:string;activeRoom:string, msgInput:string, rooms:opt[], loaded:boolean, date:string, loadEmoji:boolean,chosenEmoji:any,chatInput:any, messages:Msg[]}>{
 	roomList:Room[] = [];
 	mRef:HTMLDivElement | null;
 	inputRef:HTMLInputElement | null;
@@ -78,16 +81,25 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 
 		};
 		this.props.socket.emit('getRoomList')
-		this.props.socket.on('refreshMsg',  (data:any) => {
+		this.props.socket.on('LoadRoom',  (data:any) => {
+			this.setState({messages: data.msg, activeRoom: data.room})
+        });
+		this.props.socket.on('ReceiveMessage',  (data:any) => {
 			this.setState({messages: this.state.messages.concat([data])})
 			if (this.mRef)
 				this.mRef.scrollTop = this.mRef.scrollHeight;
         });
-		this.props.socket.on('sendRoomList', (data:any) => {
-			console.log("update roomList")
-			this.setState({rooms:data.rooms, loaded:true});
-
+		this.props.socket.on('updateRooms', (data:any) => {
+			console.log(data.array)
+			var arr:opt[] = [];
+			data.rooms.forEach((element:string) => {
+				arr.push({value:element,label:element})
+			});
+			this.setState({rooms:arr, loaded:true});
 		});
+		this.props.socket.on('moveToChannel', (data:any) => {
+
+		})
 	}
 
 	messagesRef = (ref:HTMLDivElement) => {
@@ -119,6 +131,7 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 	}
 
 	updateRoom = (newOne:string) => {
+		this.props.socket.emit('getMessage', {room:newOne})
 		this.setState({activeRoom:newOne})
 		if (this.mRef)
 			this.mRef.innerHTML = "";
@@ -132,6 +145,10 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 	inputEnter = (event:any) => {
 		if(event.code === 'Enter')
 			this.sendMessage();
+	}
+
+	changeRoom = (room:string) =>{
+		this.props.socket.emit('askAuthorisation',{ room:room, token:this.props.User})
 	}
 
 	// onEmojiClick = (emojiObject:any) => {
@@ -163,13 +180,13 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 					<img src={Send} alt="" className="send" defaultValue='NULL' width='25px' height='25px' onClick={this.sendMessage} />
 				</div>
 				<div className="back"></div>
-				<ChatMenu newRoom={this.sendNewRoom}  actRoom={this.updateRoom} roomList={this.state.rooms} onMenuOpen={this.menuOpen}/>
+				<ChatMenu onRoomChange={this.changeRoom} newRoom={this.sendNewRoom}  actRoom={this.state.activeRoom} socket={this.props.socket} roomList={this.state.rooms} onMenuOpen={this.menuOpen}/>
 				<div id="chatmessage" ref={this.messagesRef} className="chatmessage">
 					{
 						this.state.messages.map(( (item, idx) => {
 							if (item.sender === this.props.User.name)
 								var classForItem = "msgItem"
-							else 
+							else
 								var classForItem = "msgOtherItem"
 							return (
 								<MessageItem msg={item} User={this.props.User} activeRoom={this.state.activeRoom} class={classForItem}/>

@@ -104,7 +104,7 @@ export class UsersService {
   async getUserPublic(token:string, name:string){
 
     var verif = await this.findOne(token);
-    if(verif){
+    if(verif != undefined){
       var user = await this.findOneByName(name);
       return({
         imgUrl: user.imgUrl,

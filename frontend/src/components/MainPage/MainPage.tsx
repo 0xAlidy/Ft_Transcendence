@@ -49,12 +49,10 @@ export default class MainPage extends React.Component<{token: string, name:strin
 		console.log("debug connection error" + this.state.token)
 		if(this.state.token)
 		{
-			while (this.state.User === undefined || this.state.User === null ){
 				await axios.get("HTTP://"+window.location.host.split(":").at(0)+":667/auth/me?token="+this.state.token).then(res => {
 					this.setState({User: res.data, url: res.data.imgUrl})})
-				}
 			console.log(this.state.User)
-			this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667')})
+			this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token}})})
 			if (this.state.socket)
 				this.state.socket.emit('setID', {token: this.props.token, name:this.props.name});
 			else
