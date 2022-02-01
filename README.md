@@ -42,6 +42,7 @@ PATCH:
 - Erreur connexion (rarement)
 - PNG image
 - Je vois ma room quand j'host
+- crash avec webcam
 
 ?
 - matchmacking fast

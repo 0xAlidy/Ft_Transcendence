@@ -76,15 +76,14 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 			this.setState({displayChoices: false, webcamOption: false});
 	}
 	openwebcam() {
-		console.log('bisous')
 		if(this.state.webcamOption === false)
 			this.setState({webcamOption: true,})
 		else
 			this.setState({webcamOption: false})
 	}
+
 	handlePhoto(url:string){
 		console.log(url);
-
 	}
 
 	render(){
@@ -108,8 +107,8 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 							{
 								!(this.state.webcamOption || this.state.uploadOption) &&
 								<>
-									<div className='ChooseOption'  onClick={this.openwebcam}>use webcam</div>
-									<label className='ChooseOption' htmlFor='file'>upload image</label>
+									<div className='ChooseOption'  onClick={this.openwebcam}>Use Webcam</div>
+									<label className='ChooseOption' htmlFor='file'>Upload Image</label>
 									<input type="file" id="file" name="myImage" onChange={this.onImageUpload} />
 								</>
 							}
