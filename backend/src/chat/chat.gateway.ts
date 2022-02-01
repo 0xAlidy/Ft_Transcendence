@@ -24,6 +24,7 @@ export class ChatGateway implements OnGatewayInit {
     this.chatService.create('general', 'system', null);
   }
 
+
   async handleConnection(client:Socket, ...args: any[]){
     this.logger.log("New Conection ! token:" + client.handshake.query.token);
     client.join("general");
@@ -58,7 +59,17 @@ export class ChatGateway implements OnGatewayInit {
 
   @SubscribeMessage('password')
   async password(client:Socket, data:any){
-    
+    console.log(data)
+    var tocheck = await this.chatService.findRoomByName(data.room)
+    console.log(tocheck.password)
+    if (data.pass === tocheck.password)
+    {
+      var msg = await this.chatService.getMessagesByRoom(data.room);
+      client.emit('LoadRoomPass', {room: data.room, msg:msg })
+      client.leave(this.clients.get(client.id)._room)
+      client.join(data.room)
+      this.clients.get(client.id)._room = data.room 
+    }
 
 
     //loadroom
@@ -73,7 +84,8 @@ export class ChatGateway implements OnGatewayInit {
   @SubscribeMessage('newRoom')
   async addRoom(client:Socket, data:any){
     // console.log( data)
-    var update = await this.chatService.create(data.name, data.creator, data.password);
+    var passEncrypt = await this.chatService.encrypt(data.password)
+    var update = await this.chatService.create(data.name, data.creator, passEncrypt);
     console.log(update);
     this.server.emit('updateRooms',{rooms: update})
     // var id = this.rooms.length + 1;
@@ -90,14 +102,14 @@ export class ChatGateway implements OnGatewayInit {
     var bool = await this.chatService.isAuthorized(this.clients.get(client.id)._token, data.room)
     console.log(bool)
     if(bool){
-    var msg = await this.chatService.getMessagesByRoom(data.room);
+      var msg = await this.chatService.getMessagesByRoom(data.room);
       client.emit('LoadRoom', {room: data.room, msg:msg })
       client.leave(this.clients.get(client.id)._room)
       client.join(data.room)
       this.clients.get(client.id)._room = data.room
     }
     else
-      client.emit('needPassword')
+      client.emit('needPassword', {room:data.room})
   }
 
 

@@ -72,6 +72,8 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 	mRef:HTMLDivElement | null;
 	inputRef:HTMLInputElement | null;
 
+	needPass:string = "";
+
 	constructor(props:any) {
 		super(props);
 		this.mRef = null;
@@ -97,6 +99,11 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			console.log(data.msg)
 			this.setState({messages: data.msg, activeRoom: data.room})
         });
+		this.props.socket.on('LoadRoomPass',  (data:any) => {
+			console.log(data.msg)
+			this.togglePopupPass()
+			this.setState({messages: data.msg, activeRoom: data.room})
+        });
 		this.props.socket.on('ReceiveMessage',  (data:any) => {
 			this.setState({messages: this.state.messages.concat([data])})
 			if (this.mRef)
@@ -110,10 +117,13 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			});
 			this.setState({rooms:arr, loaded:true});
 		});
-		// this.props.socket.on('needPassword', () => {
-		// 	console.log("needPass")
-		// 	this.setState({openNewPass:true})
-		// })
+		this.props.socket.on('needPassword', (data:any) => {
+			console.log("needPass for " + data.room)
+			this.needPass = data.room;
+			this.setState({messages: []})
+			this.setState({RowsStyle:"40px auto 40px"})
+			this.setState({openNewPass:true})
+		})
 		
 	}
 
@@ -137,7 +147,6 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 				this.props.socket.emit('sendMessage', toSend);
 				this.inputRef.value = "";
 			}
-		//this.setState({chatInput:""});
 	}
 
 	sendNewRoom = () => {
@@ -161,10 +170,6 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 		this.setState({activeRoom:newOne})
 		if (this.mRef)
 			this.mRef.innerHTML = "";
-		// var date = new Date().toTimeString().slice(0,5)
-		// var ne = new Message("you are now logged to : " + newOne, this.state.activeRoom, "system", date);
-		// this.setState({messages: this.state.messages.concat([ne])})
-		// this.ReceiveCont(ne);
 	}
 
 
@@ -189,25 +194,22 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 	handlePopUpRoom = () => {
 		this.setState({messages: []})
         this.setState({openNewRoom:true})
-
 		console.log("handle popup room")
-        // // var chatMsg = document.getElementById("chatmessage") as HTMLDivElement;
-        // // chatMsg.setAttribute("display", "none");
-		// console.log(this.state.activeRoom)
-		// this.props.socket.emit('joinRoom', {room:this.state.activeRoom})
-
     };
 
 	togglePopupRoom = () => {
         this.setState({openNewRoom:false});
 		this.props.socket.emit('joinRoom', {room:this.state.activeRoom})
-        // var chatMsg = document.getElementById("chatmessage") as HTMLDivElement;
-        // chatMsg.setAttribute("display", "flex");
     };
 
 	sendPass = () => {
-		var pass = document.getElementById("passRequest") as HTMLDivElement;
-		console.log(pass)
+		var pass = document.getElementById("passRequest") as HTMLInputElement;
+		console.log(this.state.activeRoom + "     " + pass.value)
+		this.props.socket.emit('password', {pass:pass.value, room:this.needPass})
+	}
+
+	togglePopupPass = () => {
+		this.setState({openNewPass:false});
 	}
 
 	render(){
@@ -238,17 +240,15 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
                         <button onClick={this.togglePopupRoom} className="buttonPopUp">Cancel</button>
                       </>}
                 	/>}
-					
 
-					{/* popUp NewPass */}
-					{/* {this.state.openNewPass === true && <Popup
+					{this.state.openNewPass === true && <Popup
 						content={<>
 							<b>This room require a password :</b>
                         	<input type="password" placeholder="password" id="passRequest" className="inputPopUp"/>
                         	<button onClick={this.sendPass} className="buttonPopUp1">Send</button>
-                        	<button onClick={this.togglePopupRoom} className="buttonPopUp">Cancel</button>
+                        	<button onClick={this.togglePopupPass} className="buttonPopUp">Cancel</button>
 						</>}
-					/>} */}
+					/>}
 			
 					{
 						this.state.messages.map(( (item, idx) => {

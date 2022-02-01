@@ -47,7 +47,6 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
 	}
 
 	handleChange = (selectedOption:any) => {
-		console.log(selectedOption.value)
         this.setState({activeRoom:selectedOption.value})
 		this.props.socket.emit('joinRoom',{room:selectedOption.value})
 	}

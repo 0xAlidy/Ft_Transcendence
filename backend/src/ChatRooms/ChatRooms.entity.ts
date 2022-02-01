@@ -15,7 +15,7 @@ export class ChatRooms {
   owner:string;
 
   @Column({default:''})
-  password:string;
+  password:Buffer;
 
   @Column()
   IsPassword:boolean;
@@ -29,7 +29,7 @@ export class ChatRooms {
   @Column('jsonb',{ default: []})
   messages: Msg[];
 
-  constructor(name :string, owner:string, password:string|null){
+  constructor(name :string, owner:string, password:Buffer|null){
     this.name = name;
     this.owner = owner;
     if( password === null)
