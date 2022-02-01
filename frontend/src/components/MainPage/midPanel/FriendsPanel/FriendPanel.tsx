@@ -1,6 +1,6 @@
 import React from 'react'
 import '../../../../styles/MainPage/midPanel/midPanel.css'
-import '../../../../styles/MainPage/midPanel/FriendPanel/FriendPanel.css'
+import '../../../../styles/MainPage/midPanel/FriendsPanel/FriendPanel.css'
 
 export default class FriendPanel extends React.Component<{},{select:number}>{
 	list:HTMLDivElement|null;

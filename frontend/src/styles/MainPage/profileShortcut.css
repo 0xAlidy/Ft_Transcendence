@@ -1,29 +1,61 @@
-.PopupContainer {  display: grid;
-	grid-template-columns: 100px 100px 100px;
-	grid-template-rows: 100px 100px 100px;
-	grid-auto-columns: 1fr;
-	gap: 0px 0px;
-	grid-auto-flow: row;
-	grid-template-areas:
-	  "pp name name"
-	  "lvl ratio history"
-	  "mp addFriend duel";
-	  height: 300px;
-	  width:300px;
-	  border-radius: 50px;
-	  border: #fee154 solid 3px;
-	  background-color: #2c2c2c;
-	  box-shadow:5px 5px 20px black;
-	  color:white;
-  }
+.PopupContainer {  
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	width: 350px;
+	height: 350px;
+	border-radius: 20%;
+	border: #fee154 solid 3px;
+	background-color: #2c2c2c;
+	box-shadow: 0px 0px 0px 10000px #00000099;
+	color:white;
+	/*animation: 3s popup;*/
+}
 
-  .pp{ /*grid-area: pp;*/
-		border-radius: 50%;
-		height:46px;
-		width: 46px;
-		margin-left: 2px;
-		overflow: hidden;
+/*@keyframes popup {
+	from {
+		height: 0px;
+		width: 0px;
+		display: none;
 	}
+	to {
+		height: 350px;
+		width: 350px;
+	}
+}*/
+
+#profilSection {
+	display: flex;
+	height: 33%;
+}
+
+#profilSection span{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 50%;
+}
+
+#levelSection {
+	display: flex;
+	height: 33%;
+	padding-top: 20px;
+}
+
+#buttonSection{
+	display: flex;
+	height: 33%;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.pp{ /*grid-area: pp;*/
+	border-radius: 50%;
+	height:46px;
+	width: 46px;
+	margin-left: 2px;
+	overflow: hidden;
+}
 	
 .pp img{
 	margin-left: auto;
@@ -77,6 +109,7 @@ text-align: center;}
     justify-content: center;
     transition: all 0.5s ease ;
 }
+
 .ProfileShortcutButton:hover{
     background-color: #fee154;
     color: #000;

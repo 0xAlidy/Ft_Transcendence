@@ -34,7 +34,15 @@ TO DO :
 - Spectactor mode
 - Additionnal features
 - Ruleset is available somewhere on the website and can be consulted by users
+- Bloquer user
+- their status (offline/online/in a game)
 
-Pas urgent
-- matchmacking
+PATCH:
+- Pas de pop up de ma propre image
+- Erreur connexion (rarement)
+- PNG image
+- Je vois ma room quand j'host
+
+?
+- matchmacking fast
 - Website owner/moderators
