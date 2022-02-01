@@ -23,6 +23,10 @@ export class User {
   @Column({ default: 0 })
   numberOfLoose: number;
 
+
+  @Column("text",{ array:true, default: []})
+  waitingFriends: string[];
+
   @Column("text",{ array:true, default: []})
   friends: string[];
 

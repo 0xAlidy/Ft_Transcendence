@@ -1,0 +1,18 @@
+.container {  display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-rows: 10% 90%;
+	gap: 0px 0px;
+	grid-auto-flow: row;
+	grid-template-areas:
+	  "friendList waiting blocked"
+	  "listConstainer listConstainer listConstainer";
+  }
+  
+  .blocked { grid-area: blocked; }
+  
+  .waiting { grid-area: waiting; }
+  
+  .friendList { grid-area: friendList; }
+  
+  .listConstainer { grid-area: listConstainer; }
+  

@@ -50,6 +50,20 @@ export class UsersService {
     }
   }
 
+  async friendRequest(token:string, name:string){
+    var user = await this.findOne(token);
+    if (user)
+    {
+      var other = await this.findOneByName(name);
+      other.waitingFriends.push(user.name);
+      await this.usersRepository.save(other);
+    }
+  }
+  async acceptFriendRequest(token:string, name:string)
+  {
+    var user = await this.findOne(token);
+  }
+
   async addRoom(token:string, room:string)
   {
     var user = await this.findOne(token);
