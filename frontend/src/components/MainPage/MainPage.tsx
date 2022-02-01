@@ -6,7 +6,6 @@ import { io, Socket} from "socket.io-client";
 import Menu from './Menu/Menu';
 import IGame from './midPanel/Game/Game';
 import Profile from './midPanel/Profile/Profile';
-import Achievement from './midPanel/Achievement/Achievement';
 import History from './midPanel/History/History';
 import AdminPanel from './midPanel/AdminPanel/AdminPanel';
 import axios from 'axios';
@@ -71,10 +70,7 @@ export default class MainPage extends React.Component<{token: string, name:strin
 	}
 	render(){
 		const Ref = (e: any) => {
-			if (e.isAchievOpen){
-				this.setState({selector: 'achievement'});
-			}
-			else if (e.isAdminOpen){
+			if (e.isAdminOpen){
 				this.setState({selector: 'admin'});
 			}
 			else if (e.isGameOpen){
@@ -102,7 +98,6 @@ export default class MainPage extends React.Component<{token: string, name:strin
 				<div className="game" id="game">
 				{this.state.socket && this.state.selector === 'game' && <IGame socket={this.state.socket}/>}
 				{this.state.selector === 'profile' && <Profile User={this.state.User} name={this.state.User.name} refreshUser={this.refreshUser}/>}
-				{this.state.selector === 'achievement' && <Achievement />}
 				{this.state.selector === 'history' && <History User={this.state.User}/>}
 				{this.state.selector === 'admin' && <AdminPanel/>}
 				{this.state.selector === 'friends' && <FriendPanel/>}

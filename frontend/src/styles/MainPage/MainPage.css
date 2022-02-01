@@ -1,15 +1,16 @@
 #MainPage {
-    background: #1F1F1F;
-    height: 100%;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 20% 50% 20%;
-    grid-template-rows: 20% 80%;
-    gap: 0% 5%;
-    grid-template-areas:
-      "menu logo chat"
-      "menu game chat ";
+  background: #1F1F1F;
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 20% 50% 20%;
+  grid-template-rows: 20% 80%;
+  gap: 0% 5%;
+  grid-template-areas:
+    "menu logo chat"
+    "menu game chat ";
 }
+
 .divimg {
   width: 100px;
   height: 100px;
@@ -25,24 +26,37 @@
   width: auto;
 }
 
-.menu { grid-area: menu;
+.menu {
+  grid-area: menu;
   justify-content: left;
   width: 75%;
   height :100%;
-display: flex;
-flex-direction: column;
-justify-content: center;}
-.game { grid-area: game;
-  text-align: center;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
 }
-/* .chat { grid-area: chat; background-color: #333333; border-radius: 35px 35px 0px 35px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px;} */
-.logo { grid-area: logo;
-text-align: center;
+
+.game { 
+  grid-area: game;
+  display: flex;
+  justify-content: center;
 }
-.mainLogo{
+
+#phaser-game
+{
+  padding-top: 100px;
+}
+/* .chat { grid-area: chat; background-color: #333333; border-radius: 35px 35px 0px 35px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px;} */
+
+.logo { 
+  grid-area: logo;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mainLogo {
   min-height: 50px;
   height: 90%;
   max-height: 200px;
