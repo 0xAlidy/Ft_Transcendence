@@ -43,12 +43,12 @@ export class Lobby extends Scene {
 			if (event.target.name ==='hostButton' && event.target.defaultValue === 'HOST')
 			{
 
-				(self.socket as Socket).emit('createRoom');
+				self.socket.emit('searchRoom');
                 // scene.start('Waiting');
             }
 			if (event.target.name ==='hostButton' && event.target.defaultValue === 'CANCEL')
 			{
-				(self.socket as Socket).emit('leaveRoom');
+				self.socket.emit('leaveRoom');
                 // scene.start('Waiting');
             }
 		});

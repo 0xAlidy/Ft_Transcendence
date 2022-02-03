@@ -11,10 +11,12 @@ import { roomClass } from "./class/room.class";
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
     constructor(private userService: UsersService,private readonly matchsService: MatchsService){
     }
+    index:number = 0;
     private logger: Logger = new Logger('WS-game');
     rooms = new Map<string, roomClass>() ;
     i : number;
     clients = new Map<string, clientClass>();
+    clientsSearching:clientClass[]= [];
     clientsOnWaitingRoom = new Map();
     @WebSocketServer()
     server: Server;
@@ -69,18 +71,42 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.logger.log(client.id + " is " + message);
         this.clients.get(client.id).setName(message);
     }
-    @SubscribeMessage('createRoom')
-    createRoom(client: Socket): void {
-        if (this.clients.get(client.id)._room !== this.clients.get(client.id)._pseudo + "'s_room"){
-            var formated : string = this.clients.get(client.id)._pseudo + "'s_room";
-            this.clients.get(client.id).setRoom(formated);
-            this.rooms.set(formated, new roomClass(formated, this.clients.get(client.id), this.server.to(formated)));
-            this.updateRoom();
-        }
-        else{
 
+    @SubscribeMessage('searchRoom')
+    search(client: Socket): void {
+        this.clientsSearching.push(this.clients.get(client.id))
+        if (this.clientsSearching.length >= 2)
+        {
+            var userOne = this.clientsSearching.at(this.clientsSearching.length - 2)
+            var userTwo = this.clientsSearching.at(this.clientsSearching.length - 1)
+            var roomName = "room"+this.index;
+            userOne._room = roomName;
+            userTwo._room = roomName;
+            this.rooms.set('room' +this.index, new roomClass(roomName, userOne , userTwo, this.server.to(roomName)));
+            var room = this.rooms.get('room' + this.index);
+            userOne._socket.leave('lobby');
+            userOne._socket.join(roomName);
+            userTwo._socket.leave('lobby');
+            userTwo._socket.join(roomName);
+            this.rooms.get('room' + this.index)._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._pseudo, nameB: room._guest._pseudo, bool: room._player._nbOfGames != 0 ? true : false })
+            this.rooms.get('room' + this.index)._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._pseudo, nameB: room._guest._pseudo,  bool: room._guest._nbOfGames != 0 ? true : false});
+            room._isJoinable = false;
+            this.clientsSearching.pop()
+            this.clientsSearching.pop()
+            this.index++;
         }
     }
+    // @SubscribeMessage('createRoom')
+    // createRoom(client: Socket): void {
+    //     if (this.clients.get(client.id)._room !== this.clients.get(client.id)._pseudo + "'s_room"){
+    //         var formated : string = this.clients.get(client.id)._pseudo + "'s_room";
+    //         this.clients.get(client.id).setRoom(formated);
+    //         this.rooms.set(formated, new roomClass(formated, this.clients.get(client.id), this.server.to(formated)));
+    //         this.updateRoom();
+    //     }
+    //     else{
+    //     }
+    // }
     @SubscribeMessage('getUserName')
     userName(client: Socket): void {
         var formated : string = this.clients.get(client.id)._pseudo + "'s_room";
@@ -135,6 +161,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
     @SubscribeMessage('leaveRoom')
     leaveRoom(client: Socket): void {
+        var user = this.clients.get(client.id)
+        if(user._room !== 'lobby')
+
         this.rooms.forEach(element => {
             if(element._name == this.clients.get(client.id)._room)
             {

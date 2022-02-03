@@ -1,4 +1,5 @@
 import { Logger } from "@nestjs/common";
+import { randomInt } from "crypto";
 import { BroadcastOperator, Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { clientClass } from "./client.class";
@@ -21,9 +22,17 @@ export class roomClass{
 	_numberOfSpec: number;
     private logger: Logger = new Logger('WS-game/Rooms');
 
-	constructor(name: string, owner : clientClass, room: BroadcastOperator<DefaultEventsMap>){
+	constructor(name: string, playerOne : clientClass, playerTwo : clientClass, room: BroadcastOperator<DefaultEventsMap>){
 		this._name = name;
-		this._player = owner;
+		if(randomInt(0,1))
+		{
+			this._player = playerOne;
+			this._guest = playerTwo;
+		}
+		else{
+			this._guest = playerOne;
+			this._player = playerTwo;
+		}
 		this._room = room;
 		this.logger.log(name + ' created.');
 	}

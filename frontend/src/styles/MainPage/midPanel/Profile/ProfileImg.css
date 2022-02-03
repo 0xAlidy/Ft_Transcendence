@@ -10,6 +10,7 @@
 	height: 30px;
 	border-radius: 50%;
 	border: 0px none;
+    cursor: pointer;
 }
 
 .ChooseContainer{
