@@ -36,6 +36,25 @@ export class roomClass{
 		this._room = room;
 		this.logger.log(name + ' created.');
 	}
+	abandon(client: string)
+	{
+		if(client === this._player._pseudo)
+		{
+			this._player._socket.leave(this._name)
+			this._player._socket.join('lobby')
+			// this._player._socket.emit('backToLobby');
+			this._room.emit('winner', {id:1, winner: this._player._pseudo});
+			//tell adv he won by forfait
+			return 1;
+		}
+		else if(client === this._guest._pseudo){
+			this._guest._socket.leave(this._name)
+			this._guest._socket.join('lobby')
+			// this._guest._socket.emit('backToLobby');
+			this._room.emit('winner', {id:2, winner: this._guest._pseudo});
+			return 2;
+		}
+	}
 	addGuest(client: clientClass){
 		this._guest = client;
 		this.logger.log(client._pseudo + " join" + this._name + "as P2.");

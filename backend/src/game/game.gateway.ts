@@ -75,10 +75,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @SubscribeMessage('searchRoom')
     search(client: Socket): void {
         this.clientsSearching.push(this.clients.get(client.id))
-        if (this.clientsSearching.length >= 2)
+        console.log(this.clients.get(client.id)._pseudo + 'join waiting match')
+        client.emit('changeState', {bool : true})
+        if (this.clientsSearching.length == 2)
         {
-            var userOne = this.clientsSearching.at(this.clientsSearching.length - 2)
-            var userTwo = this.clientsSearching.at(this.clientsSearching.length - 1)
+            var userOne = this.clientsSearching.at(1)
+            var userTwo = this.clientsSearching.at(0)
+            this.clientsSearching.pop()
+            this.clientsSearching.pop()
             var roomName = "room"+this.index;
             userOne._room = roomName;
             userTwo._room = roomName;
@@ -91,8 +95,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             this.rooms.get('room' + this.index)._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._pseudo, nameB: room._guest._pseudo, bool: room._player._nbOfGames != 0 ? true : false })
             this.rooms.get('room' + this.index)._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._pseudo, nameB: room._guest._pseudo,  bool: room._guest._nbOfGames != 0 ? true : false});
             room._isJoinable = false;
-            this.clientsSearching.pop()
-            this.clientsSearching.pop()
             this.index++;
         }
     }
@@ -159,11 +161,32 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             }
         });
     }
+    @SubscribeMessage('cancel')
+    cancelSearch(client: Socket): void {
+        var index = this.clientsSearching.indexOf(this.clients.get(client.id))
+        console.log(this.clients.get(client.id)._pseudo + 'leave waiting match')
+        client.emit('changeState', {bool : false})
+        if (index > -1) {
+            this.clientsSearching.splice(index, 1); // 2nd parameter means remove one item only
+        }
+    }
+    @SubscribeMessage('abandon')
+    abandon(client: Socket): void {
+        var user = this.clients.get(client.id);
+        var room = this.rooms.get(this.clients.get(client.id)._room);
+        console.log(user);
+        var ret = room.abandon(user._pseudo)
+        if (ret == 1)
+            this.matchsService.create(room._guest._pseudo, 5, room._player._pseudo, room._scoreA);
+        if (ret == 2)
+            this.matchsService.create(room._player._pseudo, 5, room._guest._pseudo, room._scoreB);
+        // l'adversaire gagne le match
+        // match history winner = 5 pts
+        // 
+    }
     @SubscribeMessage('leaveRoom')
     leaveRoom(client: Socket): void {
         var user = this.clients.get(client.id)
-        if(user._room !== 'lobby')
-
         this.rooms.forEach(element => {
             if(element._name == this.clients.get(client.id)._room)
             {
