@@ -40,7 +40,7 @@ export class Game extends Scene {
 	rect2 = new Phaser.Geom.Rectangle();
 	rectball = new Phaser.Geom.Rectangle();
 	textInfo: any;
-	socket:any;
+	socket:Socket| null = null;
 	constructor() {
 	  super("Game");
 	  this.update = this.update.bind(this);
@@ -48,7 +48,7 @@ export class Game extends Scene {
 	init(data: any)
     {
 
-        this.socket = data.socket as Socket;
+        this.socket = data.socket;
         this.PLAYERID = data.id;
 		this.room = data.room;
 		this.nameA = data.nameA;
@@ -89,180 +89,185 @@ export class Game extends Scene {
 			this.textReadyB = this.add.text( 600 , 300 , 'Waiting!', {  fontSize: '40px', align: 'left' }).setOrigin(0.5).setColor('#ecf0f1');
 			this.textInfo = this.add.text( 400 , 550 , 'press ↑ or ↓ for being ready!', {  fontSize: '30px', align: 'left' }).setOrigin(0.5).setColor('#ecf0f1');
 		}
-		var self = this;
 		//socket events
 		var keyObj = this.input.keyboard.addKey('ESC');  // Get key object
-		keyObj.on('down', function() {
-			self.socket.emit('leaveRoom');
-			self.backToLobby();
-		});
-		this.socket.on('readyPlayer', function(data:any){
-			if(data.id=== 1)
-				self.textReadyA.setText('Ready!');
-			if(data.id=== 2)
-				self.textReadyB.setText('Ready!');
-		});
-		this.socket.on('go', function()
+		if (this.socket !== null)
 		{
-			if (self.PLAYERID !== 3)
+			keyObj.on('down', () => {
+				if (this.socket !== null)
+					this.socket.emit('abandon');
+				this.backToLobby();
+			});
+			this.socket.on('readyPlayer', (data:any) => {
+				if(data.id=== 1)
+					this.textReadyA.setText('Ready!');
+				if(data.id=== 2)
+					this.textReadyB.setText('Ready!');
+			});
+			this.socket.on('go', () => 
 			{
-				self.textReadyA.setText('');
-				self.textReadyB.setText('');
-				self.textInfo.setText('');
-				self.displayA.setFontSize('200px');
-				self.displayB.setFontSize('200px');
-				self.displayA.setPosition(200, 300);
-				self.displayB.setPosition(600, 300);
-				self.Ready = true;
-			}
-		});
-		this.socket.on('ballThrow', function(data:any)
-		{
-				self.ball.setPosition(400, data.y);
-				self.x = data.velx;
-				self.y = data.vely;
-				self.speedball = 250;
-				self.ball.setVelocity(data.velx, data.vely);
-		});
-		this.socket.on('updateBall', function(data:any)
-		{
-				self.sound.play('pop');
-				self.ball.setPosition(data.posx, data.posy);
-				self.ball.setVelocity(data.velx, data.vely);
-		});
-		this.socket.on('updatePos', function(data:any)
-		{
-			if (self.PLAYERID=== 3)
+				if (this.PLAYERID !== 3)
+				{
+					this.textReadyA.setText('');
+					this.textReadyB.setText('');
+					this.textInfo.setText('');
+					this.displayA.setFontSize('200px');
+					this.displayB.setFontSize('200px');
+					this.displayA.setPosition(200, 300);
+					this.displayB.setPosition(600, 300);
+					this.Ready = true;
+				}
+			});
+			this.socket.on('ballThrow', (data:any) => 
 			{
-				if (data.id=== 1)
-					self.barA.setPosition(40, data.y);
+					this.ball.setPosition(400, data.y);
+					this.x = data.velx;
+					this.y = data.vely;
+					this.speedball = 250;
+					this.ball.setVelocity(data.velx, data.vely);
+			});
+			this.socket.on('updateBall', (data:any) => 
+			{
+					this.sound.play('pop');
+					this.ball.setPosition(data.posx, data.posy);
+					this.ball.setVelocity(data.velx, data.vely);
+			});
+			this.socket.on('updatePos', (data:any) => 
+			{
+				if (this.PLAYERID=== 3)
+				{
+					if (data.id=== 1)
+						this.barA.setPosition(40, data.y);
+					else
+						this.barB.setPosition(760, data.y);
+				}
+				if(this.PLAYERID=== 1)
+					this.barB.setPosition(760, data.y);
 				else
-					self.barB.setPosition(760, data.y);
-			}
-			if(self.PLAYERID=== 1)
-				self.barB.setPosition(760, data.y);
-			else
-				self.barA.setPosition(40, data.y);
-		});
-		this.socket.on('backToLobby', function () {
-			if (!self.end)
-			{
-				self.winnerText.setFontSize('30px');
-				self.textReadyA.setText('');
-				self.textReadyB.setText('');
-				self.winnerText.setText('your opponent left..');
-			}
-        });
-		this.socket.on('scoreUpdate', function (score:any) {
-			self.displayA.setText(score.a);
-			self.displayB.setText(score.b);
-		});
-		this.socket.on('winner', function (data:any) {
-			self.end = true;
-			self.textInfo.setText('Press ESC!');
-			if (self.PLAYERID=== 3)
-			{
-				self.winnerText.setColor('#edca00');
-				self.winnerText.setText(data.winner + ' WINS!');
-			}
-			if(self.PLAYERID=== data.id){
-				self.winnerText.setColor('#edca00');
-				self.winnerText.setText('YOU WIN!');
-			}
-			if(self.PLAYERID !== data.id && self.PLAYERID !== 3){
-				self.winnerText.setColor('#d90024');
-				self.winnerText.setText('YOU LOOSE!');
-		}});
-
+					this.barA.setPosition(40, data.y);
+			});
+			this.socket.on('backToLobby',  () => {
+				if (!this.end)
+				{
+					this.winnerText.setFontSize('30px');
+					this.textReadyA.setText('');
+					this.textReadyB.setText('');
+					this.winnerText.setText('your opponent left..');
+				}
+        	});
+			this.socket.on('scoreUpdate', (score:any) => {
+				this.displayA.setText(score.a);
+				this.displayB.setText(score.b);
+			});
+			this.socket.on('winner',(data:any) => {
+				this.end = true;
+				this.textInfo.setText('Press ESC!');
+				if (this.PLAYERID=== 3)
+				{
+					this.winnerText.setColor('#edca00');
+					this.winnerText.setText(data.winner + ' WINS!');
+				}
+				if(this.PLAYERID=== data.id){
+					this.winnerText.setColor('#edca00');
+					this.winnerText.setText('YOU WIN!');
+				}
+				if(this.PLAYERID !== data.id && this.PLAYERID !== 3){
+					this.winnerText.setColor('#d90024');
+					this.winnerText.setText('YOU LOOSE!');
+			}})
+		}
 	}
 
 	update ()
 	{
-		this.rectball = this.ball.getBounds();
-		if (this.Ready=== true && this.PLAYERID !== 3)
+		if(this.socket)
 		{
-			if (this.PLAYERID===  1)
+			this.rectball = this.ball.getBounds();
+			if (this.Ready=== true && this.PLAYERID !== 3 )
 			{
-				this.rect1 = this.barA.getBounds();
-				if (this.x < 0 && this.checkOverlap(this.rectball, this.rect1)){
-					this.bounceSide(this.socket, this.barA, this.ball, false);
-				}
-				this.rect2 = this.barB.getBounds();
-				if (this.x > 0 && this.checkOverlap(this.rectball, this.rect2)){
-					this.bounceSide(this.socket, this.barB, this.ball, true);
-				}
-				if(this.ball.x <= 10 && this.x <= 0)
+				if (this.PLAYERID===  1)
 				{
-					this.socket.emit('score', {
-						goalID: 2,
-						room: this.room
-					});
+					this.rect1 = this.barA.getBounds();
+					if (this.x < 0 && this.checkOverlap(this.rectball, this.rect1)){
+						this.bounceSide(this.socket, this.barA, this.ball, false);
+					}
+					this.rect2 = this.barB.getBounds();
+					if (this.x > 0 && this.checkOverlap(this.rectball, this.rect2)){
+						this.bounceSide(this.socket, this.barB, this.ball, true);
+					}
+					if(this.ball.x <= 10 && this.x <= 0)
+					{
+						this.socket.emit('score', {
+							goalID: 2,
+							room: this.room
+						});
+					}
+					if(this.ball.x >= 790 && this.x >= 0)
+					{
+						this.socket.emit('score', {
+							goalID: 1,
+							room: this.room
+						});
+					}
+					if(this.ball.y <= 10 && this.y <= 0)
+						this.bounceTopBot();
+					else if(this.ball.y >= 590 && this.y >= 0)
+						this.bounceTopBot();
 				}
-				if(this.ball.x >= 790 && this.x >= 0)
+				if(this.cursor.up.isDown)
 				{
-					this.socket.emit('score', {
-						goalID: 1,
-						room: this.room
-					});
-				}
-				if(this.ball.y <= 10 && this.y <= 0)
-					this.bounceTopBot();
-				else if(this.ball.y >= 590 && this.y >= 0)
-					this.bounceTopBot();
-			}
-			if(this.cursor.up.isDown)
-			{
-				if (this.PLAYERID=== 1)
-				{
-					if ((this.barA.y - this.speed) > 40)
-						this.barA.setPosition(this.barA.x, this.barA.y - this.speed);
-					else
-						this.barA.setPosition(this.barA.x, 40);
-				}
-				if (this.PLAYERID=== 2)
-				{
-					if ((this.barB.y - this.speed) > 40)
-						this.barB.setPosition(this.barB.x, this.barB.y - this.speed);
-					else
-						this.barB.setPosition(this.barB.x, 40);
-				}
-				this.socket.emit('playerMovement', {
-					y: (this.PLAYERID=== 1) ? this.barA.y : this.barB.y ,
-					id: this.PLAYERID,
-					room: this.room
-				});
-			}
-			if(this.cursor.down.isDown)
-			{
-				if (this.PLAYERID=== 1)
-				{
-					if ((this.barA.y + this.speed) < 560)
-						this.barA.setPosition(this.barA.x, this.barA.y + this.speed);
-					else
-						this.barA.setPosition(this.barA.x, 560);
-				}
-				if (this.PLAYERID=== 2)
-				{
-					if ((this.barB.y + this.speed) < 560)
-						this.barB.setPosition(this.barB.x, this.barB.y + this.speed);
-					else
-						this.barB.setPosition(this.barB.x, 560);
-				}
+					if (this.PLAYERID=== 1)
+					{
+						if ((this.barA.y - this.speed) > 40)
+							this.barA.setPosition(this.barA.x, this.barA.y - this.speed);
+						else
+							this.barA.setPosition(this.barA.x, 40);
+					}
+					if (this.PLAYERID=== 2)
+					{
+						if ((this.barB.y - this.speed) > 40)
+							this.barB.setPosition(this.barB.x, this.barB.y - this.speed);
+						else
+							this.barB.setPosition(this.barB.x, 40);
+					}
 					this.socket.emit('playerMovement', {
 						y: (this.PLAYERID=== 1) ? this.barA.y : this.barB.y ,
 						id: this.PLAYERID,
 						room: this.room
-				});
-			}
-		}
-		else
-		{
-			if (!this.uready && this.PLAYERID !== 3)
-			{
-				if (this.cursor.up.isDown || this.cursor.down.isDown)
+					});
+				}
+				if(this.cursor.down.isDown)
 				{
-					this.socket.emit('ready', {id: this.PLAYERID, room: this.room});
-					this.uready = true;
+					if (this.PLAYERID=== 1)
+					{
+						if ((this.barA.y + this.speed) < 560)
+							this.barA.setPosition(this.barA.x, this.barA.y + this.speed);
+						else
+							this.barA.setPosition(this.barA.x, 560);
+					}
+					if (this.PLAYERID=== 2)
+					{
+						if ((this.barB.y + this.speed) < 560)
+							this.barB.setPosition(this.barB.x, this.barB.y + this.speed);
+						else
+							this.barB.setPosition(this.barB.x, 560);
+					}
+						this.socket.emit('playerMovement', {
+							y: (this.PLAYERID=== 1) ? this.barA.y : this.barB.y ,
+							id: this.PLAYERID,
+							room: this.room
+					});
+				}
+			}
+			else
+			{
+				if (!this.uready && this.PLAYERID !== 3)
+				{
+					if (this.cursor.up.isDown || this.cursor.down.isDown)
+					{
+						this.socket.emit('ready', {id: this.PLAYERID, room: this.room});
+						this.uready = true;
+					}
 				}
 			}
 		}
@@ -296,11 +301,13 @@ export class Game extends Scene {
 	}
 	backToLobby()
 	{
-		this.scene.start('Lobby');
+		// this.scene.start('Lobby');
+		this.scene.remove();
 	}
 	bounceTopBot()
 	{
 		this.y *= -1;
+		if (this.socket)
 		this.socket.emit('ball', {
 			room: this.room,
 			velx: this.x,

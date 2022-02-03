@@ -5,11 +5,13 @@ import { Socket } from "socket.io-client";
 export class Lobby extends Scene {
     list = [];
     joinItem : Phaser.GameObjects.DOMElement[] = [];
-    sceneGame : any;
+    sceneGame : Phaser.Scenes.ScenePlugin | null = null;
     socket:any;
+
 	constructor() {
 	  super("Lobby");
 	}
+
 	init(data: any)
     {
         console.log(data);
@@ -40,7 +42,7 @@ export class Lobby extends Scene {
         element.addListener('click');
         var scene = this.scene;
 		element.on('click', function (event : any) {
-			if (event.target.name ==='hostButton' && event.target.defaultValue === 'HOST')
+			if (event.target.name ==='hostButton' && event.target.defaultValue === 'SEARCH')
 			{
 
 				self.socket.emit('searchRoom');
@@ -48,7 +50,7 @@ export class Lobby extends Scene {
             }
 			if (event.target.name ==='hostButton' && event.target.defaultValue === 'CANCEL')
 			{
-				self.socket.emit('leaveRoom');
+				self.socket.emit('cancel');
                 // scene.start('Waiting');
             }
 		});
@@ -69,7 +71,7 @@ export class Lobby extends Scene {
             if(data.bool)
                 a.value = 'CANCEL';
             else
-                a.value = 'HOST';
+                a.value = 'SEARCH';
         });
         this.socket.on('updateRoom', function (data : any) {
             // joinElement.getChildByName('rooms') = '';
@@ -112,16 +114,10 @@ export class Lobby extends Scene {
         });
         this.socket.on('startGame', function (data:any) {
             data.socket = self.socket;
-            if (data.bool)
-            {
-                console.log('wtf')
-                self.sceneGame = scene.start('Game', data);
-            }
-            else
-            {
-                console.log('restart')
-                self.sceneGame.restart(data);
-            }
+            // if (self.sceneGame !== null)
+            //     self.sceneGame.remove()
+            console.log(data)
+            self.sceneGame = scene.launch('Game', data);
         });
     }
 }
