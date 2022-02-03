@@ -9,7 +9,7 @@ export class Room{
 	password: string;
 	userList: Array<string>;
 	adminList: Array<string>;
-	_room: BroadcastOperator<DefaultEventsMap>; // permet de faire room.emit("x", x)
+	_room: BroadcastOperator<DefaultEventsMap>;
 
 	constructor(name:string, id:number, creator:string , password:string, room:BroadcastOperator<DefaultEventsMap>){
         	this.name = name;

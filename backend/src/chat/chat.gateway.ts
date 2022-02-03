@@ -1,11 +1,8 @@
 import { SubscribeMessage, WebSocketGateway, OnGatewayInit, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { Logger } from '@nestjs/common';
-import { Room } from './class/Room.class';
+import { Logger } from '@nestjs/common'; 
 import { clientClass } from "./class/client.class";
-import { MessagesService } from 'src/message/messages.service';
 import { ChatRoomsService } from 'src/ChatRooms/ChatRooms.service';
-// import { Message } from '../../../frontend/src/components/MainPage/Chat/Chat';
 
 @WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit {
@@ -39,30 +36,14 @@ export class ChatGateway implements OnGatewayInit {
 
   @SubscribeMessage('getRoomList')
   roomList(client:Socket, data:any){
-    console.log(this.rooms);
     client.emit('updateRooms',{rooms: this.rooms});
   }
 
-  // @SubscribeMessage('getMessage')
-  // getMessage(client:Socket, data:any){
-  //   this.rooms
-  // }
-
-  // @SubscribeMessage('changeRoom')
-  // async askAuthorization(client:Socket, data:any){
-  //   if(this.chatService.isAuthorized(this.clients.get(client.id)._token, data.name))
-  //     client.emit('LoadRoom', await this.chatService.getMessagesByRoom('general'))
-  //   else
-  //     client.emit('needPassword')
-  // }
-
-
   @SubscribeMessage('password')
   async password(client:Socket, data:any){
-    console.log(data)
     var tocheck = await this.chatService.findRoomByName(data.room)
-    console.log(tocheck.password)
-    if (data.pass === tocheck.password)
+    var decrypted = await this.chatService.decrypt(tocheck.password)
+    if (data.pass === decrypted)
     {
       var msg = await this.chatService.getMessagesByRoom(data.room);
       client.emit('LoadRoomPass', {room: data.room, msg:msg })
@@ -70,31 +51,13 @@ export class ChatGateway implements OnGatewayInit {
       client.join(data.room)
       this.clients.get(client.id)._room = data.room 
     }
-
-
-    //loadroom
   }
-
-  // @SubscribeMessage('newConnection')
-  // addGeneral(client:Socket, data:any){
-  //   this.rooms[0].userList.push(data.username);
-  //   console.log(this.rooms);
-  // }
 
   @SubscribeMessage('newRoom')
   async addRoom(client:Socket, data:any){
-    // console.log( data)
     var passEncrypt = await this.chatService.encrypt(data.password)
     var update = await this.chatService.create(data.name, data.creator, passEncrypt);
-    console.log(update);
     this.server.emit('updateRooms',{rooms: update})
-    // var id = this.rooms.length + 1;
-    // var rr = new Room(data.name, id, data.username, data.pass, this.server.to(data.name))
-    // if(this.findRoomByName(rr.name) == -1){
-    //   this.rooms.push(rr);
-    //   this.server.emit('sendRoomList',{rooms: this.rooms});
-    // }
-    // console.log(this.rooms);
   }
 
   @SubscribeMessage('joinRoom')
@@ -111,30 +74,9 @@ export class ChatGateway implements OnGatewayInit {
     else
       client.emit('needPassword', {room:data.room})
   }
-
-
-  // IsRoom(username, id){
-  //   for (var i = 0; i < this.rooms[id].userList.length; i++){
-  //     if (this.rooms[id].userList[i] == username)
-  //       return 1;
-  //   }
-  //   return 0;
-  // }
-
-  // findRoomByName(name){
-  //   for (var i = 0; i < this.rooms.length; i++){
-  //     if (this.rooms[i].name == name)
-  //       return i;
-  //   }
-  //   return -1;
-  // }
-
   @SubscribeMessage('sendMessage')
   async handleMessage(client: Socket, Message: { sender: string, dest: string, message: string, date: string}) {
-    this.chatService.addMessage(Message);//save to db
+    this.chatService.addMessage(Message);
     this.server.to(Message.dest).emit('ReceiveMessage', Message)
-    // if (this.findRoomByName(Message.dest) !== -1)
-    //   this.rooms[this.findRoomByName(Message.dest)]//.Send(Message.sender, Message.dest, Message.message, Message.date)
-      //this.server.to(message.room).emit('chatToClient', message);
   }
 }

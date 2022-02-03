@@ -7,6 +7,7 @@
 - ban 														//	/ban "pseudo"
 - unban 													//	/unban "pseudo"
 - mute 														//	/mute "pseudo" time(minutes)
+- private room 
 
 
 

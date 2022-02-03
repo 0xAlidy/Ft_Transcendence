@@ -7,27 +7,22 @@ import { createCipheriv, randomBytes, scrypt } from 'crypto';
 import { promisify } from 'util';
 import { createDecipheriv } from 'crypto';
 
- // you can also get it via getConnection().getRepository() or getManager().getRepository()
  @Injectable()
  export class ChatRoomsService
  {
 	password = "";
 	iv:Buffer= null;
-	key: Buffer;
-
-
-	async init () {
-		this.password = 'Password used to generate key';
-		this.iv = randomBytes(16);
-		this.key = (await promisify(scrypt)(this.password, 'salt', 32)) as Buffer;
-	}	
-
+	key:string;
 
 	private logger: Logger = new Logger('UsersService');
 	constructor(@InjectRepository(ChatRooms) private ChatRoomsRepository: Repository<ChatRooms>, private userService:UsersService){
+		this.iv = randomBytes(16);
+		this.key = "ceci est une phrase de 32 charac"
 	}
 
-	async create(name :string, owner:string, password:Buffer) {
+	init 
+
+	async create(name :string, owner:string, password:string) {
 		if( await this.findRoomByName(name) === undefined){
 			var match = new ChatRooms(name, owner, password)
 			await this.ChatRoomsRepository.save(match);
@@ -66,7 +61,6 @@ import { createDecipheriv } from 'crypto';
 
 	async getAllRoomName(){
 		var all = await this.ChatRoomsRepository.find()
-		console.log(all);
 		var ret:string[]= [];
 		all.forEach(element => {
 			ret.push(element.name)
@@ -76,8 +70,6 @@ import { createDecipheriv } from 'crypto';
 	async isAuthorized(token:string, name:string){
 		var room = await this.findRoomByName(name)
 		var user = await this.userService.findOne(token)
-		// if(room.owner == user.name)
-		// 	return true
 		if(room.IsPassword === false)
 			return true
 		room.users.forEach(element => {
@@ -89,23 +81,18 @@ import { createDecipheriv } from 'crypto';
 
 
 	
-	async encrypt(toEncrypt:Buffer) {
-		const cipher = createCipheriv('aes-256-ctr', this.key, this.iv);
-		const encryptedText = Buffer.concat([
-  		cipher.update(toEncrypt),
-  		cipher.final(),
-		]);
+	async encrypt(toEncrypt:string) {
+		this.password = 'password';
+		const cipher = createCipheriv('aes256', this.key, this.iv);
+		const encryptedText = cipher.update(toEncrypt, 'utf8', 'hex') + cipher.final('hex');
 		console.log("encrypted :                     " + encryptedText)
 		return encryptedText;
 	}
 
-	async decrypt(toDecrypt:Buffer){
-		const decipher = createDecipheriv('aes-256-ctr', this.key, this.iv);
-		const decryptedText = Buffer.concat([
-  		decipher.update(toDecrypt),
-  		decipher.final(),
-		]);
-		console.log("decrypted :                     " + decryptedText)
+	async decrypt(toDecrypt:string){
+		const decipher = createDecipheriv('aes256', this.key, this.iv);
+		const decryptedText = decipher.update(toDecrypt, 'hex', 'utf8') + decipher.final('utf8');
+		console.log("decrypted :                     " + decryptedText);
 		return decryptedText;
 	}
 }
