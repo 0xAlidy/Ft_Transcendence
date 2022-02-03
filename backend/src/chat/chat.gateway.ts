@@ -1,8 +1,9 @@
-import { SubscribeMessage, WebSocketGateway, OnGatewayInit, WebSocketServer } from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway, OnGatewayInit, WebSocketServer} from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { Logger } from '@nestjs/common'; 
 import { clientClass } from "./class/client.class";
 import { ChatRoomsService } from 'src/ChatRooms/ChatRooms.service';
+import { Client } from 'socket.io/dist/client';
 
 @WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit {
@@ -76,7 +77,27 @@ export class ChatGateway implements OnGatewayInit {
   }
   @SubscribeMessage('sendMessage')
   async handleMessage(client: Socket, Message: { sender: string, dest: string, message: string, date: string}) {
-    this.chatService.addMessage(Message);
-    this.server.to(Message.dest).emit('ReceiveMessage', Message)
+    if (Message.message[0] == '/'){
+        this.chatService.systemMsg(Message);
+        Message.sender = "system";
+        // this.chatService.addMessage(Message);
+        console.log(Message)
+        client.emit('ReceiveMessage', Message)
+        //envoyer a moi uniquement 
+      }
+      else{
+
+        this.chatService.addMessage(Message);
+        this.server.to(Message.dest).emit('ReceiveMessage', Message)
+      }
   }
+  
+  // @SubscribeMessage('sendMessageSys')
+  // async handleMessageSys(client: Socket, Message: { sender: string, message: string}) {
+  //   this.chatService.systemMsg(Message);
+  //   this.server.to(Message.sender).emit('ReceiveMessageSys', Message)
+  // }
 }
+  // @SubscribeMessage('sendMessageSys')
+  // async handleMessageSys(client: Socket, MsgSys: {})
+

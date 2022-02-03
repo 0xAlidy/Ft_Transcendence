@@ -135,8 +135,6 @@ border-color: #2c2c2c !important;
 
 
 .myMsg {
-  /* display: flex; */
-  /* flex-direction: column; */
   word-wrap: break-all;
   background-color : #edca00;
   padding : 15px;
@@ -146,9 +144,6 @@ border-color: #2c2c2c !important;
   border-radius : 23px 23px 0px 23px;
   clear: both;
   float : right;
-  /* margin-bottom : 15px; */
-  /* clear: both; */
-  /* line-height: 5px; */
 }
 
 .myMsg > p{
@@ -175,15 +170,15 @@ border-color: #2c2c2c !important;
   text-align: left;
 }
 
-.systemMsg {
+.systemMsg .bubble{
   word-wrap: break-all;
-  width:fit-content;
   color: aliceblue;
   padding : 15px;
-  align-self: center;
   border-radius : 23px 23px 23px 23px;
   margin-bottom : 15px;
-  clear: both;
+  margin-left: 25px;
+  margin-right: 25px;
+  background-color: #999;
 }
 
 

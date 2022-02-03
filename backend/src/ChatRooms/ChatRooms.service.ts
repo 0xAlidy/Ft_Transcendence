@@ -3,8 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UsersService } from "src/user/users.service";
 import {Repository} from "typeorm";
 import { ChatRooms } from './ChatRooms.entity';
-import { createCipheriv, randomBytes, scrypt } from 'crypto';
-import { promisify } from 'util';
+import { createCipheriv, randomBytes} from 'crypto';
 import { createDecipheriv } from 'crypto';
 
  @Injectable()
@@ -19,8 +18,6 @@ import { createDecipheriv } from 'crypto';
 		this.iv = randomBytes(16);
 		this.key = "ceci est une phrase de 32 charac"
 	}
-
-	init 
 
 	async create(name :string, owner:string, password:string) {
 		if( await this.findRoomByName(name) === undefined){
@@ -85,14 +82,39 @@ import { createDecipheriv } from 'crypto';
 		this.password = 'password';
 		const cipher = createCipheriv('aes256', this.key, this.iv);
 		const encryptedText = cipher.update(toEncrypt, 'utf8', 'hex') + cipher.final('hex');
-		console.log("encrypted :                     " + encryptedText)
+		// console.log("encrypted :                     " + encryptedText)
 		return encryptedText;
 	}
 
 	async decrypt(toDecrypt:string){
 		const decipher = createDecipheriv('aes256', this.key, this.iv);
 		const decryptedText = decipher.update(toDecrypt, 'hex', 'utf8') + decipher.final('utf8');
-		console.log("decrypted :                     " + decryptedText);
+		// console.log("decrypted :                     " + decryptedText);
 		return decryptedText;
+	}
+
+	// async changePass(msg:string, dest:string){
+	// 	var newPass = this.encrypt(msg.slice(6))
+	// 	var room = await this.findRoomByName(dest)
+	// 	room.setPass(await newPass)
+	// 	console.log(room)
+	// }
+
+	async systemMsg(data:any){
+		var help = "/help will help you to know the command you can use from the library for multiple line and other shit like this for long text so cute "
+		var ban = "/ban will ban someone"
+		var unknow = "/ unknow command / try again..."
+		// var pass = "/ your password has been change"
+		if (data.message === "/help")
+			data.message = help
+		else if (data.message === "/ban")
+			data.message = ban
+		// else if (data.message.beginWidth("/pass")){
+		// 	// this.changePass(data.message, data.dest)
+		// 	data.message = pass;
+		// }
+		else 
+			data.message = unknow
+
 	}
 }

@@ -39,4 +39,8 @@ export class ChatRooms {
       this.IsPassword = true;
     }
   }
+
+  setPass = (newPass:string) =>{
+    this.password = newPass;
+  }
 }

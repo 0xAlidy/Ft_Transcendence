@@ -19,11 +19,9 @@
 
 import * as React from "react";
 import "../../../styles/MainPage/Chat/Chat.css"
-// import {Room} from './class';
 import Send from '../../../assets/send.png'
 import { Socket } from "socket.io-client";
 import ChatMenu from "./chatMenu";
-// import Picker from 'emoji-picker-react';
 import {user} from '../MainPage'
 import MessageItem from "./message";
 
@@ -97,21 +95,19 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 		};
 		this.props.socket.emit('getRoomList')
 		this.props.socket.on('LoadRoom',  (data:any) => {
-			console.log(data.msg)
 			this.setState({messages: data.msg, activeRoom: data.room})
         });
 		this.props.socket.on('LoadRoomPass',  (data:any) => {
-			console.log(data.msg)
 			this.togglePopupPass()
 			this.setState({messages: data.msg, activeRoom: data.room})
         });
 		this.props.socket.on('ReceiveMessage',  (data:any) => {
+			console.log(data);
 			this.setState({messages: this.state.messages.concat([data])})
 			if (this.mRef)
 				this.mRef.scrollTop = this.mRef.scrollHeight;
         });
 		this.props.socket.on('updateRooms', (data:any) => {
-			console.log(data.array)
 			var arr:opt[] = [];
 			data.rooms.forEach((element:string) => {
 				arr.push({value:element,label:element})
@@ -119,7 +115,6 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			this.setState({rooms:arr, loaded:true});
 		});
 		this.props.socket.on('needPassword', (data:any) => {
-			console.log("needPass for " + data.room)
 			this.needPass = data.room;
 			this.setState({messages: []})
 			this.setState({RowsStyle:"40px auto 40px"})
@@ -140,13 +135,13 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 	}
 
 	sendMessage = () => {
-		var date = new Date().toTimeString().slice(0,5)
-
-		if (this.inputRef)
-			if (this.state.activeRoom && this.inputRef.value !== "") {
-				var toSend = {sender:this.props.User.name, dest:this.state.activeRoom, message:this.inputRef.value, date:date};
-				this.props.socket.emit('sendMessage', toSend);
-				this.inputRef.value = "";
+			var date = new Date().toTimeString().slice(0,5)
+			if (this.inputRef)
+				if (this.state.activeRoom && this.inputRef.value !== "") {
+					var toSend = {sender:this.props.User.name, dest:this.state.activeRoom, message:this.inputRef.value, date:date};
+					console.log(toSend);
+					this.props.socket.emit('sendMessage', toSend);
+					this.inputRef.value = "";
 			}
 	}
 
@@ -156,14 +151,11 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
         if (pass != "")
 		{
 			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.name,password:pass})
-			console.log("pass")
 		}
 		else{
 			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.name,password:null})
-			console.log("no pass")
 		} 
         this.togglePopupRoom();
-        console.log("name " + name + "                " + pass)
 	}
 
 	updateRoom = (newOne:string) => {
@@ -195,7 +187,6 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 	handlePopUpRoom = () => {
 		this.setState({messages: []})
         this.setState({openNewRoom:true})
-		console.log("handle popup room")
     };
 
 	togglePopupRoom = () => {
@@ -205,7 +196,6 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 
 	sendPass = () => {
 		var pass = document.getElementById("passRequest") as HTMLInputElement;
-		console.log(this.state.activeRoom + "     " + pass.value)
 		this.props.socket.emit('password', {pass:pass.value, room:this.needPass})
 	}
 
@@ -253,8 +243,13 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			
 					{
 						this.state.messages.map(( (item, idx) => {
+							console.log(item.message[0])
 							if (item.sender === this.props.User.name)
 								var classForItem = "msgItem"
+							else if (item.sender == "system"){
+								console.log("hello system msg ")
+								var classForItem = "systemMsg"
+							}
 							else
 								var classForItem = "msgOtherItem"
 							return (
@@ -267,44 +262,3 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 		)
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-// ReceiveCont = (newCont:Message) =>{
-	// 	// const myProfile = <ProfileShortCut pseudo={this.props.User.name} token={this.props.User.token} canOpen={false}/>;
-	// 	if(this.state.activeRoom === newCont.dest){
-
-	// 		var chatBox = document.getElementById("chatmessage")
-	// 		var newDiv = document.createElement("div");
-	// 		var time = document.createElement("p");
-	// 		time.textContent = newCont.date;
-	// 		// time.appendChild(document.createTextNode(newCont.date))
-	// 		if (this.props.User.name === newCont.sender){
-	// 			newDiv.className = 'myMsg';
-	// 			// newDiv.appendComponent(myProfile)
-	// 			// newDiv.appendChild(<ProfileShortCut pseudo={this.props.User.name} token={this.props.User.token} canOpen={false}/>)
-	// 			newDiv.appendChild(document.createTextNode(newCont.message));
-	// 			newDiv.append(time);
-	// 		}
-	// 		else if (newCont.sender === "system"){
-	// 			newDiv.className = 'systemMsg';
-	// 			newDiv.appendChild(document.createTextNode(newCont.message));
-	// 		}
-	// 		else{
-	// 			newDiv.className = 'otherMsg';
-	// 			// newDiv.append(<ProfileShortCut pseudo={newCont.sender} token={this.props.User.token} canOpen={false}/>)
-	// 			newDiv.appendChild(document.createTextNode(newCont.sender + ": " + newCont.message));
-	// 			newDiv.append(time);
-	// 		}
-	// 		if (chatBox)
-	// 			chatBox.appendChild(newDiv)
-	// 	}
-	// };
