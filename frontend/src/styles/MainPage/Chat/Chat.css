@@ -207,7 +207,7 @@ border-color: #2c2c2c !important;
 .msgItem .bubble{
   text-align: right;
   clear: left;
-  word-wrap: break-all;
+  word-break: break-all;
   background-color : #edca00;
   padding : 15px;
   padding-top: 8px;

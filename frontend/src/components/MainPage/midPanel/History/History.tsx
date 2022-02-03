@@ -34,7 +34,7 @@ export default class History extends React.Component<{User:user},{matchs:string[
 
 	render(){
 		return (
-        <div className="midPanel" id="history">
+        <div >
 			{
 				this.state.matchs.map((function(item, idx) {
 					return <ItemMatch match={item} token={item.split('/').at(5)} name={item.split('/').at(4)} key={idx}/>;

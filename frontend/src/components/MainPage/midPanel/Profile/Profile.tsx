@@ -34,10 +34,13 @@ export default class Profile extends React.Component<{User:user, name:string, re
 	render(){
 		return (
         <div className="midPanel" id="profile">
+			<h1>Profile</h1>
 			<ProfileImg User={this.props.User} refreshUser={this.handleRefresh}/>
 			<EditBox value={this.props.User.name} onChange={() => {}} />
+			<h1>Statistics</h1>
 			<Gauge percent={this.props.User.xp.toString()} lvl={this.props.User.lvl.toString()}/>
 			<WinRate win={this.props.User.numberOfWin} loose={this.props.User.numberOfLoose}/>
+			<h1>Security</h1>
 			<TwoAuth token={this.props.User.token}/>
 			{/* <img src={LEAVE} alt="" width="50px"/>
 			<img src={DELETE} alt="" width="50px" /> */}
