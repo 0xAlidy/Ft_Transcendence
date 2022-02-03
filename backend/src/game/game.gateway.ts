@@ -163,7 +163,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     leaveRoom(client: Socket): void {
         var user = this.clients.get(client.id)
         if(user._room !== 'lobby')
-            
+
         this.rooms.forEach(element => {
             if(element._name == this.clients.get(client.id)._room)
             {
