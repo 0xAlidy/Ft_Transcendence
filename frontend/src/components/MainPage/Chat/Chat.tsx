@@ -97,6 +97,13 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 		this.props.socket.on('LoadRoom',  (data:any) => {
 			this.setState({messages: data.msg, activeRoom: data.room})
         });
+		this.props.socket.on('banned', () => {
+			var date = new Date().toTimeString().slice(0,5)
+			var banMsg:Msg = { id: 0, sender:"system", dest:this.state.activeRoom, message:"you have been kicked", date:date}
+			this.setState({messages: this.state.messages.concat([banMsg])})
+			if (this.mRef)
+				this.mRef.scrollTop = this.mRef.scrollHeight;
+		})
 		this.props.socket.on('LoadRoomPass',  (data:any) => {
 			this.togglePopupPass()
 			this.setState({messages: data.msg, activeRoom: data.room})
@@ -139,7 +146,6 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			if (this.inputRef)
 				if (this.state.activeRoom && this.inputRef.value !== "") {
 					var toSend = {sender:this.props.User.name, dest:this.state.activeRoom, message:this.inputRef.value, date:date};
-					console.log(toSend);
 					this.props.socket.emit('sendMessage', toSend);
 					this.inputRef.value = "";
 			}
@@ -242,12 +248,10 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 					/>}
 			
 					{
-						this.state.messages.map(( (item, idx) => {
-							console.log(item.message[0])
+						this.state.messages.map(( (item) => {
 							if (item.sender === this.props.User.name)
 								var classForItem = "msgItem"
 							else if (item.sender == "system"){
-								console.log("hello system msg ")
 								var classForItem = "systemMsg"
 							}
 							else

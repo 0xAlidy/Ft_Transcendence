@@ -6,11 +6,12 @@ export class clientClass{
 	_token: string;
 	_id: string;
 	_room: string;
-	constructor(socket: Socket, token:string){
+	constructor(socket: Socket, token:string, name:string){
 		this._id = socket.id;
 		this._socket = socket;
 		this._token = token;
 		this._room = '';
+		this._pseudo = name;
 	}
 	setName(name: string){
 		this._pseudo = name;
