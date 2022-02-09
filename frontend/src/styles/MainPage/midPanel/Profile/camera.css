@@ -4,12 +4,15 @@
 	height:150px;
 	border-radius: 15px;
 }
+
 .webcam{
 	border-radius: 12px;
 }
+
 .capture{
 	border-radius: 12px;
 }
+
 .buttonCapture{
 	margin-top: 10px;
 	background-color: #fee154;
@@ -17,6 +20,7 @@
 	border-radius: 12px;
 	height: 24px;
 }
+
 .circle{
 	height:100px;
 	width:100px;

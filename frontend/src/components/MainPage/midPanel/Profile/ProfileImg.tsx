@@ -109,7 +109,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 								<>
 									<div className='ChooseOption'  onClick={this.openwebcam}>Use Webcam</div>
 									<label className='ChooseOption' htmlFor='file'>Upload Image</label>
-									<input type="file" id="file" name="myImage" onChange={this.onImageUpload} />
+									<input type="file" id="file" name="myImage" accept="image/*" onChange={this.onImageUpload} />
 								</>
 							}
 						</>:<>

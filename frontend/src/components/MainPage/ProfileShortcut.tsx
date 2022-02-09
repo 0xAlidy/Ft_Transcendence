@@ -31,7 +31,7 @@ export default class ProfileShortCut extends React.Component<{pseudo:string, tok
 		return (
 			<>
 				{this.state.User &&
-					<div>
+					<div className="profileShortcut">
 						<Popup open={this.state.opened && this.props.canOpen} closeOnEscape={true} closeOnDocumentClick={true} onClose={() =>{this.setState({opened:false})}}>
 							<div className="PopupContainer">
 								<div id='profilSection'>

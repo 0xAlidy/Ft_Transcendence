@@ -1,7 +1,6 @@
 import React from 'react'
 import '../../../../styles/MainPage/midPanel/midPanel.css'
 import '../../../../styles/MainPage/midPanel/History/History.css'
-// import  Logo from '../../../../assets/versus.png'
 import ItemMatch from './itemMatch/itemMatch'
 import axios from "axios";
 import { user } from '../../MainPage';
@@ -16,12 +15,12 @@ export default class History extends React.Component<{User:user},{matchs:string[
 			}
 	};
 
-	loadMatchs =  () => {
-		var self = this;
-		this.state.matchs.map((function(item, idx) {
-			return <ItemMatch match={item} token={self.props.User.token} name={item.split('/').at(4)} key={idx}/>;
-		}))
-	};
+	//loadMatchs =  () => {
+	//	var self = this;
+	//	this.state.matchs.map((function(item, idx) {
+	//		return <ItemMatch match={item} token={self.props.User.token} name={item.split('/').at(4)} key={idx}/>;
+	//	}))
+	//};
 
 	// createMatchElement = (newMatch:Match) => {
 	// 	return (
@@ -34,9 +33,11 @@ export default class History extends React.Component<{User:user},{matchs:string[
 
 	render(){
 		return (
-        <div >
+        <div className="midPanel" id="history">
+			<h1>History</h1>
 			{
 				this.state.matchs.map((function(item, idx) {
+					console.log(item , idx)
 					return <ItemMatch match={item} token={item.split('/').at(5)} name={item.split('/').at(4)} key={idx}/>;
 				}))
 			}
