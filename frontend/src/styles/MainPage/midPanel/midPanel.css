@@ -8,19 +8,49 @@
 	flex-direction: column;
 	text-align: center;
 	align-content: center;
-	box-shadow: 0px 5px 14px 4px #fee054;
-	animation: 30s Color infinite;
+	animation: 3s Color infinite;
 }
 
 @keyframes Color{
-    from, to { box-shadow: 0px 5px 14px 4px hsl(0, 100%, 50%); }
-    10%      { box-shadow: 0px 5px 14px 4px rgb(230, 133, 22); }
-    20%      { box-shadow: 0px 5px 14px 4px hsl( 36, 80%, 45%); }
-    30%      { box-shadow: 0px 5px 14px 4px hsl( 72, 75%, 35%); }
-    40%      { box-shadow: 0px 5px 14px 4px hsl(108, 65%, 35%); }
-    50%      { box-shadow: 0px 5px 14px 4px hsl(144, 75%, 35%); }
-    60%      { box-shadow: 0px 5px 14px 4px hsl(180, 75%, 35%); }
-    70%      { box-shadow: 0px 5px 14px 4px hsl(216, 60%, 45%); }
-    80%      { box-shadow: 0px 5px 14px 4px hsl(252, 65%, 50%); }
-    90%      { box-shadow: 0px 5px 14px 4px hsl(288, 60%, 40%); }
+    0% 		{ box-shadow: 0px 2px 20px 3px  hsl(53, 90%, 51%, 0.050); }
+	2.5% 	{ box-shadow: 0px 2px 20px 3.5px  hsl(53, 90%, 51%, 0.100); }
+	5% 		{ box-shadow: 0px 2px 20px 4px  hsl(53, 90%, 51%, 0.150); }
+    7.5% 	{ box-shadow: 0px 2px 20px 4.5px  hsl(53, 90%, 51%, 0.200); }
+    10%     { box-shadow: 0px 2px 20px 5px  hsl(53, 90%, 51%, 0.250); }
+	12.5%   { box-shadow: 0px 2px 20px 5.5px  hsl(53, 90%, 51%, 0.300); }
+	15%     { box-shadow: 0px 2px 20px 6px  hsl(53, 90%, 51%, 0.350); }
+    17.5%   { box-shadow: 0px 2px 20px 6.5px hsl(53, 90%, 51%, 0.400); }
+	20%     { box-shadow: 0px 2px 20px 7px hsl(53, 90%, 51%, 0.450); }
+	22.5%   { box-shadow: 0px 2px 20px 7.5px hsl(53, 90%, 51%, 0.500); }
+    25%     { box-shadow: 0px 2px 20px 8px hsl(53, 90%, 51%, 0.550); }
+	27.5% 	{ box-shadow: 0px 2px 20px 8.5px  hsl(53, 90%, 51%, 0.600); }
+	30% 	{ box-shadow: 0px 2px 20px 9px  hsl(53, 90%, 51%, 0.650); }
+	32.5% 	{ box-shadow: 0px 2px 20px 9.5px  hsl(53, 90%, 51%, 0.700); }
+    35% 	{ box-shadow: 0px 2px 20px 10px  hsl(53, 90%, 51%, 0.750); }
+    37.5%   { box-shadow: 0px 2px 20px 10px  hsl(53, 90%, 51%, 0.800); }
+	40%     { box-shadow: 0px 2px 20px 10px  hsl(53, 90%, 51%, 0.850); }
+	42.5%   { box-shadow: 0px 2px 20px 10px  hsl(53, 90%, 51%, 0.900); }
+    45%     { box-shadow: 0px 2px 20px 10px hsl(53, 90%, 51%, 0.950); }
+	47.5%   { box-shadow: 0px 2px 20px 10px hsl(53, 90%, 51%, ); }
+	50%     { box-shadow: 0px 2px 20px 10px hsl(53, 90%, 51%, ); }
+	52.5%   { box-shadow: 0px 2px 20px 10px hsl(53, 90%, 51%, ); }
+	55%     { box-shadow: 0px 2px 20px 10px hsl(53, 90%, 51%, 0.950); }
+	57.5%   { box-shadow: 0px 2px 20px 10px  hsl(53, 90%, 51%, 0.900); }
+	60%     { box-shadow: 0px 2px 20px 10px  hsl(53, 90%, 51%, 0.850); }
+	62.5%   { box-shadow: 0px 2px 20px 10px  hsl(53, 90%, 51%, 0.800); }
+	65% 	{ box-shadow: 0px 2px 20px 10px  hsl(53, 90%, 51%, 0.750); }
+	67.5% 	{ box-shadow: 0px 2px 20px 9.5px  hsl(53, 90%, 51%, 0.700); }
+	70% 	{ box-shadow: 0px 2px 20px 9px  hsl(53, 90%, 51%, 0.650); }
+	72.5% 	{ box-shadow: 0px 2px 20px 8.5px  hsl(53, 90%, 51%, 0.600); }
+	75%     { box-shadow: 0px 2px 20px 8px hsl(53, 90%, 51%, 0.550); }
+	77.5%   { box-shadow: 0px 2px 20px 7.5px hsl(53, 90%, 51%, 0.500); }
+	80%     { box-shadow: 0px 2px 20px 7px hsl(53, 90%, 51%, 0.450); }
+	82.5%   { box-shadow: 0px 2px 20px 6.5px hsl(53, 90%, 51%, 0.400); }
+	85%     { box-shadow: 0px 2px 20px 6px  hsl(53, 90%, 51%, 0.350); }
+	87.5%   { box-shadow: 0px 2px 20px 5.5px  hsl(53, 90%, 51%, 0.300); }
+	90%     { box-shadow: 0px 2px 20px 5px  hsl(53, 90%, 51%, 0.250); }
+	92.5% 	{ box-shadow: 0px 2px 20px 4.5px  hsl(53, 90%, 51%, 0.200); }
+	95% 	{ box-shadow: 0px 2px 20px 4px  hsl(53, 90%, 51%, 0.150); }
+	97.5% 	{ box-shadow: 0px 2px 20px 3.5px  hsl(53, 90%, 51%, 0.100); }
+	100% 	{ box-shadow: 0px 2px 20px 3px  hsl(53, 90%, 51%, 0.050); }
 }
