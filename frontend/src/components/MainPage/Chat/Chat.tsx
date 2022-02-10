@@ -2,13 +2,18 @@
 
 - block = don t see message									//	/block "pseudo"
 - unblock = see again										//	/unblock "pseudo"
+
 - admin cmd =	- change pass define it or remove it 		//	/pass "new"     /pass rm
 - set admin													//	/admin "pseudo"
 - ban 														//	/ban "pseudo"
 - unban 													//	/unban "pseudo"
 - mute 														//	/mute "pseudo" time(minutes)
-- private room 
 
+- private msg / room invisible 
+
+
+- leave room user list dont remove ?
+- premier message quand tu te log dans la room  
 
 
 - help = montre les cmd possible 							//  /help
@@ -93,13 +98,20 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			loaded:false,
 
 		};
-		this.props.socket.emit('getRoomList')
+		// this.props.socket.emit('getRoomList')
 		this.props.socket.on('LoadRoom',  (data:any) => {
 			this.setState({messages: data.msg, activeRoom: data.room})
         });
 		this.props.socket.on('banned', () => {
 			var date = new Date().toTimeString().slice(0,5)
 			var banMsg:Msg = { id: 0, sender:"system", dest:this.state.activeRoom, message:"you have been kicked", date:date}
+			this.setState({messages: this.state.messages.concat([banMsg])})
+			if (this.mRef)
+				this.mRef.scrollTop = this.mRef.scrollHeight;
+		})
+		this.props.socket.on('promoteAdmin', () => {
+			var date = new Date().toTimeString().slice(0,5)
+			var banMsg:Msg = { id: 0, sender:"system", dest:this.state.activeRoom, message:"you are now admin of this room", date:date}
 			this.setState({messages: this.state.messages.concat([banMsg])})
 			if (this.mRef)
 				this.mRef.scrollTop = this.mRef.scrollHeight;

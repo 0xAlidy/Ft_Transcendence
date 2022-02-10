@@ -4,6 +4,7 @@
   "private": true,
   "keywords": [],
   "dependencies": {
+    "@mobiscroll/react": "https://npm.mobiscroll.com/@mobiscroll/react-trial/-/react-trial-4.10.9.tgz",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@types/react": "^17.0.21",

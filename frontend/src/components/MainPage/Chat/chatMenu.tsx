@@ -1,19 +1,21 @@
 import * as React from "react";
-import Select from 'react-select';
-import { Room } from "./class";
+// import Select from 'react-select';
+import { Select} from '@mobiscroll/react';
+// import { Room } from "./class";
 import MenuPng from '../../../assets/menu.png'
 import { Socket } from "socket.io-client";
 
 
-export default class ChatMenu extends React.Component <{socket:Socket , roomList:any, newRoom: any, actRoom:any, onMenuOpen:any}, {activeRoom:string | null, inputRoomName:string, options:{value:string,label:string}[]}>{
+export default class ChatMenu extends React.Component <{socket:Socket , roomList:any, newRoom: any, actRoom:any, onMenuOpen:any}, {userOpt:{value:string,label:string}[],activeRoom:string | null, inputRoomName:string, options:{value:string,label:string}[]}>{
 	chatMenu:HTMLDivElement|null;
-	general: Room = {name:"general", id:0, password:"", userList:[]};
-	default = {value:"general", label:"general"}
+	//general: Room = {name:"general", id:0, password:"", userList:[]};
+	//default = {value:"general", label:"general"}
 	flipflap:boolean;
     constructor(props:any) {
 		super(props)
         this.state = {
 			options: [],
+			userOpt:[{value:"ge", label:"ge"},{value:"ral", label:"ral"},{value:"toto", label:"toto"},{value:"lololo", label:"lololo"}],
 			activeRoom: null,
             inputRoomName: '',
 			// roomList: this.props.roomList,
@@ -27,24 +29,23 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
 
 	// componentDidUpdate(prevprops:any){
 	// 	if (prevprops.roomList !== this.props.roomList){
-	// 		this.setState({roomList:this.props.roomList})
-	// 		// this.convert();
+	// 		this.convert(this.props.roomList);
 	// 	}
 
 	// }
 
 	// componentDidMount(){
 	// 	console.log(this.props.roomList)
-	// 	this.convert();
+	// 	this.convert(this.props.roomList);
 	// }
 
-	convert = (arr:string[]) => {
-		var temp:any = [];
-		arr.forEach(element => {
-			temp.push({value: element, label:element})
-		});
-		return temp
-	}
+	// convert = (arr:string[]) => {
+	// 	var temp:any = [];
+	// 	arr.forEach(element => {
+	// 		temp.push({value: element, label:element})
+	// 	});
+	// 	return temp
+	// }
 
 	handleChange = (selectedOption:any) => {
         this.setState({activeRoom:selectedOption.value})
@@ -85,11 +86,8 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
 					</div>
 					<div className="hiddenMenu">
 			        	<Select className="SelectRoom"
-						        options={this.props.roomList}
-						        id="selectRoom"
+						        data={this.props.roomList}
 						        onChange={this.handleChange}
-						        placeholder="join a room"
-								defaultValue={{value:this.props.actRoom, label:this.props.actRoom}}
 								/>
 						<button className="buttonAdd" onClick={this.handleButtonAdd} >+</button>
 					</div>
