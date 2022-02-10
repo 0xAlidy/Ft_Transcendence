@@ -1,15 +1,24 @@
 FT_Transcendence
 
-Front :
+Avant de lancer l'application :
 
-http://localhost:3000
+- Creer un .env dans le backend avec : 
+    IP={IP_HOST}  # Localhost ou 10.2.2.8 par exemple
+    ID={Application_ID} # oauth
+    SECRET={Application_secret} #oauth
 
-PgAdmin:
+- Verifier l'id dans HomePage.tsx soit la meme que dans le backend
 
-http://localhost:5050
+INFORMATIONS :
+
+- Front : http://localhost:3000
+
+- PgAdmin: http://localhost:5050
 
 PGADMIN_DEFAULT_EMAIL == user42@42lyon.fr
 PGADMIN_DEFAULT_PASSWORD == password
+
+DEVELOPPEMENT:
 
 Favicon generator :
 
@@ -23,12 +32,6 @@ Blue:       #6A7985
 Grey:       #333333
 Light Grey: #7C7C7C
 White:      #F2F2F2
-
-z2 / r1->r12 / 1->8
-
-
-
-backend/.env  ==> IP={IP_HOST}  # Localhost ou 10.2.2.8 par exemple
 
 TO DO :
 - Spectactor mode

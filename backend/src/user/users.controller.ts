@@ -16,7 +16,6 @@ export class UsersController {
     async meToken(@Query('token') token: string)
     {
 		  return await this.UsersService.findOne(token);
-
     }
     
     @Get('/getUser')

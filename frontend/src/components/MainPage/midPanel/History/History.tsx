@@ -29,6 +29,7 @@ export default class History extends React.Component<{User:user},{matchs:string[
 	async componentDidMount() {
 		var data = (await axios.get("http://" + window.location.host.split(":").at(0) + ":667/matchs?name="+ this.props.User.name +"&token="+ this.props.User.token)).data;
 		this.setState({matchs: data});
+		console.log(data);
 	}
 
 	render(){

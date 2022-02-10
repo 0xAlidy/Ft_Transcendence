@@ -45,7 +45,6 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 	photo = async () =>{
 		var headers = {
 			'Content-Type': 'application/json;charset=UTF-8',
-			"Access-Control-Allow-Origin": "*"
 		}
 		if(this.editor){
 			await fetch("HTTP://" + window.location.host.split(":").at(0) + ":667/user/upload", {
@@ -57,7 +56,6 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 			this.setState({url: null, webcamOption: false, displayChoices: false});
 			this.props.refreshUser();
 		}
-
 	}
 
 	onImageUpload = (event:any) => {
@@ -73,7 +71,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 		if(this.state.displayChoices === false)
 			this.setState({displayChoices: true})
 		else
-			this.setState({displayChoices: false, webcamOption: false});
+			this.setState({displayChoices: false, webcamOption: false, url:null});
 	}
 	openwebcam() {
 		if(this.state.webcamOption === false)
@@ -113,7 +111,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 								</>
 							}
 						</>:<>
-							<AvatarEditor ref={this.setEditorRef} image={this.state.url as string} width={100} height={100} borderRadius={100} color={[255, 255, 255, 0.6]} scale={1.1} rotate={0}/>
+							<AvatarEditor ref={this.setEditorRef} image={this.state.url as string} width={100} height={100} borderRadius={100} color={[31,31,31, 0.6]} scale={1.1} rotate={0}/>
 							<button className='ChooseOption' onClick={this.photo}>OK</button>
 						</>
 					}
