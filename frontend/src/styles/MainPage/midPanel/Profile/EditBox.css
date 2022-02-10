@@ -15,7 +15,7 @@ text-align: center;
 .editButton{
   height: 25px;
   margin-left: 4%;
-filter: invert(90%) sepia(44%) saturate(2847%) hue-rotate(317deg) brightness(113%) contrast(99%);
+  filter: invert(90%) sepia(44%) saturate(2847%) hue-rotate(317deg) brightness(113%) contrast(99%);
 }
 .ProfileInput{
   background-color: #1f1f1f;

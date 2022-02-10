@@ -7,11 +7,14 @@
 	font-size: 50px;
 	margin-bottom: 50px;
 	text-transform: uppercase;
+	box-shadow:0px 10px 13px 4px hsl(0deg 0% 7%);
 }
 
 #history .profileShortcut img{
 	width: 85px;
 	border: 2px #fee154 groove;
+	background-color: white;
+	box-shadow: 0px 10px 13px 4px hsl(0deg 0% 7%);
 }
 
 .item-match-section{
@@ -28,6 +31,7 @@
 	background-color: #1f1f1f;
 	border-radius: 20px;
 	padding: 12px 20px;
+	box-shadow: 0px 10px 13px 4px hsl(0deg 0% 7%);
 }
 
 .itemMatch{
@@ -41,7 +45,7 @@
 	align-items: center;
 	font-weight: bold;
 	font-size: 20px;
-	box-shadow: inset 0px 0px 11px 0px rgb(3, 3, 3);
+	box-shadow: inset 0px 0px 11px 0px rgb(3, 3, 3), 0px 10px 13px 4px hsl(0deg 0% 7%);
 	border-top:2px #fee154 groove;
 	border-bottom:2px #fee154 groove;
 }
@@ -52,7 +56,7 @@
 }
 
 .itemMatch-lose{
-	background-color: #7C7C7C;
+	background-color: #3c3c3c;
 }
 
 .score {
@@ -60,9 +64,13 @@
 }
 
 .score-win{
-	color: green;
+	color: #007000;
 }
 
 .score-lose{
 	color: #cc0000;
+}
+
+.name {
+	text-transform: uppercase;
 }

@@ -4,24 +4,29 @@
 	width: 100%;
 	height: 100%;
 	flex-wrap: wrap;
+	align-content: flex-start;
+	box-shadow: 0px 0px 11px 0px hsl(0deg 0% 7%);
+	border-radius: 30px;
 }
 
 #profile h1 {
 	box-shadow: #fee154;
 	color: #fee154;
-	border:solid 2px;
+	border: groove 2px #fee154;
 	background-color: #1f1f1f;
 	border-radius: 20px;
 	padding: 10px 25%;
 	text-transform: uppercase;
+	box-shadow: 0px 10px 13px 4px hsl(0deg 0% 7%);
 }
 
 #profile #player {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 40%;
-	height: 30%;
+	justify-content: space-between;
+	width: 50%;
+	height: 42%;
 }
 
 #profile #statistics {
@@ -29,7 +34,7 @@
 	flex-direction: column;
 	align-items: center;
 	width: 40%;
-	height: 30%;
+	height: 42%;
 }
 
 #profile #security {
@@ -46,9 +51,11 @@
 
 
 .profileImg{
-	width: 100px;
-	margin-top: 10px;
-	height:100px;
+	width: 140px;
+	height:140px;
 	border-radius: 50%;
 	align-self: center;
+	border: groove 2px #fee154;
+	background-color: white;
+	box-shadow: 0px 10px 13px 4px hsl(0deg 0% 7%);
 }

@@ -1,29 +1,51 @@
 .cameraWidget{
-	background-color: #2c2c2c;
-	width:170px;
-	height:150px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	background-color: #1f1f1f;
 	border-radius: 15px;
+	padding: 10px;
+	width: 250px;
+	height: 200px;
+	box-shadow: 0px 7px 10px 3px hsl(0deg 0% 7%);
+}
+
+.cameraWidget img {
+	border-radius: 10px;
 }
 
 .webcam{
-	border-radius: 12px;
+	border-radius: 10px;
 }
 
 .capture{
-	border-radius: 12px;
+	border-radius: 10px;
 }
 
 .buttonCapture{
 	margin-top: 10px;
 	background-color: #fee154;
-	border: 0px none;
-	border-radius: 12px;
-	height: 24px;
+	border:none;
+	border-radius: 8px;
+	cursor: pointer;
+	width: 20%;
+	padding-right: 4px;
+	padding-bottom: 3px;
+	box-shadow: 0px 4px 6px 1px hsl(0deg 0% 7%);
 }
 
-.circle{
-	height:100px;
-	width:100px;
-	border-radius: 50%;
-	overflow: hidden;
+.boxButton {
+	width: 85%;
+ 	display: flex;
+ 	justify-content: space-between;
+	
+}
+
+.buttonWebcam{
+	background-color: #fee154;
+	border:none;
+	border-radius: 8px;
+	cursor: pointer;
+	padding: 3px 5px;
 }

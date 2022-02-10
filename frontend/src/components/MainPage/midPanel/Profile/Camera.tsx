@@ -5,8 +5,8 @@ import Webcam from "react-webcam";
 import '../../../../styles/MainPage/midPanel/Profile/camera.css'
 
 const videoConstraints = {
-width: 150,
-height:100,
+width: 200,
+height:150,
 facingMode: "environment"
 };
 
@@ -50,23 +50,19 @@ export default class Camera extends React.Component<{validate:any},{url:string |
 		return (
 			<div className="cameraWidget">
 				{ 	this.state.url === null ?
-					<>
-						<div style={{height:'10px'}}/>
-						<Webcam className="webcam" ref={this.setRef} audio={false} screenshotFormat="image/jpeg" videoConstraints={videoConstraints} />
-					</>
+					
+					<Webcam className="webcam" ref={this.setRef} audio={false} screenshotFormat="image/jpeg" videoConstraints={videoConstraints} />
 					:
-					<>
-						<div style={{height:'10px'}}/>
-						<img src={this.state.url}/>
-					</>
+					<img src={this.state.url}/>
+				
 				}
 				{	this.state.url === null ?
 					<button className='buttonCapture' onClick={this.capturePhoto}>[o]</button>
 					:
-					<>
-						<button className='buttonCapture' onClick={() => this.setState({url:null})}>Retry</button>
-						<button className='buttonCapture' onClick={good}>validate</button>
-					</>
+					<div className="boxButton">
+						<button className='buttonWebcam' onClick={() => this.setState({url:null})}>Retry</button>
+						<button className='buttonWebcam' onClick={good}>Validate</button>
+					</div>
 				}
 			</div>
 		);
