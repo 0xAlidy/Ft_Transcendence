@@ -55,10 +55,14 @@
 	background-color: #7C7C7C;
 }
 
+.score {
+	font-size: 30px;
+}
+
 .score-win{
 	color: green;
 }
 
 .score-lose{
-	color: red;
+	color: #cc0000;
 }
