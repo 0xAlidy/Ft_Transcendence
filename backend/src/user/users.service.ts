@@ -1,7 +1,9 @@
 import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { stringify } from "querystring";
 import {getRepository, Repository} from "typeorm";
-import {User} from "./user.entity";
+import { User, privRoom } from './user.entity';
+// import { user } from '../../../frontend/src/components/MainPage/MainPage';
 var qrcode = require('qrcode');
 var speakeasy = require('speakeasy');
 

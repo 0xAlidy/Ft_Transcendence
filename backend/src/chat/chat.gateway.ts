@@ -3,12 +3,12 @@ import { Socket, Server } from 'socket.io';
 import { Logger } from '@nestjs/common'; 
 import { clientClass } from "./class/client.class";
 import { ChatRoomsService } from 'src/ChatRooms/ChatRooms.service';
-import { Client } from 'socket.io/dist/client';
+import { PrivRoomService } from 'src/PrivRoom/PrivRoom.service';
 
 @WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit {
 
-  constructor(private readonly chatService: ChatRoomsService){
+  constructor(private readonly chatRoomService: ChatRoomsService, private readonly chatPrivService:PrivRoomService ){
   }
   clients = new Map<string, clientClass>();
   rooms: string[];
@@ -18,8 +18,8 @@ export class ChatGateway implements OnGatewayInit {
 
   async afterInit(server: any) {
     this.logger.log('Initialized!');
-    this.rooms = await this.chatService.getAllRoomName()
-    this.chatService.create('general', 'system', null);
+    this.rooms = await this.chatRoomService.getAllRoomName()
+    this.chatRoomService.create('general', 'system', '');
   }
 
 
@@ -27,8 +27,8 @@ export class ChatGateway implements OnGatewayInit {
     this.logger.log("New Conection ! token:" + client.handshake.query.token);
     client.join("general");
     this.clients.set(client.id,new clientClass(client, client.handshake.query.token as string, client.handshake.query.username as string));
+    client.emit('LoadRoom', {room: 'general', msg:await this.chatRoomService.getMessagesByRoom('general')})
     client.emit('updateRooms',{rooms: this.rooms});
-    client.emit('LoadRoom', {room: 'general', msg:await this.chatService.getMessagesByRoom('general')})
   }
 
   handleDisconnect(client: Socket) {
@@ -42,11 +42,11 @@ export class ChatGateway implements OnGatewayInit {
 
   @SubscribeMessage('password')
   async password(client:Socket, data:any){
-    var tocheck = await this.chatService.findRoomByName(data.room)
-    var decrypted = await this.chatService.decrypt(tocheck.password)
+    var tocheck = await this.chatRoomService.findRoomByName(data.room)
+    var decrypted = await this.chatRoomService.decrypt(tocheck.password)
     if (data.pass === decrypted)
     {
-      var msg = await this.chatService.getMessagesByRoom(data.room);
+      var msg = await this.chatRoomService.getMessagesByRoom(data.room);
       client.emit('LoadRoomPass', {room: data.room, msg:msg })
       client.leave(this.clients.get(client.id)._room)
       client.join(data.room)
@@ -57,25 +57,25 @@ export class ChatGateway implements OnGatewayInit {
   @SubscribeMessage('newRoom')
   async addRoom(client:Socket, data:any){
     if (data.password){
-      var passEncrypt = await this.chatService.encrypt(data.password)
-      var update = await this.chatService.create(data.name, data.creator, passEncrypt);
+      var passEncrypt = await this.chatRoomService.encrypt(data.password)
+      var update = await this.chatRoomService.create(data.name, data.creator, passEncrypt);
     }
     else
-      var update = await this.chatService.create(data.name, data.creator, '');
+      var update = await this.chatRoomService.create(data.name, data.creator, '');
     this.server.emit('updateRooms',{rooms: update})
   }
 
   @SubscribeMessage('joinRoom')
   async joinRoom(client:Socket, data:any){
-    var bool = await this.chatService.isAuthorized(this.clients.get(client.id)._token, data.room)
+    var bool = await this.chatRoomService.isAuthorized(this.clients.get(client.id)._token, data.room)
     console.log(bool)
     var user = this.clients.get(client.id)._pseudo
     if(bool){
-      var msg = await this.chatService.getMessagesByRoom(data.room);
+      var msg = await this.chatRoomService.getMessagesByRoom(data.room);
       client.emit('LoadRoom', {room: data.room, msg:msg })
       client.leave(this.clients.get(client.id)._room)
       client.join(data.room)
-      this.chatService.addUser(user, data.room)
+      this.chatRoomService.addUser(user, data.room)
       this.clients.get(client.id)._room = data.room
     }
     else
@@ -83,13 +83,14 @@ export class ChatGateway implements OnGatewayInit {
   }
   @SubscribeMessage('sendMessage')
   async handleMessage(client: Socket, Message: { sender: string, dest: string, message: string, date: string}) {
+    console.log(Message)
     if (Message.message[0] == '/'){
-        this.chatService.systemMsg(Message, this.clients);
+        Message.message = await this.chatRoomService.systemMsg(Message, this.clients);
         Message.sender = "system";
         client.emit('ReceiveMessage', Message)
       }
       else{
-        this.chatService.addMessage(Message);
+        this.chatRoomService.addMessage(Message);
         this.server.to(Message.dest).emit('ReceiveMessage', Message)
       }
   }

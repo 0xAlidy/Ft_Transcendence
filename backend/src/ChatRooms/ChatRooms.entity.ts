@@ -26,12 +26,16 @@ export class ChatRooms {
   @Column("text",{ array:true, default: []})
   users: string[];
 
+  @Column("text", {array: true, default: []})
+  adminList: string[];
+
   @Column('jsonb',{ default: []})
   messages: Msg[];
 
   constructor(name :string, owner:string, password:string|null){
     this.name = name;
     this.owner = owner;
+    this.adminList= [this.owner];
     if( password === '')
       this.IsPassword = false;
     else{

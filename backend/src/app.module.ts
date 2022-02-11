@@ -13,6 +13,7 @@ import { MatchsModule } from './matchs/matchs.module';
 import { Match } from './matchs/match.entity';
 import { MessagesModule } from './message/messages.module';
 import { ChatRooms } from './ChatRooms/ChatRooms.entity';
+import { PrivRoom } from './PrivRoom/PrivRoom.entity'; 
 
 @Module({
   imports: [ChatModule, WSGame, TypeOrmModule.forRoot({
@@ -22,7 +23,7 @@ import { ChatRooms } from './ChatRooms/ChatRooms.entity';
     username: 'user42',
     password: 'password',
     database: 'database',
-    entities: [User,Match, ChatRooms],
+    entities: [User,Match, ChatRooms, PrivRoom],
     synchronize: true,
   }), HttpModule , UsersModule, AuthModule, MatchsModule],
   controllers: [AppController],

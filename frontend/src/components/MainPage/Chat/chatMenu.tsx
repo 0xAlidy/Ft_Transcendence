@@ -1,12 +1,22 @@
 import * as React from "react";
-// import Select from 'react-select';
-import { Select} from '@mobiscroll/react';
+import Select from 'react-select';
+// import { Select} from '@mobiscroll/react';
 // import { Room } from "./class";
 import MenuPng from '../../../assets/menu.png'
 import { Socket } from "socket.io-client";
 
+interface opt{
+	label:string,
+	value:string
+}
 
-export default class ChatMenu extends React.Component <{socket:Socket , roomList:any, newRoom: any, actRoom:any, onMenuOpen:any}, {userOpt:{value:string,label:string}[],activeRoom:string | null, inputRoomName:string, options:{value:string,label:string}[]}>{
+interface groupeOpt{
+	label:string,
+	options:opt[],
+}
+
+
+export default class ChatMenu extends React.Component <{socket:Socket , roomList:opt[], newRoom: any, actRoom:any, onMenuOpen:any}, {groupedOptions:groupeOpt[],userOpt:opt[],activeRoom:string | null, inputRoomName:string, options:opt[]}>{
 	chatMenu:HTMLDivElement|null;
 	//general: Room = {name:"general", id:0, password:"", userList:[]};
 	//default = {value:"general", label:"general"}
@@ -16,17 +26,16 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
         this.state = {
 			options: [],
 			userOpt:[{value:"ge", label:"ge"},{value:"ral", label:"ral"},{value:"toto", label:"toto"},{value:"lololo", label:"lololo"}],
+			groupedOptions: [{label: "Room", options: [{value:"ge", label:"ge"},{value:"ral", label:"ral"},{value:"toto", label:"toto"},{value:"lololo", label:"lololo"}]},{label: "Flavours",options: this.props.roomList}],
 			activeRoom: null,
             inputRoomName: '',
-			// roomList: this.props.roomList,
-        }
+        };
 		this.chatMenu= null;
 		this.flipflap = true;
 	};
 	setChatMenu = (r:HTMLDivElement) =>{
 		this.chatMenu =  r;
 	}
-
 	// componentDidUpdate(prevprops:any){
 	// 	if (prevprops.roomList !== this.props.roomList){
 	// 		this.convert(this.props.roomList);
@@ -48,6 +57,7 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
 	// }
 
 	handleChange = (selectedOption:any) => {
+		console.log(selectedOption.value)
         this.setState({activeRoom:selectedOption.value})
 		this.props.socket.emit('joinRoom',{room:selectedOption.value})
 	}
@@ -86,8 +96,12 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
 					</div>
 					<div className="hiddenMenu">
 			        	<Select className="SelectRoom"
-						        data={this.props.roomList}
+						        options={this.state.groupedOptions}
+						        id="selectRoom"
 						        onChange={this.handleChange}
+						        placeholder="join a room"
+								defaultValue={{value:this.props.actRoom, label:this.props.actRoom}}
+
 								/>
 						<button className="buttonAdd" onClick={this.handleButtonAdd} >+</button>
 					</div>

@@ -7,6 +7,8 @@ import { createCipheriv, randomBytes} from 'crypto';
 import { createDecipheriv } from 'crypto';
 import { Message } from '../message/message.entity';
 import { clientClass } from "src/chat/class/client.class";
+import { Client } from 'socket.io/dist/client';
+import { PrivRoomService } from '../PrivRoom/PrivRoom.service';
 
  @Injectable()
  export class ChatRoomsService
@@ -16,15 +18,15 @@ import { clientClass } from "src/chat/class/client.class";
 	key:string;
 
 	private logger: Logger = new Logger('ChatRoomService');
-	constructor(@InjectRepository(ChatRooms) private ChatRoomsRepository: Repository<ChatRooms>, private userService:UsersService){
+	constructor(@InjectRepository(ChatRooms) private ChatRoomsRepository: Repository<ChatRooms>, private PrivRoomService:PrivRoomService,private userService:UsersService){
 		this.iv = randomBytes(16);
 		this.key = "ceci est une phrase de 32 charac"
 	}
 
 	async create(name :string, owner:string, password:string) {
 		if( await this.findRoomByName(name) === undefined){
-			var match = new ChatRooms(name, owner, password)
-			await this.ChatRoomsRepository.save(match);
+			var newroom = new ChatRooms(name, owner, password)
+			await this.ChatRoomsRepository.save(newroom);
 		}
 		return await this.getAllRoomName();
 	}
@@ -121,20 +123,40 @@ import { clientClass } from "src/chat/class/client.class";
 
 	async isBanned(name:string, dest:string){
 		var room = await this.findRoomByName(dest)
-		for(var i = 0; i < room.users.length; i++)
+		for(var i = 0; i < room.blockedUsers.length; i++)
 		  if (room.blockedUsers[i] === name)
+			return true
+		return false
+	}
+
+	async isAdmin(name:string,dest:string){
+		var room = await this.findRoomByName(dest)
+		for(var i = 0; i < room.adminList.length; i++)
+		  if (room.adminList[i] === name)
 			return true
 		return false
 	}
 
 	findClientByName(clientList:any, name:string){
 		clientList.forEach((item:clientClass) => {
-			if (item._pseudo === name)
-				return (item)
+			console.log("-------------------------")
+			console.log(item._pseudo+ "     " + name)
+			console.log("-------------------------")
+			if (item._pseudo === name){
+				console.log("SUCCESS MOTHERFUCKER")
+				console.log(item)
+				return item
+			}
 		});
 		return null;
 	}
 
+	checkDoublon(tocheck:string, array:string[]){
+		for(var i = 0; i < array.length; i++)
+		  if (array[i] === tocheck)
+			return true
+		return false
+	}
 
 
 	async  banUser(arg:string, dest:string, clientList:any){
@@ -142,60 +164,83 @@ import { clientClass } from "src/chat/class/client.class";
 
 		var toBan = arg.split(' ').at(1)
 		console.log(toBan)
-		if (await this.findUser(toBan, dest) === true){
+		if (await this.findUser(toBan, dest) === true && this.checkDoublon(toBan, room.blockedUsers) === false){
 			room.blockedUsers.push(toBan); //ajoute dans la liste des personne banni
 			this.ChatRoomsRepository.save(room)
 			var clientToBan = this.findClientByName(clientList, toBan);
-			console.log("find client")
 			if (clientToBan){
-				console.log("emit1")
 				clientToBan._socket.leave(room)
-				console.log("emit2")
 				clientToBan._socket.emit('banned')
-				console.log("emit3")
 			}
-			console.log("emit4")
-			//kick + message socket 
 			return "this user " + toBan + " has been succesfully banned we hope he die in the burning flame of hell :-D"
 		}
 		else{
 			console.log("to ban doesn t exist")
 			return "this user " + toBan + " doesn't exist in the room please try again if he deserve else go kill yourself"
 		}
-	  }
+	}
+
+	async addAdmin(toAdd:string, dest:string,clientList:any){
+		var room = await this.findRoomByName(dest)
+
+		var name = toAdd.split(' ').at(1)
+		console.log(room.name + "   " + name)
+		if (await this.findUser(name, dest) === true && this.checkDoublon(name, room.adminList) === false){
+			room.adminList.push(name)
+			console.log("push")
+			this.ChatRoomsRepository.save(room)
+			var clientToAdd:clientClass = this.findClientByName(clientList, name);
+			console.log("-------------------------")
+			console.log(clientToAdd)
+			console.log("-------------------------")
+			if (clientToAdd){
+				console.log("yoyoyoyoyyo client to add ")
+				console.log("-------------------------")
+				clientToAdd._socket.emit('promoteAdmin')
+			}
+			return "this user " + name + " has been succesfully promoted to admin in " + room.name
+		}
+		return "this user " + name + " doesn t exist in room " + room.name
+	}
 	
-	//   unbanUser = (toUnban:string) => {
-	// 	var isBlock: boolean = false;
-	// 	for(var i = 0; i < this.users.length; i++)
-	// 	{
-	// 	  if (this.users[i] === toUnban)
-	// 		isBlock = true
-	// 	}
-	// 	if (isBlock == false)
-	// 	  return false
-	// 	else 
-	// 	{
-		  
-	// 	}
-	//  }
+
+
+	addPriv(crea:string, dest:string,clientList:any){
+		 this.PrivRoomService.create(crea, dest)
+		 return "new priv room"
+	}
+
+
 
 	async systemMsg(data:any, clientList:any){
 		var help = "/help will help you to know the command you can use from the library for multiple line and other shit like this for long text so cute "
 		var unknow = "/ unknow command / try again..."
-		// var pass = "/ your password has been change"
-		console.log(data.message + "dsfbsdfhjvbdfshbahjskb shjkfh ajskdvuaisjhc nucxbhjn hee")
 		if (data.message === "/help")
 			data.message = help
 		else if (data.message.startsWith("/ban")){
-			data.message = await this.banUser(data.message, data.dest, clientList)
-			console.log(data.message)
+			if(await this.isAdmin(data.sender,data.dest) === true)
+				data.message = await this.banUser(data.message, data.dest, clientList)
+			else 
+				data.message = "echec t es pas admin fdp"
+		}
+		else if (data.message.startsWith('/setadmin')){
+			if( await this.isAdmin(data.sender, data.dest) === true){
+				console.log("t es admin et t as le bon debut")
+				console.log(data.message)
+				return await this.addAdmin(data.message, data.dest, clientList)
+			}
+			else 
+				return "echec t es pas admin fdp"
+		}
+		else if (data.message.startsWith('/priv')){
+			return await this.addPriv(data.message, data.dest, clientList)
 		}
 		// else if (data.message.beginWidth("/pass")){
 		// 	// this.changePass(data.message, data.dest)
 		// 	data.message = pass;
 		// }
 		else 
-			data.message = unknow
+			return unknow
 
 	}
 }
