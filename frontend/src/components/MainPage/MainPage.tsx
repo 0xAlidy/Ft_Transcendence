@@ -11,6 +11,7 @@ import AdminPanel from './midPanel/AdminPanel/AdminPanel';
 import axios from 'axios';
 import PopupStart from './PopupStart';
 import FriendPanel from './midPanel/FriendsPanel/FriendPanel';
+import MatchMaking from './midPanel/MatchMaking/MatchMaking';
 // import axios from 'axios';
 
 export interface user{
@@ -30,12 +31,15 @@ export interface user{
 	firstConnection: boolean;
 }
 
-export default class MainPage extends React.Component<{token: string, name:string},{token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, url:string|null}>{
+export default class MainPage extends React.Component<{token: string, name:string},{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, url:string|null}>{
 	menuState: any
 	selector : any;
+	ref:any;
 	constructor(props :any) {
 		super(props);
 		this.state = {
+			lastSelect:'game',
+			gameOpen:false,
 			selector: 'game',
 			url:null,
 			socket: null,
@@ -43,8 +47,8 @@ export default class MainPage extends React.Component<{token: string, name:strin
 			popupOpen: false,
 			token: this.props.token
 		};
+		this.ref = React.createRef();
 	}
-
 	async componentDidMount() {
 		console.log("debug connection error" + this.state.token)
 		if(this.state.token)
@@ -53,9 +57,15 @@ export default class MainPage extends React.Component<{token: string, name:strin
 					this.setState({User: res.data, url: res.data.imgUrl})})
 			if (this.state.User)
 				this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token, username:this.state.User.name}})})
-			if (this.state.socket)
+			if (this.state.socket){
+				this.state.socket.on('startGame', () => {
+					this.openGame();
+				});
+				this.state.socket.on('closeGame', () => {
+					this.closeGame();
+				});
 				this.state.socket.emit('setID', {token: this.props.token, name:this.props.name});
-			else
+			}else
 				console.log("ERROR socket")
 		}
 	}
@@ -67,6 +77,15 @@ export default class MainPage extends React.Component<{token: string, name:strin
 
 	CompleteProfile = (User:user) => {
 		this.setState({User: User});
+	}
+	openGame(){
+		this.ref.current.openGame();
+		this.setState({lastSelect: this.state.selector})
+		this.setState({selector:'none'})
+	}
+	closeGame(){
+		this.ref.current.closeGame();
+		this.setState({selector:this.state.lastSelect})
 	}
 	render(){
 		const Ref = (e: any) => {
@@ -88,19 +107,21 @@ export default class MainPage extends React.Component<{token: string, name:strin
 		}
 		return (
         <div id="MainPage">
-			{this.state.User &&
+			{this.state.User && this.state.socket &&
 			<>
 				<div className="logo">
 					<img src={LOGO} alt="" className="mainLogo"/>
 				</div>
+
 				<Menu onChange={Ref} imgsrc={this.state.User.imgUrl}/>
-				{this.state.socket && <Chat socket={this.state.socket} User={this.state.User} />}
+				<Chat socket={this.state.socket} User={this.state.User} />
 				<div className="game" id="game">
-				{this.state.socket && this.state.selector === 'game' && <IGame socket={this.state.socket}/>}
-				{this.state.selector === 'profile' && <Profile User={this.state.User} name={this.state.User.name} refreshUser={this.refreshUser}/>}
-				{this.state.selector === 'history' && <History User={this.state.User}/>}
-				{this.state.selector === 'admin' && <AdminPanel/>}
-				{this.state.selector === 'friends' && <FriendPanel/>}
+						{this.state.selector === 'profile' && <Profile User={this.state.User} name={this.state.User.name} refreshUser={this.refreshUser}/>}
+						{this.state.selector === 'history' && <History User={this.state.User}/>}
+						{this.state.selector === 'admin' && <AdminPanel/>}
+						{this.state.selector === 'game' && <MatchMaking token={this.state.User.tokengit } socket={this.state.socket}/>}
+						{this.state.selector === 'friends' && <FriendPanel/>}
+					<IGame ref={this.ref} socket={this.state.socket}/>
 				</div>
 				<PopupStart User={this.state.User} onChange={this.CompleteProfile}/>
 			</>

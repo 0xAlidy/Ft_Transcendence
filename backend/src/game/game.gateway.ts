@@ -92,8 +92,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             userOne._socket.join(roomName);
             userTwo._socket.leave('lobby');
             userTwo._socket.join(roomName);
-            this.rooms.get('room' + this.index)._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._pseudo, nameB: room._guest._pseudo, bool: room._player._nbOfGames != 0 ? true : false })
-            this.rooms.get('room' + this.index)._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._pseudo, nameB: room._guest._pseudo,  bool: room._guest._nbOfGames != 0 ? true : false});
+            this.rooms.get('room' + this.index)._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._pseudo, nameB: room._guest._pseudo})
+            this.rooms.get('room' + this.index)._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._pseudo, nameB: room._guest._pseudo});
             room._isJoinable = false;
             this.index++;
         }
@@ -117,20 +117,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.updateRoom();
     }
     @SubscribeMessage('specRoom')
-    specRoom(client: Socket, room: string ): void {
-        this.rooms.forEach(element => {
-            if(element._name == room)
-            {
-                element._player._socket.leave('lobby');
-                element._player._socket.join(element._name);
+    specRoom(client: Socket, data: any ): void {
+        var room = this.rooms.get(data.room)
                 client.leave('lobby');
-                client.join(element._name);
-                element.addGuest(this.clients.get(client.id));
-                this.clients.get(client.id).setRoom(room);
-                client.emit('startGame', {id: 3, room: room, nameA: element._player._pseudo, nameB: element._guest._pseudo,  bool: this.clients.get(client.id)._nbOfGames != 0 ? true : false});
+                client.join(room._name);
+                room.addGuest(this.clients.get(client.id));
+                this.clients.get(client.id).setRoom(room._name);
+                client.emit('startGame', {id: 3, room: room, nameA: room._player._pseudo, nameB: room._guest._pseudo});
                 this.updateRoom();
-            }
-        });
     }
     @SubscribeMessage('joinRoom')
     joinRoom(client: Socket, room: string ): void {
@@ -143,7 +137,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 client.join(element._name);
                 element.addSpec(this.clients.get(client.id));
                 this.clients.get(client.id).setRoom(room);
-                client.emit('startGame', {id: 3, room: room, nameA: element._player._pseudo, nameB: element._guest._pseudo,  bool: this.clients.get(client.id)._nbOfGames != 0 ? true : false});
+                client.emit('startGame', {id: 3, room: room, nameA: element._player._pseudo, nameB: element._guest._pseudo});
                 this.updateRoom();
             }
             if(element._name == room && element._isJoinable)
@@ -154,8 +148,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 client.join(element._name);
                 element.addGuest(this.clients.get(client.id));
                 this.clients.get(client.id).setRoom(room);
-                element._player._socket.emit('startGame', {id: 1, room: room, nameA: element._player._pseudo, nameB: element._guest._pseudo, bool: element._player._nbOfGames != 0 ? true : false })
-                client.emit('startGame', {id: 2, room: room, nameA: element._player._pseudo, nameB: element._guest._pseudo,  bool: this.clients.get(client.id)._nbOfGames != 0 ? true : false});
+                element._player._socket.emit('startGame', {id: 1, room: room, nameA: element._player._pseudo, nameB: element._guest._pseudo})
+                client.emit('startGame', {id: 2, room: room, nameA: element._player._pseudo, nameB: element._guest._pseudo});
                 element._isJoinable = false;
                 this.updateRoom();
             }
@@ -174,15 +168,19 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     abandon(client: Socket): void {
         var user = this.clients.get(client.id);
         var room = this.rooms.get(this.clients.get(client.id)._room);
+        if(room._scoreA >=5 || room._scoreB >= 5)
+        {
+            client.emit('closeGame');
+        }
         console.log(user);
         var ret = room.abandon(user._pseudo)
-        if (ret == 1)
-            this.matchsService.create(room._guest._pseudo, 5, room._player._pseudo, room._scoreA);
         if (ret == 2)
+            this.matchsService.create(room._guest._pseudo, 5, room._player._pseudo, room._scoreA);
+        if (ret == 1)
             this.matchsService.create(room._player._pseudo, 5, room._guest._pseudo, room._scoreB);
         // l'adversaire gagne le match
         // match history winner = 5 pts
-        // 
+        //
     }
     @SubscribeMessage('leaveRoom')
     leaveRoom(client: Socket): void {
@@ -239,51 +237,44 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     @SubscribeMessage('score')
     Score(client: Socket, data: any): void {
-        this.rooms.forEach(element => {
-            if(element._name == data.room){
-                var res = element.goal(data.goalID);
+                var room = this.rooms.get(data.room)
+                var res = room.goal(data.goalID)
                 if(res!= 0)
                 {
                     if(res == 1)
                     {
-                        this.userService.win(element._player._token);
-                        this.userService.xp(element._player._token, 50);
-                        this.userService.xp(element._guest._token, 25);
-                        this.userService.loose(element._guest._token);
-                        this.matchsService.create(element._player._pseudo, 5, element._guest._pseudo, element._scoreB);
+                        this.userService.win(room._player._token);
+                        this.userService.xp(room._player._token, 50);
+                        this.userService.xp(room._guest._token, 25);
+                        this.userService.loose(room._guest._token);
+                        this.matchsService.create(room._player._pseudo, 5, room._guest._pseudo, room._scoreB);
                     }
                     if(res == 2)
                     {
-                        this.userService.win(element._guest._token);
-                        this.userService.xp(element._player._token, 25);
-                        this.userService.xp(element._guest._token, 50);
-                        this.userService.loose(element._player._token);
-                        this.matchsService.create(element._guest._pseudo, 5, element._player._pseudo, element._scoreA);
+                        this.userService.win(room._guest._token);
+                        this.userService.xp(room._player._token, 25);
+                        this.userService.xp(room._guest._token, 50);
+                        this.userService.loose(room._player._token);
+                        this.matchsService.create(room._guest._pseudo, 5, room._player._pseudo, room._scoreA);
                     }
                 }
-            }
-        });
     }
 
-
     updateRoom(){
-        var join : string[] = [];
-        var spec : string[] = [];
+        var spec : specRooms[] = [];
 
         this.rooms.forEach(element => {
             if (element._isJoinable == false)
-                spec.push(element._name);
-            else
-                join.push(element._name);
+                spec.push({name:element._name, left:element._player._pseudo, right:element._guest._pseudo});
         });
-        this.clients.forEach(client => {
-            if(client._room == 'lobby')
-                client._socket.emit('changeState', {bool : false})
-            else
-                client._socket.emit('changeState', {bool : true})
-        });
-        this.server.to('lobby').emit('updateRoom', { join: join, spec: spec});
+        this.server.to('lobby').emit('specRoom', {spec: spec});
     }
     //GAME-PART
 
+}
+
+interface specRooms{
+    name:string,
+    left:string,
+    right:string,
 }
