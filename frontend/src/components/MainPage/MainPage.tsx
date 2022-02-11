@@ -12,6 +12,7 @@ import axios from 'axios';
 import PopupStart from './PopupStart';
 import FriendPanel from './midPanel/FriendsPanel/FriendPanel';
 import MatchMaking from './midPanel/MatchMaking/MatchMaking';
+import Popup from 'reactjs-popup';
 // import axios from 'axios';
 
 export interface user{
@@ -30,14 +31,16 @@ export interface user{
 	xp: 0;
 	firstConnection: boolean;
 }
+interface popupScore{open:boolean, win:boolean, adv:string}
 
-export default class MainPage extends React.Component<{token: string, name:string},{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, url:string|null}>{
+export default class MainPage extends React.Component<{token: string, name:string},{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, url:string|null, popupInfo:popupScore | null}>{
 	menuState: any
 	selector : any;
 	ref:any;
 	constructor(props :any) {
 		super(props);
 		this.state = {
+			popupInfo:null,
 			lastSelect:'game',
 			gameOpen:false,
 			selector: 'game',
@@ -64,6 +67,12 @@ export default class MainPage extends React.Component<{token: string, name:strin
 				this.state.socket.on('closeGame', () => {
 					this.closeGame();
 				});
+				this.state.socket.on('popupScore', (data:any) => {
+					this.setState({popupInfo:{open:true, win:data.win, adv:data.adv}})
+				});
+				this.state.socket.on('invite', (data:any) => {
+					//data.adv:string, data.room:'data.clientName/data.inviteName'
+				});
 				this.state.socket.emit('setID', {token: this.props.token, name:this.props.name});
 			}else
 				console.log("ERROR socket")
@@ -86,6 +95,9 @@ export default class MainPage extends React.Component<{token: string, name:strin
 	closeGame(){
 		this.ref.current.closeGame();
 		this.setState({selector:this.state.lastSelect})
+	}
+	closePopup(){
+
 	}
 	render(){
 		const Ref = (e: any) => {
@@ -119,10 +131,12 @@ export default class MainPage extends React.Component<{token: string, name:strin
 						{this.state.selector === 'profile' && <Profile User={this.state.User} name={this.state.User.name} refreshUser={this.refreshUser}/>}
 						{this.state.selector === 'history' && <History User={this.state.User}/>}
 						{this.state.selector === 'admin' && <AdminPanel/>}
-						{this.state.selector === 'game' && <MatchMaking token={this.state.User.tokengit } socket={this.state.socket}/>}
+						{this.state.selector === 'game' && <MatchMaking token={this.state.User.token} socket={this.state.socket}/>}
 						{this.state.selector === 'friends' && <FriendPanel/>}
 					<IGame ref={this.ref} socket={this.state.socket}/>
 				</div>
+				{this.state.popupInfo && <Popup open={this.state.popupInfo.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>}
+				{this.state.popupInvite && <Popup open={this.state.popupInvite.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>}
 				<PopupStart User={this.state.User} onChange={this.CompleteProfile}/>
 			</>
 			}

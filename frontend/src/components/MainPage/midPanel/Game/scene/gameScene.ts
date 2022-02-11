@@ -220,7 +220,7 @@ export class Game extends Scene {
 		this.inputUser.esc = this.input.keyboard.addKey('ESC');
 		this.inputUser.esc.on('down', () => {
 			if (this.socket !== null)
-				this.socket.emit('abandon');
+				this.socket.emit('end');
 		});
 	}
 	disableEvent(){

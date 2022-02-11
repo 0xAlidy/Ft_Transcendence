@@ -1,5 +1,4 @@
 import * as React from "react";
-import '../../../../../styles/MainPage/midPanel/History/History.css'
 import ProfileShortCut from "../../ProfileShortcut";
 
 interface specRoomsData{

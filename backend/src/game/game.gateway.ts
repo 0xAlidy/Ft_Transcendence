@@ -57,6 +57,36 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.clients.delete(client.id);
         this.server.emit('updateUser', keys);
     }
+    getUserClassbyName(str:string):clientClass| null
+    {
+        this.clients.forEach( element => {
+            if(element._pseudo === str)
+                return element;
+        })
+        return null
+    }
+    @SubscribeMessage('createPrivateSession')
+    createPrivateSession(client: Socket, data: any){
+        var cli = this.clients.get(client.id);
+        var guest = this.getUserClassbyName(data.inviteName);
+        this.rooms.set('room' +this.index, new roomClass(data.clientName + data.inviteName, cli , guest, this.server.to(data.clientName + data.inviteName)));
+        guest._socket.emit('invite', {adv:cli._pseudo, room:data.clientName + data.inviteName})
+    }
+    @SubscribeMessage('joinPrivateSession')
+    joinPrivateSession(client: Socket, data: any){
+        var room = this.rooms.get(data.room)
+        room._player._room = data.room;
+        room._guest._room = data.room;
+        var room = this.rooms.get('room' + this.index);
+        room._player._socket.leave('lobby');
+        room._player._socket.join(data.room);
+        room._guest._socket.leave('lobby');
+        room._guest._socket.join(data.room);
+        room._player._socket.emit('startGame', {id: 1, room: data.room, nameA: room._player._pseudo, nameB: room._guest._pseudo})
+        room._guest._socket.emit('startGame', {id: 2, room: data.room, nameA: room._player._pseudo, nameB: room._guest._pseudo});
+        room._isJoinable = false;
+        this.index++;
+    }
 
     @SubscribeMessage('setID')
     async setID(client: Socket, data: any){
@@ -164,20 +194,22 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             this.clientsSearching.splice(index, 1); // 2nd parameter means remove one item only
         }
     }
-    @SubscribeMessage('abandon')
+    @SubscribeMessage('end')
     abandon(client: Socket): void {
         var user = this.clients.get(client.id);
         var room = this.rooms.get(this.clients.get(client.id)._room);
-        if(room._scoreA >=5 || room._scoreB >= 5)
-        {
-            client.emit('closeGame');
-        }
-        console.log(user);
+		room._room.emit('closeGame');
         var ret = room.abandon(user._pseudo)
-        if (ret == 2)
+        if (ret == 2){
+            this.userService.win(room._guest._token);
+            this.userService.xp(room._guest._token, 50);
             this.matchsService.create(room._guest._pseudo, 5, room._player._pseudo, room._scoreA);
-        if (ret == 1)
+        }if (ret == 1){
+            this.userService.win(room._player._token);
+            this.userService.xp(room._player._token, 50);
             this.matchsService.create(room._player._pseudo, 5, room._guest._pseudo, room._scoreB);
+        }
+        this.rooms.delete(room._name);
         // l'adversaire gagne le match
         // match history winner = 5 pts
         //
@@ -243,6 +275,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 {
                     if(res == 1)
                     {
+
+                        room._player._socket.emit('popupScore', {win: true, adv:room._guest._pseudo})
+                        room._guest._socket.emit('popupScore', {win: false, adv:room._player._pseudo})
                         this.userService.win(room._player._token);
                         this.userService.xp(room._player._token, 50);
                         this.userService.xp(room._guest._token, 25);
@@ -251,12 +286,15 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                     }
                     if(res == 2)
                     {
+                        room._player._socket.emit('popupScore', {win: false, adv:room._player._pseudo})
+                        room._guest._socket.emit('popupScore', {win: true, adv:room._guest._pseudo})
                         this.userService.win(room._guest._token);
                         this.userService.xp(room._player._token, 25);
                         this.userService.xp(room._guest._token, 50);
                         this.userService.loose(room._player._token);
                         this.matchsService.create(room._guest._pseudo, 5, room._player._pseudo, room._scoreA);
                     }
+                    room.clean();
                 }
     }
 
