@@ -1,47 +1,84 @@
 .ProfileImgDiv{
     display: flex;
-    flex-direction: row;
-    width: 100px;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    
 }
-.ProfileButton{
-    filter: invert(73%) sepia(44%) saturate(523%) hue-rotate(7deg) brightness(109%) contrast(104%);
-	background-color: #fee15400;
-	width: 30px;
-	height: 30px;
-	border-radius: 50%;
-	border: 0px none;
+
+.ProfileButton {
+    width: 100%;
+}
+
+.ProfileButton img {
+    width: 20px;
+    filter: invert(90%) sepia(44%) saturate(2847%) hue-rotate(317deg) brightness(113%) contrast(99%);
     cursor: pointer;
 }
 
-.ChooseContainer{
-	/* position: relative; */
-	/* left: 170px;
-	bottom: 110px; */
-    height:auto;
-    display: flex;
-    flex-direction: column;
+.ProfileButton button{
+    border: none;
+    background-color: unset;
+    margin-left: 165px;
+    margin-bottom: 3px;
 }
+
+.ChooseContainer{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+.ChooseContainer canvas {
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
 .ChooseOption
 {
-	text-align: center;
 	background-color: #2c2c2c;
     border-radius: 20px;
     cursor: pointer;
-    overflow: hidden;
     margin-top: 10px;
     width: 120px;
     height: 40px;
-    /* border: 3px solid #fee154; */
     color: #fee154;
     display: flex;
     flex-direction: column;
     justify-content: center;
     transition: all 0.5s ease ;
 }
+
 .ChooseOption:hover{
     background-color: #fee154;
     color: #000;
 }
+
+.valideButton
+{
+	background-color: #2c2c2c;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 120px;
+    height: 40px;
+    padding-top: 10px;
+    color: #fee154;
+    display: flex;
+    justify-content: center;
+    transition: all 0.5s ease ;
+    align-self: center;
+}
+
+.valideButton:hover{
+    background-color: #fee154;
+    color: #000;
+}
+
+
+
 
 input[type="file"] {
     display: none;

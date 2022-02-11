@@ -90,10 +90,13 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 		}
 		return (
         <div className='ProfileImgdiv'>
+			<div className='ProfileButton'>
+				<button  onClick={this.open}>
+					<img src={this.state.displayChoices === false ? EDIT: CLOSE} alt=""/>
+				</button>
+			</div>
+			
 			{this.state.src && <img src={this.state.src} className="profileImg"/>}
-			<button className='ProfileButton' onClick={this.open}>
-				<img src={this.state.displayChoices === false ? EDIT: CLOSE} alt="" width={"18px"}/>
-			</button>
 			<div className='ChooseContainer'>
 			{
 				this.state.displayChoices === true &&
@@ -112,7 +115,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 							}
 						</>:<>
 							<AvatarEditor ref={this.setEditorRef} image={this.state.url as string} width={100} height={100} borderRadius={100} color={[31,31,31, 0.6]} scale={1.1} rotate={0}/>
-							<button className='ChooseOption' onClick={this.photo}>OK</button>
+							<button className='valideButton' onClick={this.photo}>OK</button>
 						</>
 					}
 				</>

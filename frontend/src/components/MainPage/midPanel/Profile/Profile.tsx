@@ -25,12 +25,10 @@ interface user{
 	xp: 0;
 }
 export default class Profile extends React.Component<{User:user, name:string, refreshUser:any},{}>{
-	async componentDidMount(){
-
-	}
 	handleRefresh = () => {
 		this.props.refreshUser()
 	}
+	
 	render(){
 		return (
         <div className="midPanel" >

@@ -22,6 +22,7 @@ export class AuthController {
 
 	@Get("/me")
 	async me(@Query('token') token: string){
+		console.log("Token pour charger l'User:" + token);
 		const {...result} = await this.UsersService.findOne(token);
 		return  result;
 	}
