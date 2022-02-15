@@ -128,11 +128,12 @@ export class UsersService {
     return await this.findOneByLogin(login);
   }
 
-  async getUserPublic(token:string, nickname:string){
+  async getUserPublic(token:string, login:string){
 
     var verif = await this.findOne(token);
-    if (verif != undefined){
-      var user = await this.findOneByNickname(nickname);
+    if (verif){
+      var user = await this.findOneByLogin(login);
+      if(user)
       return({
         imgUrl: user.imgUrl,
         isActive: user.isActive,
@@ -146,7 +147,13 @@ export class UsersService {
     }
     return null;
   }
-
+  async getNickame(login:string)
+  {
+    var user = await this.findOneByLogin(login);
+    if(user)
+      return(user.nickname)
+    return null;
+  }
   async changeImgUrl(data:any)
   {
     var user = await this.findOne(data.token);
@@ -172,7 +179,7 @@ export class UsersService {
 
   async findOne(token: string): Promise<User | undefined> {
     const user = await this.usersRepository.findOne(
-      { 
+      {
         where:
           { token: token }
       }
@@ -182,7 +189,7 @@ export class UsersService {
 
   async findOneByNickname(nickname: string): Promise<User | undefined> {
     const user = await this.usersRepository.findOne(
-      { 
+      {
         where:
           { nickname: nickname }
       }
@@ -200,7 +207,7 @@ export class UsersService {
 
   async findOneByLogin(login: string): Promise<User | undefined> {
     const user = await this.usersRepository.findOne(
-      { 
+      {
         where:
           { login: login }
       }
@@ -219,6 +226,8 @@ export class UsersService {
   async xp(token:string,num: number)
   {
     var user = await this.findOne(token);
+    if(user)
+      return;
     user.xp += num;
     if (user.xp >= 100)
     {

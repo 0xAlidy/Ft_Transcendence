@@ -28,7 +28,6 @@ export default class MatchMaking extends React.Component<{socket:Socket, token:s
 				<button className="buttonSearch" value='SEARCH'  onClick={() => {this.props.socket.emit('searchRoom'); this.setState({Searching:true})}}>SEARCH</button>:
 				<button className="buttonSearch" value='CANCEL' onClick={() => {this.props.socket.emit('cancel'); this.setState({Searching:false})}}>CANCEL</button>
 			}
-
 			{
 				this.state.rooms.map((function(item :specRoomsData, idx) {
 					return <ItemSpec data={item} token={item.token} key={idx}/>;

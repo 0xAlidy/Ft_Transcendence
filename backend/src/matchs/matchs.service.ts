@@ -26,11 +26,11 @@ export class MatchsService
 			var askerMatchs:Match[] = [];
 			var ret:string[] = [];
 			array.forEach(element => {
-				if (element.WinnerName === user.nickname || element.LooserName === user.nickname)
+				if (element.WinnerName === user.login || element.LooserName === user.login)
 					askerMatchs.push(element);
 			});
 			askerMatchs.forEach(element => {
-				ret.push(element.WinnerName +'/'+ element.WinnerScore	+'/'+ element.LooserName +'/'+ element.LooserScore + '/' + user.nickname + '/' + token);
+				ret.push(element.WinnerName +'/'+ element.WinnerScore	+'/'+ element.LooserName +'/'+ element.LooserScore);
 			});
 			return ret;
 		}

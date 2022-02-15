@@ -54,7 +54,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 	}
 
 	async componentDidMount() {
-		
+
 		if (this.state.token)
 		{
 			console.log("debug connection error" + this.state.token)
@@ -62,7 +62,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 				this.setState({User: res.data, url: res.data.imgUrl})
 			})
 			if (this.state.User)
-				this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token, name:this.state.User.login}})}) // NICKNAME ?
+				this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token}})})
 			if (this.state.socket){
 				this.state.socket.on('startGame', () => {
 					this.openGame();
@@ -76,8 +76,6 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 				this.state.socket.on('invite', (data:any) => {
 					//data.adv:string, data.room:'data.clientName/data.inviteName'
 				});
-				if (this.state.User && this.state.User.nickname) // checkpremierconnexion où le nickname n'est pas set
-					this.state.socket.emit('setID', { token: this.props.token });
 			}
 			else
 				console.log("ERROR socket")

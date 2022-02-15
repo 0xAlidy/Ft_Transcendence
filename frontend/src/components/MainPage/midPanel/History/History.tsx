@@ -27,7 +27,7 @@ export default class History extends React.Component<{User:user},{matchs:string[
 	// 			<ItemMatch match={newMatch} name={this.props.name} key={newMatch.id}/>
 	// 	)
 	async componentDidMount() {
-		var data = (await axios.get("http://" + window.location.host.split(":").at(0) + ":667/matchs?name="+ this.props.User.nickname +"&token="+ this.props.User.token)).data;
+		var data = (await axios.get("http://" + window.location.host.split(":").at(0) + ":667/matchs?name="+ this.props.User.login +"&token="+ this.props.User.token)).data;
 		this.setState({matchs: data});
 		console.log(data);
 	}
@@ -37,10 +37,10 @@ export default class History extends React.Component<{User:user},{matchs:string[
         <div className="midPanel" id="history">
 			<h1>History</h1>
 			{
-				this.state.matchs.map((function(item, idx) {
+				this.state.matchs.map((item, idx) => {
 					console.log(item , idx)
-					return <ItemMatch match={item} token={item.split('/').at(5)} name={item.split('/').at(4)} key={idx}/>;
-				}))
+					return <ItemMatch match={item} token={this.props.User.token} name={this.props.User.login} key={idx}/>;
+				})
 			}
 		</div>
     	)

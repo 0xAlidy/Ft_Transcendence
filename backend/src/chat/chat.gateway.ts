@@ -1,14 +1,15 @@
 import { SubscribeMessage, WebSocketGateway, OnGatewayInit, WebSocketServer} from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { Logger } from '@nestjs/common'; 
+import { Logger } from '@nestjs/common';
 import { clientClass } from "./class/client.class";
 import { ChatRoomsService } from 'src/ChatRooms/ChatRooms.service';
 import { Client } from 'socket.io/dist/client';
+import { UsersService } from 'src/user/users.service';
 
 @WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit {
 
-  constructor(private readonly chatService: ChatRoomsService){
+  constructor(private readonly chatService: ChatRoomsService, private readonly userService: UsersService){
   }
   clients = new Map<string, clientClass>();
   rooms: string[];
@@ -24,9 +25,11 @@ export class ChatGateway implements OnGatewayInit {
 
 
   async handleConnection(client:Socket, ...args: any[]){
-    this.logger.log("New Conection ! token:" + client.handshake.query.token);
+    this.logger.log("New Conection on the Chat!");
     client.join("general");
-    this.clients.set(client.id,new clientClass(client, client.handshake.query.token as string, client.handshake.query.username as string));
+    console.log(client.handshake.query.token as string)
+    var user = await this.userService.findOne(client.handshake.query.token as string)
+    this.clients.set(client.id,new clientClass(client, user.token, user.login));
     client.emit('updateRooms',{rooms: this.rooms});
     client.emit('LoadRoom', {room: 'general', msg:await this.chatService.getMessagesByRoom('general')})
   }
@@ -50,7 +53,7 @@ export class ChatGateway implements OnGatewayInit {
       client.emit('LoadRoomPass', {room: data.room, msg:msg })
       client.leave(this.clients.get(client.id)._room)
       client.join(data.room)
-      this.clients.get(client.id)._room = data.room 
+      this.clients.get(client.id)._room = data.room
     }
   }
 

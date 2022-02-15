@@ -46,55 +46,33 @@ export class roomClass{
 	}
 	abandon(client: string)
 	{
-		if(client === this._player._pseudo)
+		if(client === this._player._login)
 		{
 			this._player._socket.leave(this._name)
 			this._player._socket.join('lobby')
 			this._guest._socket.leave(this._name)
 			this._guest._socket.join('lobby')
-			this._player._socket.emit('popupScore', {win: false, adv:this._guest._pseudo})
-			this._guest._socket.emit('popupScore', {win: true, adv:this._player._pseudo})
+			this._player._socket.emit('popupScore', {win: false, adv:this._guest._login})
+			this._guest._socket.emit('popupScore', {win: true, adv:this._player._login})
 			return 1;
 		}
-		else if(client === this._guest._pseudo){
+		else if(client === this._guest._login){
 			this._player._socket.leave(this._name)
 			this._player._socket.join('lobby')
 			this._guest._socket.leave(this._name)
 			this._guest._socket.join('lobby')
-			this._player._socket.emit('popupScore', {win: true, adv:this._guest._pseudo})
-			this._guest._socket.emit('popupScore', {win: false, adv:this._player._pseudo})
+			this._player._socket.emit('popupScore', {win: true, adv:this._guest._login})
+			this._guest._socket.emit('popupScore', {win: false, adv:this._player._login})
 			return 2;
 		}
 	}
 	addGuest(client: clientClass){
 		this._guest = client;
-		this.logger.log(client._pseudo + " join" + this._name + "as P2.");
+		this.logger.log(client._login + " join" + this._name + "as P2.");
 	}
 	addSpec(client: clientClass){
 		this._spectators.push(client);
-		this.logger.log(client._pseudo + " join " + this._name + "as spectator.");
-	}
-	close(clientS: Socket): boolean
-	{
-		if (this._guest)
-		{
-			if (clientS.id == this._guest._socket.id)
-				this._room.emit('backToLobby');
-		}
-		if (this._player)
-		{
-			if (clientS.id == this._player._socket.id)
-				this._room.emit('backToLobby');
-		}
-		// this._spectators.forEach(element => {
-		// 	if (element._socket.id == client.id)
-		// 	{
-		// 		client.emit('backToLobby');
-		// 		this._spectators.
-		// 	}
-		// });
-
-		return true;
+		this.logger.log(client._login + " join " + this._name + "as spectator.");
 	}
 	removePlayer(client: clientClass): boolean{
 		if(this._player._socket.id == client._socket.id)
@@ -116,7 +94,7 @@ export class roomClass{
 		if (this._scoreB == 5 ||this._scoreA == 5)
 		{
 			this._room.emit('ballThrow', {velx: 0, vely: 0 , y: -100});
-			this._room.emit('winner', {id:id, winner: id == 1? this._player._pseudo : this._guest._pseudo});
+			this._room.emit('winner', {id:id, winner: id == 1? this._player._login : this._guest._login});
 			this._guest._nbOfGames +=1;
 			this._player._nbOfGames +=1;
 			this._room.emit('scoreUpdate', { a: this._scoreA.toString(), b: this._scoreB.toString()})
