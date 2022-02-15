@@ -7,9 +7,6 @@ interface specRoomsData{
 	right:string,
 }
 export default class ItemSpec extends React.Component<{data:specRoomsData, token:string},{}>{
-	constructor(props:any) {
-		super(props)
-	};
 	render(){
 		return	(<div className="itemSpec">
 					<div className="grid">

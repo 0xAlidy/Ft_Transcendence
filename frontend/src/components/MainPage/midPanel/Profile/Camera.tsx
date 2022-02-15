@@ -53,7 +53,7 @@ export default class Camera extends React.Component<{validate:any},{url:string |
 					
 					<Webcam className="webcam" ref={this.setRef} audio={false} screenshotFormat="image/jpeg" videoConstraints={videoConstraints} />
 					:
-					<img src={this.state.url}/>
+					<img alt="Img" src={this.state.url}/>
 				
 				}
 				{	this.state.url === null ?

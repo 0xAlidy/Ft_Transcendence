@@ -1,11 +1,7 @@
 import * as React from 'react'
 import queryString from 'query-string';
 import { Redirect } from 'react-router-dom';
-export default class Auth extends React.Component<{token: any, connect : any, location: string}, {}>{
-  constructor(props :any) {
-		super(props);
-	}
-  
+export default class Auth extends React.Component<{token: any, connect : any, location: string}, {}>{  
 	componentDidMount() {
     const data = {
       token: queryString.parse(this.props.location).token,
