@@ -1,6 +1,7 @@
 import * as React from "react";
 import ProfileShortCut from "../../../ProfileShortcut";
 import '../../../../../styles/MainPage/midPanel/History/History.css'
+import Nickname from "../../../../utility/utility";
 
 export default class ItemMatch extends React.Component<{match:string, name:any, token:any},{WinnerName:any, WinnerScore:any, LooserName:any, LooserScore:any}>{
 	constructor(props:any) {
@@ -22,7 +23,7 @@ export default class ItemMatch extends React.Component<{match:string, name:any, 
 					<div className="item-match-section">
 						<ProfileShortCut pseudo={this.props.name} token={this.props.token} canOpen={false}/>
 						<div className="name">
-							{this.state.WinnerName}
+						<Nickname login={this.state.WinnerName}/>
 						</div>
 						<div className="score score-win">
 							{this.state.WinnerScore}
@@ -34,7 +35,7 @@ export default class ItemMatch extends React.Component<{match:string, name:any, 
 							{this.state.LooserScore}
 						</div>
 						<div className="name">
-							{this.state.LooserName}
+						<Nickname login={this.state.LooserName}/>
 						</div>
 						<ProfileShortCut pseudo={this.state.LooserName} token={this.props.token} canOpen={true}/>
 					</div>
@@ -44,7 +45,7 @@ export default class ItemMatch extends React.Component<{match:string, name:any, 
 					<div className="item-match-section">
 						<ProfileShortCut pseudo={this.props.name} token={this.props.token} canOpen={false}/>
 						<div className="name">
-							{this.state.LooserName}
+						<Nickname login={this.state.LooserName}/>
 						</div>
 						<div className="score score-lose">
 							{this.state.LooserScore}
@@ -56,7 +57,7 @@ export default class ItemMatch extends React.Component<{match:string, name:any, 
 							{this.state.WinnerScore}
 						</div>
 						<div className="name">
-							{this.state.WinnerName}
+						<Nickname login={this.state.WinnerName}/>
 						</div>
 						<ProfileShortCut pseudo={this.state.WinnerName} token={this.props.token} canOpen={true}/>
 					</div>
