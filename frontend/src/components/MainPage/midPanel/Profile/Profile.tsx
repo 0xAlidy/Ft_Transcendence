@@ -8,13 +8,14 @@ import Gauge from './gauge';
 import WinRate from './winRate';
 import TwoAuth from './twoAuth';
 import ProfileImg from './ProfileImg';
+
 interface user{
 	WSId: string;
 	id: number;
 	imgUrl: string;
 	isActive: false;
 	lvl: number;
-	name: string;
+	login: string;
 	nickname: string;
 	numberOfLoose: number;
 	numberOfWin: number;
@@ -24,7 +25,8 @@ interface user{
 	token: string;
 	xp: 0;
 }
-export default class Profile extends React.Component<{User:user, name:string, refreshUser:any},{}>{
+
+export default class Profile extends React.Component<{User:user, refreshUser:any},{}>{
 	handleRefresh = () => {
 		this.props.refreshUser()
 	}
@@ -36,7 +38,7 @@ export default class Profile extends React.Component<{User:user, name:string, re
 				<div id="player">
 					<h1>Player</h1>
 					<ProfileImg User={this.props.User} refreshUser={this.handleRefresh}/>
-					<EditBox value={this.props.User.name} onChange={() => {}} />
+					<EditBox value={this.props.User.nickname} onChange={() => {}} User={this.props.User} refreshUser={this.handleRefresh}/>
 				</div>
 				<div id="statistics">
 					<h1>Statistics</h1>

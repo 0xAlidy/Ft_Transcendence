@@ -17,6 +17,11 @@ export class UsersController {
     {
 		  return await this.UsersService.findOne(token);
     }
+
+    @Get('/nicknameAvailable')
+    async nicknameAvailable(@Query('nickname') nickname: string) {
+      return await this.UsersService.nicknameAvailable(nickname);
+    }
     
     @Get('/getUser')
     async getUserPublic(@Query('token') token: string, @Query('name') name: string) {
@@ -31,6 +36,12 @@ export class UsersController {
     @Post('/completeProfile')
     async completeProfile(@Body() data:any) {
       return await this.UsersService.completeProfile(data);
+    }
+
+    @Post('/changeNickname')
+    async changeNickname(@Body() data:any)
+    {
+      await this.UsersService.changeNickname(data);
     }
 
     @Post('/generateSecret')

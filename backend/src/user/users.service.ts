@@ -1,12 +1,11 @@
 import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import {getRepository, Repository} from "typeorm";
+import { Repository } from "typeorm";
 import {User} from "./user.entity";
 var qrcode = require('qrcode');
 var speakeasy = require('speakeasy');
 
- // you can also get it via getConnection().getRepository() or getManager().getRepository()
-
+/*
 interface SecretData {
   otpauth_url: string
 }
@@ -21,44 +20,47 @@ interface userPublic{
   numberOfWin: number;
   xp: number;
 }
+*/
+
 @Injectable()
 export class UsersService {
   private logger: Logger = new Logger('UsersService');
+
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>){
-  }
-  async create(pseudo : string, token: string) {
-    const user = new  User(pseudo, token);
+    private usersRepository: Repository<User>){ }
+
+  async create(login: string, token: string)
+  {
+    const user = new  User(login, token);
     const all = await this.usersRepository.find();
     var ok = true;
     var existing :User;
     all.forEach(elem => {
-      if(pseudo === elem.name)
+      if (login === elem.login)
       {
         existing = elem;
         existing.token = token;
         ok = false;
       }
-      });
-    if (ok){
+    });
+    if (ok)
       return await this.usersRepository.save(user);
-    }
     else
-    {
       return await this.usersRepository.save(existing);
-    }
   }
 
-  async friendRequest(token:string, name:string){
+  async friendRequest(token:string, nickname:string)
+  {
     var user = await this.findOne(token);
     if (user)
     {
-      var other = await this.findOneByName(name);
-      other.waitingFriends.push(user.name);
+      var other = await this.findOneByNickname(nickname);
+      other.waitingFriends.push(user.nickname);
       await this.usersRepository.save(other);
     }
   }
+
   async acceptFriendRequest(token:string, name:string)
   {
     var user = await this.findOne(token);
@@ -70,6 +72,7 @@ export class UsersService {
     user.rooms.push(room);
     await this.usersRepository.save(user);
   }
+
   async leaveRoom(token:string, room:string)
   {
     var user = await this.findOne(token);
@@ -77,24 +80,28 @@ export class UsersService {
     user.rooms.splice(index, 1);
     await this.usersRepository.save(user);
   }
+
   async addFriend(token:string, room:string)
   {
     var user = await this.findOne(token);
     user.rooms.push(room);
     await this.usersRepository.save(user);
   }
+
   async removeFriend(token:string, room:string)
   {
     var user = await this.findOne(token);
     user.rooms.push(room);
     await this.usersRepository.save(user);
   }
+
   async addBlocked(token:string, room:string)
   {
     var user = await this.findOne(token);
     user.rooms.push(room);
     await this.usersRepository.save(user);
   }
+
   async removeBlocked(token:string, room:string)
   {
     var user = await this.findOne(token);
@@ -102,29 +109,35 @@ export class UsersService {
     await this.usersRepository.save(user);
   }
 
-  async changeWSId(name:string, id:string){
-      var user = await this.findOneByName(name);
-      if(user != null){
-      this.logger.log(user.name + ' his WSid change for ' + id);
+  async changeWSId(token:string, id:string)
+  {
+    var user = await this.findOne(token);
+    if (user != null)
+    {
+      this.logger.log(user.nickname + ' his WSid change for ' + id);
       user.WSId = id;
-      await this.usersRepository.save(user);}
+      await this.usersRepository.save(user);
+    }
   }
-  async changetoken(username: any, newToken:any){
-    var user = await this.findOneByName(username);
+
+  async changetoken(login: any, newToken:any)
+  {
+    var user = await this.findOneByLogin(login);
     user.token = newToken;
     await this.usersRepository.save(user);
-    return await this.findOneByName(username)
-}
-  async getUserPublic(token:string, name:string){
+    return await this.findOneByLogin(login);
+  }
+
+  async getUserPublic(token:string, nickname:string){
 
     var verif = await this.findOne(token);
-    if(verif != undefined){
-      var user = await this.findOneByName(name);
+    if (verif != undefined){
+      var user = await this.findOneByNickname(nickname);
       return({
         imgUrl: user.imgUrl,
         isActive: user.isActive,
         lvl: user.lvl,
-        name: user.name,
+        login: user.login,
         nickname: user.nickname,
         numberOfLoose: user.numberOfLoose,
         numberOfWin: user.numberOfWin,
@@ -146,33 +159,58 @@ export class UsersService {
     var user = await this.findOne(data.token);
     user.firstConnection = false;
     user.imgUrl = data.url;
-    user.nickname = data.name;
+    user.nickname = data.nickname;
     return await this.usersRepository.save(user);
+  }
+
+  async changeNickname(data:any)
+  {
+    var user = await this.findOne(data.token);
+    user.nickname = data.nickname;
+    await this.usersRepository.save(user);
   }
 
   async findOne(token: string): Promise<User | undefined> {
     const user = await this.usersRepository.findOne(
-      { where:
+      { 
+        where:
           { token: token }
       }
     );
-    if(!user)
-      return undefined;
     return user;
   }
 
-  async findOneByName(name: string): Promise<User | undefined> {
+  async findOneByNickname(nickname: string): Promise<User | undefined> {
     const user = await this.usersRepository.findOne(
-      { where:
-          { name: name }
+      { 
+        where:
+          { nickname: nickname }
       }
-  );
+    );
     return user;
   }
 
-  async setIsActive(name:string,bool: boolean){
-    const user = await this.findOneByName(name);
-    if(user){
+  async nicknameAvailable(nickname: string){
+    let user = await this.findOneByNickname(nickname);
+    if (user)
+      return false;
+    else
+      return true;
+  }
+
+  async findOneByLogin(login: string): Promise<User | undefined> {
+    const user = await this.usersRepository.findOne(
+      { 
+        where:
+          { login: login }
+      }
+    );
+    return user;
+  }
+
+  async setIsActive(nickname:string, bool: boolean){
+    const user = await this.findOneByNickname(nickname);
+    if (user){
       user.isActive = bool;
       await this.usersRepository.save(user);
     }
@@ -182,7 +220,7 @@ export class UsersService {
   {
     var user = await this.findOne(token);
     user.xp += num;
-    if(user.xp >= 100)
+    if (user.xp >= 100)
     {
       user.xp = user.xp - 100;
       user.lvl++;

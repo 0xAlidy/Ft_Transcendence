@@ -145,7 +145,7 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			var date = new Date().toTimeString().slice(0,5)
 			if (this.inputRef)
 				if (this.state.activeRoom && this.inputRef.value !== "") {
-					var toSend = {sender:this.props.User.name, dest:this.state.activeRoom, message:this.inputRef.value, date:date};
+					var toSend = {sender:this.props.User.nickname, dest:this.state.activeRoom, message:this.inputRef.value, date:date};
 					this.props.socket.emit('sendMessage', toSend);
 					this.inputRef.value = "";
 			}
@@ -156,10 +156,10 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
         var pass = (document.getElementById("passNewRoom") as HTMLInputElement).value;
         if (pass != "")
 		{
-			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.name,password:pass})
+			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.nickname,password:pass})
 		}
 		else{
-			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.name,password:null})
+			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.nickname,password:null})
 		} 
         this.togglePopupRoom();
 	}
@@ -249,7 +249,7 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			
 					{
 						this.state.messages.map(( (item) => {
-							if (item.sender === this.props.User.name)
+							if (item.sender === this.props.User.nickname)
 								var classForItem = "msgItem"
 							else if (item.sender == "system"){
 								var classForItem = "systemMsg"

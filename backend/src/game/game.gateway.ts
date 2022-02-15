@@ -26,10 +26,12 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.logger.log('Initialized!');
         this.logger.log('Waiting for incoming connection...');
     }
+
     handleConnection(client: Socket, ...args: any[]) {
         this.logger.log("Connection:    " + client.id.slice(0, 4));
         this.clients.set(client.id,new clientClass(client));
     }
+
     handleDisconnect(client: Socket) {
         this.logger.log("Disconnect:    "+ client.id.slice(0, 4));
         var keys : string[] = Array.from( this.clients.keys());
@@ -57,6 +59,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.clients.delete(client.id);
         this.server.emit('updateUser', keys);
     }
+
     getUserClassbyName(str:string):clientClass| null
     {
         this.clients.forEach( element => {
@@ -65,6 +68,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         })
         return null
     }
+
     @SubscribeMessage('createPrivateSession')
     createPrivateSession(client: Socket, data: any){
         var cli = this.clients.get(client.id);
@@ -72,6 +76,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.rooms.set('room' +this.index, new roomClass(data.clientName + data.inviteName, cli , guest, this.server.to(data.clientName + data.inviteName)));
         guest._socket.emit('invite', {adv:cli._pseudo, room:data.clientName + data.inviteName})
     }
+
     @SubscribeMessage('joinPrivateSession')
     joinPrivateSession(client: Socket, data: any){
         var room = this.rooms.get(data.room)
@@ -89,11 +94,15 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     @SubscribeMessage('setID')
-    async setID(client: Socket, data: any){
-        this.logger.log(data.token +" " + client.id);
-        this.userService.changeWSId( data.name, client.id);
+    async setID(client: Socket, data: any)
+    {
+        this.logger.log(data.token + " " + client.id);
+        this.userService.changeWSId(data.token, client.id);
         var user: User;
-        await this.userService.findOneByName(data.name).then(res => {this.clients.get(client.id).setToken(data.token);this.setPlayerName(client, res.name)});
+        await this.userService.findOne(data.token).then(res => {
+            this.clients.get(client.id).setToken(data.token);
+            this.setPlayerName(client, res.nickname) // nickname ? si oui penser à la premiere connexion
+        });
     }
 
     @SubscribeMessage('setPlayerName')

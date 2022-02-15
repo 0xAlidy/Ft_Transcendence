@@ -6,7 +6,7 @@ export class User {
   id: number;
 
   @Column()
-  name: string;
+  login: string;
 
   @Column({ default: '' })
   nickname: string;
@@ -57,8 +57,8 @@ export class User {
   imgUrl: string;
 
 
-  constructor(pseudo :string, token:string){
-    this.name = pseudo;
+  constructor(login: string, token: string){
+    this.login = login;
     this.token = token;
   }
 }

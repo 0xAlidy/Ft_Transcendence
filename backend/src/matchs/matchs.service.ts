@@ -17,19 +17,20 @@ export class MatchsService
 		this.MatchRepository.save(match);
 	}
 
-	async MatchsByName(name:string, token:string)
+	async MatchsByName(token:string)
 	{
-		if(await this.usersService.findOne(token))
+		var user = await this.usersService.findOne(token);
+		if (user)
 		{
 			var array = await this.MatchRepository.find();
 			var askerMatchs:Match[] = [];
 			var ret:string[] = [];
 			array.forEach(element => {
-				if (element.WinnerName === name || element.LooserName === name)
+				if (element.WinnerName === user.nickname || element.LooserName === user.nickname)
 					askerMatchs.push(element);
 			});
 			askerMatchs.forEach(element => {
-				ret.push(element.WinnerName +'/'+ element.WinnerScore	+'/'+ element.LooserName +'/'+ element.LooserScore + '/' + name + '/' + token);
+				ret.push(element.WinnerName +'/'+ element.WinnerScore	+'/'+ element.LooserName +'/'+ element.LooserScore + '/' + user.nickname + '/' + token);
 			});
 			return ret;
 		}

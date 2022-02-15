@@ -14,7 +14,7 @@ export class ChatRooms {
   @Column()
   owner:string;
 
-  @Column({default:''})
+  @Column({default:'', nullable: true})
   password:string;
 
   @Column()

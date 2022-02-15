@@ -13,7 +13,6 @@ import PopupStart from './PopupStart';
 import FriendPanel from './midPanel/FriendsPanel/FriendPanel';
 import MatchMaking from './midPanel/MatchMaking/MatchMaking';
 import Popup from 'reactjs-popup';
-// import axios from 'axios';
 
 export interface user{
 	WSId: string;
@@ -21,7 +20,7 @@ export interface user{
 	imgUrl: string;
 	isActive: false;
 	lvl: number;
-	name: string;
+	login: string;
 	nickname: string;
 	numberOfLoose: number;
 	numberOfWin: number;
@@ -33,10 +32,11 @@ export interface user{
 }
 interface popupScore{open:boolean, win:boolean, adv:string}
 
-export default class MainPage extends React.Component<{token: string, name:string},{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, url:string|null, popupInfo:popupScore | null}>{
+export default class MainPage extends React.Component<{ token: string },{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, url:string|null, popupInfo:popupScore | null}>{
 	menuState: any
 	selector : any;
 	ref:any;
+
 	constructor(props :any) {
 		super(props);
 		this.state = {
@@ -52,14 +52,17 @@ export default class MainPage extends React.Component<{token: string, name:strin
 		};
 		this.ref = React.createRef();
 	}
+
 	async componentDidMount() {
-		console.log("debug connection error" + this.state.token)
-		if(this.state.token)
+		
+		if (this.state.token)
 		{
-				await axios.get("HTTP://"+window.location.host.split(":").at(0)+":667/auth/me?token="+this.state.token).then(res => {
-					this.setState({User: res.data, url: res.data.imgUrl})})
+			console.log("debug connection error" + this.state.token)
+			await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
+				this.setState({User: res.data, url: res.data.imgUrl})
+			})
 			if (this.state.User)
-				this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token, username:this.state.User.name}})})
+				this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token, name:this.state.User.login}})}) // NICKNAME ?
 			if (this.state.socket){
 				this.state.socket.on('startGame', () => {
 					this.openGame();
@@ -73,32 +76,39 @@ export default class MainPage extends React.Component<{token: string, name:strin
 				this.state.socket.on('invite', (data:any) => {
 					//data.adv:string, data.room:'data.clientName/data.inviteName'
 				});
-				this.state.socket.emit('setID', {token: this.props.token, name:this.props.name});
-			}else
+				if (this.state.User && this.state.User.nickname) // checkpremierconnexion où le nickname n'est pas set
+					this.state.socket.emit('setID', { token: this.props.token });
+			}
+			else
 				console.log("ERROR socket")
 		}
 	}
 
 	refreshUser = async () => {
-		await axios.get("HTTP://"+window.location.host.split(":").at(0)+":667/auth/me?token="+this.state.token).then(res => {
-				this.setState({User: res.data, url: res.data.imgUrl})})
+		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
+			this.setState({User: res.data, url: res.data.imgUrl})
+		})
 	}
 
 	CompleteProfile = (User:user) => {
-		this.setState({User: User});
+		this.setState({ User: User });
 	}
+
 	openGame(){
 		this.ref.current.openGame();
 		this.setState({lastSelect: this.state.selector})
 		this.setState({selector:'none'})
 	}
+
 	closeGame(){
 		this.ref.current.closeGame();
 		this.setState({selector:this.state.lastSelect})
 	}
+
 	closePopup(){
 
 	}
+
 	render(){
 		const Ref = (e: any) => {
 			if (e.isAdminOpen){
@@ -117,30 +127,30 @@ export default class MainPage extends React.Component<{token: string, name:strin
 				this.setState({selector: 'friends'});
 			}
 		}
-		return (
-        <div id="MainPage">
-			{this.state.User && this.state.socket &&
-			<>
-				<div className="logo">
-					<img src={LOGO} alt="" className="mainLogo"/>
-				</div>
 
-				<Menu onChange={Ref} imgsrc={this.state.User.imgUrl}/>
-				<Chat socket={this.state.socket} User={this.state.User} />
-				<div className="game" id="game">
-						{this.state.selector === 'profile' && <Profile User={this.state.User} name={this.state.User.name} refreshUser={this.refreshUser}/>}
+		return (
+			<div id="MainPage">
+				{this.state.User && this.state.socket &&
+				<>
+					<div className="logo">
+						<img src={LOGO} alt="" className="mainLogo"/>
+					</div>
+					<Menu onChange={Ref} imgsrc={this.state.User.imgUrl}/>
+					<Chat socket={this.state.socket} User={this.state.User} />
+					<div className="game" id="game">
+						{this.state.selector === 'profile' && <Profile User={this.state.User} refreshUser={this.refreshUser}/>}
 						{this.state.selector === 'history' && <History User={this.state.User}/>}
 						{this.state.selector === 'admin' && <AdminPanel/>}
 						{this.state.selector === 'game' && <MatchMaking token={this.state.User.token} socket={this.state.socket}/>}
 						{this.state.selector === 'friends' && <FriendPanel/>}
-					<IGame ref={this.ref} socket={this.state.socket}/>
-				</div>
-				{this.state.popupInfo && <Popup open={this.state.popupInfo.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>}
-				{this.state.popupInvite && <Popup open={this.state.popupInvite.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>}
-				<PopupStart User={this.state.User} onChange={this.CompleteProfile}/>
-			</>
-			}
-		</div>
+						<IGame ref={this.ref} socket={this.state.socket}/>
+					</div>
+					{this.state.popupInfo && <Popup open={this.state.popupInfo.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>}
+					{/*this.state.popupInvite && <Popup open={this.state.popupInvite.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>*/}
+					<PopupStart User={this.state.User} onChange={this.CompleteProfile}/>
+				</>
+				}
+			</div>
     	)
 	}
 };

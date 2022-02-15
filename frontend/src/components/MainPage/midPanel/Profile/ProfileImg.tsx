@@ -11,7 +11,7 @@ interface user{
 	imgUrl: string;
 	isActive: false;
 	lvl: number;
-	name: string;
+	login: string;
 	nickname: string;
 	numberOfLoose: number;
 	numberOfWin: number;
@@ -25,13 +25,14 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 	editor:AvatarEditor | null;
 	constructor(props :any){
 		super(props)
-		this.state= {displayChoices: false,
-					webcamOption:false,
-					fileOption:false,
-					uploadOption:false,
-					url:null,
-					src: this.props.User.imgUrl
-				};
+		this.state= {
+			displayChoices: false,
+			webcamOption:false,
+			fileOption:false,
+			uploadOption:false,
+			url:null,
+			src: this.props.User.imgUrl
+		};
 		this.editor = null;
 		this.open = this.open.bind(this);
 		this.openwebcam = this.openwebcam.bind(this)
@@ -46,7 +47,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 		var headers = {
 			'Content-Type': 'application/json;charset=UTF-8',
 		}
-		if(this.editor){
+		if (this.editor){
 			await fetch("HTTP://" + window.location.host.split(":").at(0) + ":667/user/upload", {
 					method: "post",
 					headers: headers,
@@ -73,6 +74,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 		else
 			this.setState({displayChoices: false, webcamOption: false, url:null});
 	}
+
 	openwebcam() {
 		if(this.state.webcamOption === false)
 			this.setState({webcamOption: true,})

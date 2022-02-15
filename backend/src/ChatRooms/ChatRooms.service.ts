@@ -74,7 +74,7 @@ import { clientClass } from "src/chat/class/client.class";
 		if(room.IsPassword === false)
 			return true
 		room.users.forEach(element => {
-			if(user.name == element)
+			if(user.nickname == element)
 				return true
 		});
 		return false
