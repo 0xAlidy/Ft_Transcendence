@@ -226,7 +226,7 @@ export class UsersService {
   async xp(token:string,num: number)
   {
     var user = await this.findOne(token);
-    if(user)
+    if(!user)
       return;
     user.xp += num;
     if (user.xp >= 100)

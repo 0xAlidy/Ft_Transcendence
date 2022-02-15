@@ -136,7 +136,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 					<Menu onChange={Ref} imgsrc={this.state.User.imgUrl}/>
 					<Chat socket={this.state.socket} User={this.state.User} />
 					<div className="game" id="game">
-						{this.state.selector === 'profile' && <Profile User={this.state.User} refreshUser={this.refreshUser}/>}
+						{this.state.selector === 'profile' && <Profile token={this.props.token} refreshUser={this.refreshUser}/>}
 						{this.state.selector === 'history' && <History User={this.state.User}/>}
 						{this.state.selector === 'admin' && <AdminPanel/>}
 						{this.state.selector === 'game' && <MatchMaking token={this.state.User.token} socket={this.state.socket}/>}

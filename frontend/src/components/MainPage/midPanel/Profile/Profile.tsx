@@ -8,6 +8,7 @@ import Gauge from './gauge';
 import WinRate from './winRate';
 import TwoAuth from './twoAuth';
 import ProfileImg from './ProfileImg';
+import axios from 'axios';
 
 interface user{
 	WSId: string;
@@ -26,30 +27,40 @@ interface user{
 	xp: 0;
 }
 
-export default class Profile extends React.Component<{User:user, refreshUser:any},{}>{
+export default class Profile extends React.Component<{token:string, refreshUser:any},{User:user|null}>{
+	constructor(props:any)
+	{
+		super(props)
+		this.state = {User:null}
+	}
 	handleRefresh = () => {
 		this.props.refreshUser()
 	}
-	
+
+	async componentDidMount(){
+		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.props.token).then(res => {
+			this.setState({User: res.data})
+		})
+	}
 	render(){
 		return (
         <div className="midPanel" >
-			<div id="profile">
+			{this.state.User && <div id="profile">
 				<div id="player">
 					<h1>Player</h1>
-					<ProfileImg User={this.props.User} refreshUser={this.handleRefresh}/>
-					<EditBox value={this.props.User.nickname} onChange={() => {}} User={this.props.User} refreshUser={this.handleRefresh}/>
+					<ProfileImg User={this.state.User} refreshUser={this.handleRefresh}/>
+					<EditBox value={this.state.User.nickname} onChange={() => {}} User={this.state.User} refreshUser={this.handleRefresh}/>
 				</div>
 				<div id="statistics">
 					<h1>Statistics</h1>
-					<Gauge percent={this.props.User.xp.toString()} lvl={this.props.User.lvl.toString()}/>
-					<WinRate win={this.props.User.numberOfWin} loose={this.props.User.numberOfLoose}/>
+					<Gauge percent={this.state.User.xp.toString()} lvl={this.state.User.lvl.toString()}/>
+					<WinRate win={this.state.User.numberOfWin} loose={this.state.User.numberOfLoose}/>
 				</div>
 				<div id="security">
 					<h1>Security</h1>
-					<TwoAuth token={this.props.User.token}/>
+					<TwoAuth token={this.state.User.token}/>
 				</div>
-			</div>
+			</div>}
 		</div>
     	)
 	}

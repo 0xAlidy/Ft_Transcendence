@@ -188,10 +188,12 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         if (ret == 1){
             this.userService.win(room._guest._token);
             this.userService.xp(room._guest._token, 50);
+            this.userService.loose(room._player._token);
             this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA);
         }if (ret == 2){
             this.userService.win(room._player._token);
             this.userService.xp(room._player._token, 50);
+            this.userService.loose(room._guest._token);
             this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB);
         }
         this.rooms.delete(room._name);
@@ -248,7 +250,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         room._guest._socket.emit('popupScore', {win: false, adv:room._player._login})
                         this.userService.win(room._player._token);
                         this.userService.xp(room._player._token, 50);
-                        this.userService.xp(room._guest._token, 25);
+                        this.userService.xp(room._guest._token, 10);
                         this.userService.loose(room._guest._token);
                         this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB);
                     }
@@ -257,7 +259,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         room._player._socket.emit('popupScore', {win: false, adv:room._player._login})
                         room._guest._socket.emit('popupScore', {win: true, adv:room._guest._login})
                         this.userService.win(room._guest._token);
-                        this.userService.xp(room._player._token, 25);
+                        this.userService.xp(room._player._token, 10);
                         this.userService.xp(room._guest._token, 50);
                         this.userService.loose(room._player._token);
                         this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA);
