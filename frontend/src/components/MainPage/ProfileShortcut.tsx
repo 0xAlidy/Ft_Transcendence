@@ -38,7 +38,7 @@ export default class ProfileShortCut extends React.Component<{pseudo:string, tok
 									<span>
 										<img alt="UserImage" src={this.state.User.imgUrl} style={{borderRadius:"50%"}}/>
 									</span>
-									<div className="popupName">{this.state.User.name}</div>
+									<div className="popupName">{this.state.User.nickname}</div>
 								</div>
 								<div id='levelSection'>
 									<div className="lvl">LEVEL<br/>{this.state.User.lvl}</div>

@@ -7,7 +7,7 @@
 - ban 														//	/ban "pseudo"
 - unban 													//	/unban "pseudo"
 - mute 														//	/mute "pseudo" time(minutes)
-- private room 
+- private room
 
 
 
@@ -127,7 +127,7 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			this.setState({RowsStyle:"40px auto 40px"})
 			this.setState({openNewPass:true})
 		})
-		
+
 	}
 
 	messagesRef = (ref:HTMLDivElement) => {
@@ -145,7 +145,7 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			var date = new Date().toTimeString().slice(0,5)
 			if (this.inputRef)
 				if (this.state.activeRoom && this.inputRef.value !== "") {
-					var toSend = {sender:this.props.User.nickname, dest:this.state.activeRoom, message:this.inputRef.value, date:date};
+					var toSend = {sender:this.props.User.login, dest:this.state.activeRoom, message:this.inputRef.value, date:date};
 					this.props.socket.emit('sendMessage', toSend);
 					this.inputRef.value = "";
 			}
@@ -156,11 +156,11 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
         var pass = (document.getElementById("passNewRoom") as HTMLInputElement).value;
         if (pass !== "")
 		{
-			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.nickname,password:pass})
+			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.login,password:pass})
 		}
 		else{
-			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.nickname,password:null})
-		} 
+			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.login,password:null})
+		}
         this.togglePopupRoom();
 	}
 
@@ -246,11 +246,11 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
                         	<button onClick={this.togglePopupPass} className="buttonPopUp">Cancel</button>
 						</>}
 					/>}
-			
+
 					{
 						this.state.messages.map(( (item) => {
 							var classForItem;
-							if (item.sender === this.props.User.nickname)
+							if (item.sender === this.props.User.login)
 								classForItem = "msgItem"
 							else if (item.sender === "system")
 								classForItem = "systemMsg"
