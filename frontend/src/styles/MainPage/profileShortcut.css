@@ -4,7 +4,7 @@
 	cursor: pointer;
 }
 
-.PopupContainer {  
+.PopupContainer {
 	display: flex;
 	flex-direction: column;
 	padding: 10px;
