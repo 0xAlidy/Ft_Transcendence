@@ -98,7 +98,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 				</button>
 			</div>
 			
-			{this.state.src && <img src={this.state.src} className="profileImg"/>}
+			{this.state.src && <img alt="" src={this.state.src} className="profileImg"/>}
 			<div className='ChooseContainer'>
 			{
 				this.state.displayChoices === true &&

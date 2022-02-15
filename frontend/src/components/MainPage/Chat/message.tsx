@@ -13,7 +13,7 @@ export default class MessageItem extends React.Component <{msg:Msg, User:user,ac
             activeRoom: this.props.activeRoom,
 			classItem:this.props.class,
         }
-		if (this.props.msg.sender == "system")
+		if (this.props.msg.sender === "system")
 			this.system = true;
 	};
 

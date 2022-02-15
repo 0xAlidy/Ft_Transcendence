@@ -154,7 +154,7 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 	sendNewRoom = () => {
 		var name = (document.getElementById("nameNewRoom") as HTMLInputElement).value;
         var pass = (document.getElementById("passNewRoom") as HTMLInputElement).value;
-        if (pass != "")
+        if (pass !== "")
 		{
 			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.nickname,password:pass})
 		}
@@ -249,13 +249,13 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			
 					{
 						this.state.messages.map(( (item) => {
+							var classForItem;
 							if (item.sender === this.props.User.nickname)
-								var classForItem = "msgItem"
-							else if (item.sender == "system"){
-								var classForItem = "systemMsg"
-							}
+								classForItem = "msgItem"
+							else if (item.sender === "system")
+								classForItem = "systemMsg"
 							else
-								var classForItem = "msgOtherItem"
+								classForItem = "msgOtherItem"
 							return (
 								<MessageItem msg={item} User={this.props.User} activeRoom={this.state.activeRoom} class={classForItem}/>
 							)

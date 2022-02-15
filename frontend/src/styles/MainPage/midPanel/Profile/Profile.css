@@ -10,7 +10,6 @@
 }
 
 #profile h1 {
-	box-shadow: #fee154;
 	color: #fee154;
 	border: groove 2px #fee154;
 	background-color: #1f1f1f;
@@ -26,15 +25,13 @@
 	align-items: center;
 	justify-content: space-between;
 	width: 50%;
-	height: 42%;
 }
 
 #profile #statistics {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 40%;
-	height: 42%;
+	width: 50%;
 }
 
 #profile #security {
@@ -46,7 +43,7 @@
 
 #profile #security h1 {
 	padding: 10px 12.5%;
-	margin-top: 80px;
+	margin-top: 60px;
 }
 
 

@@ -2,10 +2,6 @@ import React from 'react'
 import '../../../../styles/MainPage/midPanel/Profile/winRate.css'
 
 export default class WinRate extends React.Component<{ win:number, loose:number},{}>{
-    constructor(props :any){
-        super(props)
-    }
-
     render(){
         return (
         <div className="winRate">

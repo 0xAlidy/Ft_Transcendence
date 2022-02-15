@@ -27,21 +27,31 @@ interface user{
 	xp: 0;
 }
 
-export default class Profile extends React.Component<{token:string, refreshUser:any},{User:user|null}>{
+export default class Profile extends React.Component<{token:string, refreshUser:any},{User:user|null, nickname:string}>{
 	constructor(props:any)
 	{
 		super(props)
-		this.state = {User:null}
+		this.state = {
+			User:null,
+			nickname: "",
+		}
+		this.setName = this.setName.bind(this);
 	}
+
+	setName(nickname:string){
+		this.setState({ nickname: nickname });
+	};
+
 	handleRefresh = () => {
-		this.props.refreshUser()
+		//this.props.refreshUser()
 	}
 
 	async componentDidMount(){
 		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.props.token).then(res => {
-			this.setState({User: res.data})
+			this.setState({User: res.data, nickname: res.data.nickname})
 		})
 	}
+
 	render(){
 		return (
         <div className="midPanel" >
@@ -49,7 +59,7 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 				<div id="player">
 					<h1>Player</h1>
 					<ProfileImg User={this.state.User} refreshUser={this.handleRefresh}/>
-					<EditBox value={this.state.User.nickname} onChange={() => {}} User={this.state.User} refreshUser={this.handleRefresh}/>
+					<EditBox value={this.state.nickname} onChange={this.setName} User={this.state.User}/>
 				</div>
 				<div id="statistics">
 					<h1>Statistics</h1>

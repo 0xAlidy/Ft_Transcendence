@@ -27,10 +27,9 @@ https://favicon.io/
 COLORS:
 
 Black:      #1F1F1F
-Yellow:     #FEE154
-Blue:       #6A7985
 Grey:       #333333
 Light Grey: #7C7C7C
+Yellow:     #FEE154
 White:      #F2F2F2
 
 TO DO :
