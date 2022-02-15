@@ -140,7 +140,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 						{this.state.selector === 'history' && <History User={this.state.User}/>}
 						{this.state.selector === 'admin' && <AdminPanel/>}
 						{this.state.selector === 'game' && <MatchMaking token={this.state.User.token} socket={this.state.socket}/>}
-						{this.state.selector === 'friends' && <FriendPanel/>}
+						{this.state.selector === 'friends' && <FriendPanel User={this.state.User}/>}
 						<IGame ref={this.ref} socket={this.state.socket}/>
 					</div>
 					{this.state.popupInfo && <Popup open={this.state.popupInfo.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>}
