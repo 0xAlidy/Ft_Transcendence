@@ -11,7 +11,7 @@ interface specRoomsData{
 export default class MatchMaking extends React.Component<{socket:Socket, token:string},{Searching:boolean, rooms:specRoomsData[]}>{
 	constructor(props :any) {
 		super(props);
-		this.state = {Searching:false, rooms:[]}
+		this.state = {Searching:false, rooms:[{name:'roomtest', left:'edepauw', right:'alidy', token:this.props.token},{name:'roomtest', left:'edepauw', right:'alidy', token:this.props.token},{name:'roomtest', left:'edepauw', right:'alidy', token:this.props.token},{name:'roomtest', left:'edepauw', right:'alidy', token:this.props.token},{name:'roomtest', left:'edepauw', right:'alidy', token:this.props.token},{name:'roomtest', left:'edepauw', right:'alidy', token:this.props.token}]}
 		this.props.socket.on('SpecRooms', (data:any) => {
 			data.spec.token = this.props.token
 			this.setState({rooms: data.spec})
@@ -24,15 +24,19 @@ export default class MatchMaking extends React.Component<{socket:Socket, token:s
 	render(){
 		return (
         <div className="midPanel">
+			<h1>MATCHMAKING</h1>
 			{!this.state.Searching ?
 				<button className="buttonSearch" value='SEARCH'  onClick={() => {this.props.socket.emit('searchRoom'); this.setState({Searching:true})}}>SEARCH</button>:
 				<button className="buttonSearch" value='CANCEL' onClick={() => {this.props.socket.emit('cancel'); this.setState({Searching:false})}}>CANCEL</button>
 			}
+			<h1>SPECTATE</h1>
+			<div className='listSpec'>
 			{
 				this.state.rooms.map((function(item :specRoomsData, idx) {
 					return <ItemSpec data={item} token={item.token} key={idx}/>;
 				}))
 			}
+			</div>
 		</div>
     	)
 	}

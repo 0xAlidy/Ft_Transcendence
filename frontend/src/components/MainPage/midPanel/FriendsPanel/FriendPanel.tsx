@@ -1,33 +1,34 @@
 import React from 'react'
 import '../../../../styles/MainPage/midPanel/midPanel.css'
 import '../../../../styles/MainPage/midPanel/FriendsPanel/FriendPanel.css'
+import { user } from '../../MainPage'
 
-export default class FriendPanel extends React.Component<{},{select:number}>{
-	list:HTMLDivElement|null;
+export default class FriendPanel extends React.Component<{User:user},{select:number}>{
 	constructor(props:any){
 		super(props)
-		this.list = null; 
 		this.state = {select:0}
 	}
-	setRef(ref:HTMLDivElement){
-		this.list = ref;
+	async componentDidMount(){
+		
 	}
-	OpenBlocked(){
-
+	OpenBlocked = () =>{
+		this.setState({select:2});
 	}
-	OpenWaiting(){
-
+	OpenInvite = () =>{
+		this.setState({select:1});
 	}
-	OpenFriends(){
-
+	OpenFriends = () =>{
+		this.setState({select:0});
 	}
 	render(){
 		return (
 		<div className="midPanel">
-			<div className="blocked" onClick={this.OpenBlocked}></div>
-			<div className="waiting" onClick={this.OpenWaiting}></div>
-			<div className="friendList" onClick={this.OpenFriends}></div>
-			<div className="listConstainer" ref={this.setRef}></div>
+			<div className="friendPanel">
+			<div className="friends" onClick={this.OpenFriends} style={this.state.select === 0 ?{color:'#fee154', borderColor:'#fee154'}:{color:'#fee154', borderColor:'#00000000'}}>Friends</div>
+			<div className="invite" onClick={this.OpenInvite} style={this.state.select === 1 ?{color:'#fee154', borderColor:'#fee154'}:{color:'#fee154', borderColor:'#00000000'}}>Invitations</div>
+			<div className="blocked" onClick={this.OpenBlocked} style={this.state.select === 2 ?{color:'#fee154', borderColor:'#fee154'}:{color:'#fee154', borderColor:'#00000000'}}>Blockeds</div>
+			<div className="list"></div>
+			</div>
 	  	</div>
     	)
 	};

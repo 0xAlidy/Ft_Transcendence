@@ -2,3 +2,55 @@
 	width: 100;
 	height: 20;
 }
+
+.midPanel h1{
+    box-shadow: #fee154;
+    color: #fee154;
+    border: groove 2px #fee154;
+    background-color: #1f1f1f;
+    border-radius: 20px;
+    padding: 10px 5%;
+    text-transform: uppercase;
+    box-shadow: 0px 10px 13px 4px hsl(0deg 0% 7%);
+}
+.itemSpec{
+	margin: 20px;
+}
+.grid{
+	display: grid;
+	background-color: #1f1f1f;
+	border-radius: 30px;
+	grid-template-columns: 2fr 1fr 2fr;
+	grid-template-rows: 2fr 1fr 2fr;
+	grid-auto-columns: 1fr;
+	gap: 0px 0px;
+	grid-auto-flow: row;
+	grid-template-areas:
+	  "imgLeft vs imgRight"
+	  "nameLeft vs nameRight"
+	  "specButton specButton specButton";
+}
+.specButton{
+	color:#1f1f1f;
+	background-color: #fee154;
+}
+.listSpec {
+	overflow-y:scroll;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+  .imgLeft { grid-area: imgLeft; }
+
+  .imgRight { grid-area: imgRight; }
+
+  .text { grid-area: vs; }
+
+  .nameLeft { grid-area: nameLeft; }
+
+  .nameRight { grid-area: nameRight; }
+
+  .specButtongrid { grid-area: specButton; }

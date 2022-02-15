@@ -1,18 +1,21 @@
-.container {  display: grid;
+  .friendPanel {
+	width: 100%;
+	height: 100%;
+	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
-	grid-template-rows: 10% 90%;
+	grid-template-rows: 0.5fr 10fr;
+	grid-auto-columns: 1fr;
 	gap: 0px 0px;
 	grid-auto-flow: row;
 	grid-template-areas:
-	  "friendList waiting blocked"
-	  "listConstainer listConstainer listConstainer";
+	  "friends invite blocked"
+	  "list list list";
   }
-  
-  .blocked { grid-area: blocked; }
-  
-  .waiting { grid-area: waiting; }
-  
-  .friendList { grid-area: friendList; }
-  
-  .listConstainer { grid-area: listConstainer; }
-  
+
+  .friends { grid-area: friends; border-bottom:thick solid; font-weight: bolder;}
+
+  .invite { grid-area: invite; border-bottom:thick solid; font-weight: bolder;}
+
+  .blocked { grid-area: blocked; border-bottom:thick solid; font-weight: bolder;}
+
+  .list { grid-area: list; }
