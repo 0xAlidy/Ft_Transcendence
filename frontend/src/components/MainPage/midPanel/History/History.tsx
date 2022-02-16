@@ -34,14 +34,16 @@ export default class History extends React.Component<{User:user},{matchs:string[
 
 	render(){
 		return (
-        <div className="midPanel" id="history">
-			<h1>History</h1>
-			{
-				this.state.matchs.map((item, idx) => {
-					console.log(item , idx)
-					return <ItemMatch match={item} token={this.props.User.token} name={this.props.User.login} key={idx}/>;
-				})
-			}
+        <div className="midPanel">
+			<div id="history">
+				<h1>History</h1>
+				{
+					this.state.matchs.map((item, idx) => {
+						console.log(item , idx)
+						return <ItemMatch match={item} token={this.props.User.token} name={this.props.User.login} key={idx}/>;
+					})
+				}
+			</div>
 		</div>
     	)
 	}

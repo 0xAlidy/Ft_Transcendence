@@ -56,19 +56,24 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 		return (
         <div className="midPanel" >
 			{this.state.User && <div id="profile">
-				<div id="player">
-					<h1>Player</h1>
-					<ProfileImg User={this.state.User} refreshUser={this.handleRefresh}/>
-					<EditBox value={this.state.nickname} onChange={this.setName} User={this.state.User}/>
-				</div>
-				<div id="statistics">
-					<h1>Statistics</h1>
-					<Gauge percent={this.state.User.xp.toString()} lvl={this.state.User.lvl.toString()}/>
-					<WinRate win={this.state.User.numberOfWin} loose={this.state.User.numberOfLoose}/>
-				</div>
-				<div id="security">
-					<h1>Security</h1>
-					<TwoAuth token={this.state.User.token}/>
+				<h1>Profile</h1>
+				<div id="boxProfile">
+					<div id="topBox">
+						<div id="player">
+							<h2>Player</h2>
+							<ProfileImg User={this.state.User} refreshUser={this.handleRefresh}/>
+							<EditBox value={this.state.nickname} onChange={this.setName} User={this.state.User}/>
+						</div>
+						<div id="statistics">
+							<h2>Statistics</h2>
+							<Gauge percent={this.state.User.xp.toString()} lvl={this.state.User.lvl.toString()}/>
+							<WinRate win={this.state.User.numberOfWin} loose={this.state.User.numberOfLoose}/>
+						</div>
+					</div>
+					<div id="security">
+						<h2>Security</h2>
+						<TwoAuth token={this.state.User.token}/>
+					</div>
 				</div>
 			</div>}
 		</div>

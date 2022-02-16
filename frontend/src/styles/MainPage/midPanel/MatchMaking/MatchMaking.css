@@ -3,19 +3,10 @@
 	height: 20;
 }
 
-.midPanel h1{
-    box-shadow: #fee154;
-    color: #fee154;
-    border: groove 2px #fee154;
-    background-color: #1f1f1f;
-    border-radius: 20px;
-    padding: 10px 5%;
-    text-transform: uppercase;
-    box-shadow: 0px 10px 13px 4px hsl(0deg 0% 7%);
-}
 .itemSpec{
 	margin: 20px;
 }
+
 .grid{
 	display: grid;
 	background-color: #1f1f1f;
@@ -30,10 +21,12 @@
 	  "nameLeft vs nameRight"
 	  "specButton specButton specButton";
 }
+
 .specButton{
 	color:#1f1f1f;
 	background-color: #fee154;
 }
+
 .listSpec {
 	overflow-y:scroll;
 	justify-content: center;
