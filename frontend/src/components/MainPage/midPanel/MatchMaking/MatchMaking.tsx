@@ -11,15 +11,15 @@ interface specRoomsData{
 export default class MatchMaking extends React.Component<{socket:Socket, token:string},{Searching:boolean, rooms:specRoomsData[]}>{
 	constructor(props :any) {
 		super(props);
-		this.state = {Searching:false, rooms:[{name:'roomtest', left:'edepauw', right:'alidy', token:this.props.token},{name:'roomtest', left:'edepauw', right:'alidy', token:this.props.token},{name:'roomtest', left:'edepauw', right:'alidy', token:this.props.token},{name:'roomtest', left:'edepauw', right:'alidy', token:this.props.token},{name:'roomtest', left:'edepauw', right:'alidy', token:this.props.token},{name:'roomtest', left:'edepauw', right:'alidy', token:this.props.token}]}
+		this.state = {Searching:false, rooms:[{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.token},{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.token},{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.token},{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.token},{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.token},{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.token}]}
 		this.props.socket.on('SpecRooms', (data:any) => {
 			data.spec.token = this.props.token
 			this.setState({rooms: data.spec})
 		})
 	}
-	onSpecClick = () =>
+	onSpecClick = (room:string) =>
 	{
-
+		this.props.socket.emit('specRoom', {room: room});
 	}
 	render(){
 		return (
@@ -32,9 +32,9 @@ export default class MatchMaking extends React.Component<{socket:Socket, token:s
 			<h1>SPECTATE</h1>
 			<div className='listSpec'>
 			{
-				this.state.rooms.map((function(item :specRoomsData, idx) {
-					return <ItemSpec data={item} token={item.token} key={idx}/>;
-				}))
+				this.state.rooms.map((item :specRoomsData, idx) => {
+					return <ItemSpec data={item} onSpecCLick={this.onSpecClick} token={item.token} key={idx}/>;
+				})
 			}
 			</div>
 		</div>

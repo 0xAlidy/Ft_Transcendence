@@ -27,6 +27,10 @@ export default class ProfileShortCut extends React.Component<{pseudo:string, tok
 		.then(res => this.setState({User: res.data}))
 	}
 
+	addFriend = () =>{
+		
+	}
+
 	render(){
 		return (
 			<>
@@ -49,7 +53,7 @@ export default class ProfileShortCut extends React.Component<{pseudo:string, tok
 										<button className='ProfileShortcutButton'>MP</button>
 									</div>
 									<div className="addFriend">
-										<button className='ProfileShortcutButton'>addFriend</button></div>
+										<button className='ProfileShortcutButton' onClick={this.addFriend}>addFriend</button></div>
 									<div className="duel">
 										<button className='ProfileShortcutButton'>DUEL</button></div>
 									<div className="history">

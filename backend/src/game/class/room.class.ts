@@ -70,9 +70,27 @@ export class roomClass{
 		this._guest = client;
 		this.logger.log(client._login + " join" + this._name + "as P2.");
 	}
+	isSpectate(client: clientClass){
+		this._spectators.forEach(element => {
+			if(element._login === client._login)
+				return true;
+		});
+		return false
+	}
 	addSpec(client: clientClass){
 		this._spectators.push(client);
 		this.logger.log(client._login + " join " + this._name + "as spectator.");
+	}
+	removeSpec(client: clientClass){
+		for( var i = 0; i < this._spectators.length; i++){ 
+    
+			if ( this._spectators[i]._id === client._socket.id) { 
+		
+				this._spectators.splice(i, 1); 
+			}
+		
+		}
+		this.logger.log(client._login + " leave " + this._name + "as spectator.");
 	}
 	removePlayer(client: clientClass): boolean{
 		if(this._player._socket.id == client._socket.id)

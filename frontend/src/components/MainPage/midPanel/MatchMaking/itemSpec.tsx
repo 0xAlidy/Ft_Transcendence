@@ -7,7 +7,7 @@ interface specRoomsData{
 	left:string,
 	right:string,
 }
-export default class ItemSpec extends React.Component<{data:specRoomsData, token:string},{left:string|null, right:string|null}>{
+export default class ItemSpec extends React.Component<{data:specRoomsData, token:string, onSpecCLick:any},{left:string|null, right:string|null}>{
 	constructor(props:any)
 	{
 		super(props);
@@ -20,6 +20,9 @@ export default class ItemSpec extends React.Component<{data:specRoomsData, token
 		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/user/getNickname?login=" + this.props.data.left).then(res => {
 			this.setState({left: res.data})
 		})
+	}
+	specClick = () =>{
+		this.props.onSpecCLick(this.props.data.name);
 	}
 	render(){
 		return	(
@@ -40,7 +43,7 @@ export default class ItemSpec extends React.Component<{data:specRoomsData, token
 							{this.state.right}
 						</div>
 						<div className="specButtongrid">
-							<button className="specButton">Spectate</button>
+							<button className="specButton" onClick={this.specClick}>Spectate</button>
 						</div>
 					</div>}
 				</div>)

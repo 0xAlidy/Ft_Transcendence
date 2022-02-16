@@ -31,6 +31,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         var user = await this.userService.findOne(client.handshake.query.token as string);
         this.logger.log("Connection:    " + client.id.slice(0, 4));
         this.clients.set(client.id,new clientClass(client, user.login, user.token));
+        client.join('lobby');
+        this.clients.get(client.id)._room = 'lobby';
     }
     nicknameChange(){
 
@@ -62,7 +64,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @SubscribeMessage('createPrivateSession')
     createPrivateSession(client: Socket, data: any){
         var cli = this.clients.get(client.id);
-        var guest = this.getUserClassbyName(data.inviteName);
+        var guest = this.getUserClassbyName(data.inviteLogin);
         this.rooms.set('room' +this.index, new roomClass(data.clientName + data.inviteName, cli , guest, this.server.to(data.clientName + data.inviteName)));
         guest._socket.emit('invite', {adv:cli._login, room:data.clientName + data.inviteName})
     }
@@ -108,6 +110,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             this.rooms.get('room' + this.index)._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login});
             room._isJoinable = false;
             this.index++;
+            this.updateRoom();
         }
     }
     // @SubscribeMessage('createRoom')
@@ -131,12 +134,15 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @SubscribeMessage('specRoom')
     specRoom(client: Socket, data: any ): void {
         var room = this.rooms.get(data.room)
-                client.leave('lobby');
-                client.join(room._name);
-                room.addGuest(this.clients.get(client.id));
-                this.clients.get(client.id).setRoom(room._name);
-                client.emit('startGame', {id: 3, room: room, nameA: room._player._login, nameB: room._guest._login});
-                this.updateRoom();
+        if(room)
+        {
+            client.leave('lobby');
+            client.join(room._name);
+            room.addSpec(this.clients.get(client.id));
+            this.clients.get(client.id).setRoom(room._name);
+            client.emit('startGame', {id: 3, room: room._name, nameA: room._player._login, nameB: room._guest._login});
+            this.updateRoom();
+        }
     }
     @SubscribeMessage('joinRoom')
     joinRoom(client: Socket, room: string ): void {
@@ -179,37 +185,34 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @SubscribeMessage('end')
     abandon(client: Socket): void {
         var user = this.clients.get(client.id);
-        var room = this.rooms.get(this.clients.get(client.id)._room);
+        var room = this.rooms.get(this.clients.get(client.id)._room)
+       
         if (room)
         {
-		room._room.emit('closeGame');
-        var ret = room.abandon(user._login)
-        console.log(room._guest._token + "   " + room._player._token)
-        if (ret == 1){
-            this.userService.win(room._guest._token);
-            this.userService.xp(room._guest._token, 50);
-            this.userService.loose(room._player._token);
-            this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA);
-        }if (ret == 2){
-            this.userService.win(room._player._token);
-            this.userService.xp(room._player._token, 50);
-            this.userService.loose(room._guest._token);
-            this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB);
+            if(room.isSpectate(this.clients.get(client.id))){
+                client.emit('closeGame')
+                return;
+            }
+		    room._room.emit('closeGame');
+            var ret = room.abandon(user._login)
+            console.log(room._guest._token + "   " + room._player._token)
+            if (ret == 1){
+                this.userService.win(room._guest._token);
+                this.userService.xp(room._guest._token, 50);
+                this.userService.loose(room._player._token);
+                this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA);
+            }
+            if (ret == 2){
+                this.userService.win(room._player._token);
+                this.userService.xp(room._player._token, 50);
+                this.userService.loose(room._guest._token);
+                this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB);
         }
         this.rooms.delete(room._name);
         this.updateRoom();}
         // l'adversaire gagne le match
         // match history winner = 5 pts
         //
-    }
-    @SubscribeMessage('waiting')
-        waitingMsg(client: Socket): void {
-            client.emit('me', this.clients.get(client.id)._login)
-            this.userService.setIsActive(this.clients.get(client.id)._token, true);
-            this.clients.get(client.id)._room = 'lobby'
-            client.join('lobby');
-            this.logger.log('salut');
-            this.updateRoom();
     }
     @SubscribeMessage('ready')
         ready(client: Socket, data : any): void {
@@ -272,10 +275,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         var spec : specRooms[] = [];
 
         this.rooms.forEach(element => {
-            if (element._isJoinable == false)
+            if (element._isJoinable === false)
                 spec.push({name:element._name, left:element._player._login, right:element._guest._login});
         });
-        this.server.to('lobby').emit('specRoom', {spec: spec});
+        this.server.to('lobby').emit('SpecRooms', {spec: spec});
     }
     //GAME-PART
 
