@@ -1,8 +1,17 @@
 .winRate{
-    background-color: #7c7c7c;
-    border-radius: 40px;
-    flex-direction: row;
-    width: 90%;
+    display: flex;
+    justify-content: space-around;
+    width: 80%;
+    font-size: 20px;
+    font-weight: bold;
     color: white;
     top :100px;
+}
+
+.score-win{
+	color: #007000;
+}
+
+.score-lose{
+	color: #cc0000;
 }

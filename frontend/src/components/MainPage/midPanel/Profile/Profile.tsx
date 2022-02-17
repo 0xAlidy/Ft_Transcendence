@@ -1,8 +1,6 @@
 import React from 'react'
 import '../../../../styles/MainPage/midPanel/midPanel.css'
 import '../../../../styles/MainPage/midPanel/Profile/Profile.css'
-// import DELETE from '../../../../assets/delete.png'
-// import LEAVE from '../../../../assets/exit.png'
 import EditBox from './editBox';
 import Gauge from './gauge';
 import WinRate from './winRate';
@@ -50,13 +48,29 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.props.token).then(res => {
 			this.setState({User: res.data, nickname: res.data.nickname})
 		})
-	}
+
+		const box = document.getElementById("boxProfile");
+		const shadow = document.getElementById("shadow");
+		const title = document.getElementById("title");
+		if (box !== null && shadow !== null && title !== null)
+			box.addEventListener("scroll", function() { 
+				if (this.scrollTop > 47)
+				{
+					shadow.style.boxShadow= "0px -11px 20px 13px #fee154";
+					title.style.boxShadow= "none";
+				}
+				else
+					title.style.boxShadow= "0px 16px 13px 0px hsl(0deg 0% 7%)";
+			});
+	
+	};
 
 	render(){
 		return (
         <div className="midPanel" >
 			{this.state.User && <div id="profile">
-				<h1>Profile</h1>
+				<h1 id="title">Profile</h1>
+				<span id="shadow"></span>
 				<div id="boxProfile">
 					<div id="topBox">
 						<div id="player">

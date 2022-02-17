@@ -19,7 +19,7 @@
 .ProfileButton button{
     border: none;
     background-color: unset;
-    margin-left: 170px;
+    margin-left: 160px;
     margin-bottom: 3px;
 }
 
@@ -78,9 +78,6 @@
     color: #1f1f1f;
     font-weight: bolder;
 }
-
-
-
 
 input[type="file"] {
     display: none;

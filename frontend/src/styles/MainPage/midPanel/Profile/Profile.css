@@ -1,21 +1,53 @@
 #profile {
 	display: flex;
-	justify-content: space-around;
+	flex-direction: column;
+	align-items: center;
 	width: 100%;
 	height: 100%;
-	flex-wrap: wrap;
-	align-content: flex-start;
-	box-shadow: 0px 0px 11px 0px hsl(0deg 0% 7%);
-	border-radius: 30px;
+	border-radius: 25px;
+	overflow: hidden;
+	box-shadow: inset 0px 0px 20px 3px hsl(0deg 0% 7%);
+	background-color: #333333;
+}
+
+#profile span {
+	width: 96%;
+	z-index: 1;
+}
+
+#boxProfile {
+	display: flex;
+	flex-direction: column;
+	overflow-y:scroll;
+	width: 100%;
+}
+
+#topBox{
+	display: flex;
+	width: 100%;
+	margin: 30px 0px;
 }
 
 #profile h1 {
 	color: #fee154;
+	font-size: 50px;
+	border-bottom:  solid 2px #fee154;
+	box-shadow: 0px 16px 13px 0px hsl(0deg 0% 7%);
+	background-color: #1f1f1f;
+	width: 100%;
+	padding: 15px 0px;
+	text-transform: uppercase;
+	margin:0;
+	z-index: 2;
+}
+
+#profile h2 {
+	color: #fee154;
 	border: groove 2px #fee154;
 	background-color: #1f1f1f;
-	border-radius: 20px;
-	padding: 10px 25%;
+	padding: 10px 20%;
 	text-transform: uppercase;
+	border-radius: 10px;
 	box-shadow: 0px 10px 13px 4px hsl(0deg 0% 7%);
 }
 
@@ -31,7 +63,10 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-content: space-between;
 	width: 50%;
+	height: 331px;
+
 }
 
 #profile #security {
@@ -45,7 +80,6 @@
 	padding: 10px 12.5%;
 	margin-top: 60px;
 }
-
 
 .profileImg{
 	width: 140px;
