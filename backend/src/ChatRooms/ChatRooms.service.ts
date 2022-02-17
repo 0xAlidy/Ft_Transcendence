@@ -8,7 +8,6 @@ import { createDecipheriv } from 'crypto';
 import { Message } from '../message/message.entity';
 import { clientClass } from "src/chat/class/client.class";
 import { Client } from 'socket.io/dist/client';
-import { PrivRoomService } from '../PrivRoom/PrivRoom.service';
 
  @Injectable()
  export class ChatRoomsService
@@ -18,16 +17,26 @@ import { PrivRoomService } from '../PrivRoom/PrivRoom.service';
 	key:string;
 
 	private logger: Logger = new Logger('ChatRoomService');
-	constructor(@InjectRepository(ChatRooms) private ChatRoomsRepository: Repository<ChatRooms>, private PrivRoomService:PrivRoomService,private userService:UsersService){
+	constructor(@InjectRepository(ChatRooms) private ChatRoomsRepository: Repository<ChatRooms>,private userService:UsersService){
 		this.iv = randomBytes(16);
 		this.key = "ceci est une phrase de 32 charac"
 	}
 
 	async create(name :string, owner:string, password:string) {
 		if( await this.findRoomByName(name) === undefined){
-			var newroom = new ChatRooms(name, owner, password)
+			var newroom = new ChatRooms(name, owner, password, false, null)
 			await this.ChatRoomsRepository.save(newroom);
 		}
+		return await this.getAllRoomName();
+	}
+	async createPriv(name :string, owner:string, user:string[]) {
+		
+		
+		
+		// if( await this.findRoomByName(name) === undefined){
+			var newroom = new ChatRooms(null, owner, "", true,user)
+			await this.ChatRoomsRepository.save(newroom);
+		// }
 		return await this.getAllRoomName();
 	}
 
@@ -115,11 +124,7 @@ import { PrivRoomService } from '../PrivRoom/PrivRoom.service';
 		  if (room.users[i] === toFind)
 			return true
 		return false
-	  }
-	
-
-
-	
+	  }4
 
 	async isBanned(name:string, dest:string){
 		var room = await this.findRoomByName(dest)
@@ -205,8 +210,9 @@ import { PrivRoomService } from '../PrivRoom/PrivRoom.service';
 	
 
 
-	addPriv(crea:string, dest:string,clientList:any){
-		 this.PrivRoomService.create(crea, dest)
+	async addPriv(crea:string, dest:string,clientList:any){
+		var user = [crea, dest]
+		 await this.createPriv(crea, dest, user)
 		 return "new priv room"
 	}
 

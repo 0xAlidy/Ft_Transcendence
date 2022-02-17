@@ -1,17 +1,11 @@
 import { Msg } from 'src/ChatRooms/Msg.dto';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
-export class privRoom {
-  @Column()
+class privRoom {
   user1:string;
-
-  @Column()
   user2:string;
-
-  @Column('jsonb',{ default: []})
+  // @Column('jsonb',{ default: []})
   messages: Msg[];
-
   constructor(user1:string, user2:string){
     this.user1 = user1;
     this.user2 = user2;

@@ -3,12 +3,11 @@ import { Socket, Server } from 'socket.io';
 import { Logger } from '@nestjs/common'; 
 import { clientClass } from "./class/client.class";
 import { ChatRoomsService } from 'src/ChatRooms/ChatRooms.service';
-import { PrivRoomService } from 'src/PrivRoom/PrivRoom.service';
 
 @WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit {
 
-  constructor(private readonly chatRoomService: ChatRoomsService, private readonly chatPrivService:PrivRoomService ){
+  constructor(private readonly chatRoomService: ChatRoomsService){
   }
   clients = new Map<string, clientClass>();
   rooms: string[];
