@@ -60,10 +60,22 @@ export class UsersService {
       await this.usersRepository.save(other);
     }
   }
+  async removeWaitingFriend(token:string, login:string){
+    var user = await this.findOne(token)
+    user.waitingFriends.splice(user.waitingFriends.indexOf(login),1)
+    this.usersRepository.save(user);
+  }
 
-  async acceptFriendRequest(token:string, name:string)
+  async addWaitingFriend(login:string, friend:string)
   {
-    var user = await this.findOne(token);
+      var user = await this.findOneByLogin(login);
+      if(user.waitingFriends.indexOf(friend) < 0 && user.friends.indexOf(friend) < 0)
+      {
+        user.waitingFriends.push(friend);
+        await this.usersRepository.save(user);
+        return 1;
+      }
+      return 0;
   }
 
   async addRoom(token:string, room:string)
@@ -81,18 +93,24 @@ export class UsersService {
     await this.usersRepository.save(user);
   }
 
-  async addFriend(token:string, room:string)
+  async addFriend(token:string, login:string)
   {
     var user = await this.findOne(token);
-    user.rooms.push(room);
+    var friend = await this.findOneByLogin(login)
+    user.friends.push(login);
+    friend.friends.push(user.login)
     await this.usersRepository.save(user);
+    await this.usersRepository.save(friend);
   }
 
-  async removeFriend(token:string, room:string)
+  async removeFriend(token:string, login:string)
   {
     var user = await this.findOne(token);
-    user.rooms.push(room);
+    var friend = await this.findOneByLogin(login);
+    friend.friends.splice(friend.friends.indexOf(login), 1);
+    user.friends.splice(user.friends.indexOf(login), 1);
     await this.usersRepository.save(user);
+    await this.usersRepository.save(friend);
   }
 
   async addBlocked(token:string, room:string)

@@ -6,4 +6,4 @@ import { NotifGateway } from './notif.gateway';
 	imports:[UsersModule],
 	providers: [NotifGateway],
 })
-export class WSGame {}
+export class NotifModule {}

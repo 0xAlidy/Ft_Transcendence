@@ -13,6 +13,10 @@ import PopupStart from './PopupStart';
 import FriendPanel from './midPanel/FriendsPanel/FriendPanel';
 import MatchMaking from './midPanel/MatchMaking/MatchMaking';
 import Popup from 'reactjs-popup';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { DuelNotif, InviteButton, InviteNotif } from '../utility/utility';
+
 
 export interface user{
 	WSId: string;
@@ -54,7 +58,6 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 	}
 
 	async componentDidMount() {
-
 		if (this.state.token)
 		{
 			console.log("debug connection error" + this.state.token)
@@ -73,12 +76,21 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 				this.state.socket.on('popupScore', (data:any) => {
 					this.setState({popupInfo:{open:true, win:data.win, adv:data.adv}})
 				});
-				this.state.socket.on('invite', (data:any) => {
-					//data.adv:string, data.room:'data.clientName/data.inviteName'
+				this.state.socket.on('inviteNotif', (data:any) => {
+					this.notify(data.login);
 				});
 			}
 			else
 				console.log("ERROR socket")
+		}
+	}
+	notify = (login:string) => {
+		if(this.state.socket)
+		{
+			var ret: JSX.Element = <InviteNotif token={this.props.token} socket={this.state.socket} login={login}/>
+			var er: JSX.Element = <InviteButton login={login} socket={this.state.socket}/>
+			toast.dark(ret,{closeButton:er});
+			toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>);
 		}
 	}
 
@@ -126,7 +138,16 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 			}
 		}
 
-		return (
+		return (<>	<ToastContainer
+				position="top-left"
+				autoClose={false}
+				hideProgressBar={false}
+				newestOnTop={false}
+				closeOnClick={false}
+				rtl={false}
+				pauseOnFocusLoss
+				draggable
+				pauseOnHover/>
 			<div id="MainPage">
 				{this.state.User && this.state.socket &&
 				<>
@@ -137,11 +158,12 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 					<Chat socket={this.state.socket} User={this.state.User} />
 					<div className="game" id="game">
 						{this.state.selector === 'profile' && <Profile token={this.props.token} refreshUser={this.refreshUser}/>}
-						{this.state.selector === 'history' && <History User={this.state.User}/>}
+						{this.state.selector === 'history' && <History User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'admin' && <AdminPanel/>}
 						{this.state.selector === 'game' && <MatchMaking token={this.state.User.token} socket={this.state.socket}/>}
 						{this.state.selector === 'friends' && <FriendPanel User={this.state.User}/>}
 						<IGame ref={this.ref} socket={this.state.socket}/>
+					{/* <button onClick={this.notify}>oui</button> */}
 					</div>
 					{this.state.popupInfo && <Popup open={this.state.popupInfo.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>}
 					{/*this.state.popupInvite && <Popup open={this.state.popupInvite.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>*/}
@@ -149,6 +171,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 				</>
 				}
 			</div>
+				 </>
     	)
 	}
 };

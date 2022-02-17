@@ -257,7 +257,7 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 							else
 								classForItem = "msgOtherItem"
 							return (
-								<MessageItem msg={item} User={this.props.User} activeRoom={this.state.activeRoom} class={classForItem}/>
+								<MessageItem msg={item} User={this.props.User} activeRoom={this.state.activeRoom} socket={this.props.socket} class={classForItem}/>
 							)
 						}))
 					}

@@ -4,6 +4,7 @@ import MainPage from './components/MainPage/MainPage'
 import React, {useState} from 'react'
 import { useLocation } from 'react-router';
 import Auth from "./components/HomePage/Auth/Auth";
+import "./styles/root.css"
 
 
 function App() {

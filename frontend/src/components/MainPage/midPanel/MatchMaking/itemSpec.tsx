@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as React from "react";
+import { Socket } from "socket.io-client";
 import ProfileShortCut from "../../ProfileShortcut";
 
 interface specRoomsData{
@@ -7,7 +8,7 @@ interface specRoomsData{
 	left:string,
 	right:string,
 }
-export default class ItemSpec extends React.Component<{data:specRoomsData, token:string, onSpecCLick:any},{left:string|null, right:string|null}>{
+export default class ItemSpec extends React.Component<{data:specRoomsData, token:string, onSpecCLick:any, socket:Socket},{left:string|null, right:string|null}>{
 	constructor(props:any)
 	{
 		super(props);
@@ -30,10 +31,10 @@ export default class ItemSpec extends React.Component<{data:specRoomsData, token
 					{this.state.left && this.state.right &&
 					<div className="grid">
 						<div className="imgLeft">
-								<ProfileShortCut canOpen={true} pseudo={this.props.data.left} token={this.props.token}/>
+								<ProfileShortCut canOpen={true} pseudo={this.props.data.left} socket={this.props.socket} token={this.props.token}/>
 						</div>
 						<div className="imgRight">
-								<ProfileShortCut canOpen={true} pseudo={this.props.data.right} token={this.props.token}/>
+								<ProfileShortCut canOpen={true} pseudo={this.props.data.right} socket={this.props.socket} token={this.props.token}/>
 						</div>
 						<div className="text">VS</div>
 						<div className="nameLeft">

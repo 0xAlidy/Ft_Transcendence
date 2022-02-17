@@ -13,9 +13,10 @@ import { MatchsModule } from './matchs/matchs.module';
 import { Match } from './matchs/match.entity';
 import { MessagesModule } from './message/messages.module';
 import { ChatRooms } from './ChatRooms/ChatRooms.entity';
+import { NotifModule } from './notifications/notif.module';
 
 @Module({
-  imports: [ChatModule, WSGame, TypeOrmModule.forRoot({
+  imports: [ChatModule, WSGame, NotifModule, TypeOrmModule.forRoot({
     type:'postgres',
     port: 5432,
     host: 'database',

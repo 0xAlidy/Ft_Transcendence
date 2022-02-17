@@ -4,9 +4,10 @@ import '../../../../styles/MainPage/midPanel/History/History.css'
 import ItemMatch from './itemMatch/itemMatch'
 import axios from "axios";
 import { user } from '../../MainPage';
+import { Socket } from 'socket.io-client';
 
 
-export default class History extends React.Component<{User:user},{matchs:string[]}>{
+export default class History extends React.Component<{User:user, socket:Socket},{matchs:string[]}>{
 	MatchList: any = [];
 	constructor(props:any) {
 		super(props)
@@ -40,7 +41,7 @@ export default class History extends React.Component<{User:user},{matchs:string[
 				{
 					this.state.matchs.map((item, idx) => {
 						console.log(item , idx)
-						return <ItemMatch match={item} token={this.props.User.token} name={this.props.User.login} key={idx}/>;
+						return <ItemMatch match={item} token={this.props.User.token} socket={this.props.socket} name={this.props.User.login} key={idx}/>;
 					})
 				}
 			</div>

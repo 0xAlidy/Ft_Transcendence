@@ -2,6 +2,8 @@ import React from 'react'
 import '../../../src/styles/MainPage/profileShortcut.css'
 import axios from 'axios';
 import Popup from 'reactjs-popup';
+import { Socket } from 'socket.io-client';
+// import { Socket } from 'socket.io-client';
 
 interface userPublic{
 	imgUrl: string;
@@ -13,22 +15,26 @@ interface userPublic{
 	numberOfWin: number;
 	xp: number;
 }
-export default class ProfileShortCut extends React.Component<{pseudo:string, token:string, canOpen:boolean},{opened:boolean, User:userPublic|null}>{
+export default class ProfileShortCut extends React.Component<{pseudo:string, token:string, canOpen:boolean, socket:Socket},{opened:boolean, User:userPublic|null, online:boolean|null}>{
 	MatchList: any = [];
 	constructor(props:any) {
 		super(props)
 		this.state={
 				opened:false,
 				User:null,
+				online:null
 			}
 	};
 	async componentDidMount() {
 		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.token +'&name='+ this.props.pseudo)
 		.then(res => this.setState({User: res.data}))
+		// this.props.socket.emit('isOnline',{ })
 	}
 
 	addFriend = () =>{
-		
+		console.log('SAAAAAALUUU' + this.props.pseudo)
+
+		this.props.socket.emit('inviteFriend', {login:this.props.pseudo})
 	}
 
 	render(){

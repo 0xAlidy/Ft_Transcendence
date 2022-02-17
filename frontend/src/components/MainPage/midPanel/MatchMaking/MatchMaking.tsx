@@ -33,7 +33,7 @@ export default class MatchMaking extends React.Component<{socket:Socket, token:s
 			<div className='listSpec'>
 			{
 				this.state.rooms.map((item :specRoomsData, idx) => {
-					return <ItemSpec data={item} onSpecCLick={this.onSpecClick} token={item.token} key={idx}/>;
+					return <ItemSpec data={item} onSpecCLick={this.onSpecClick} token={item.token} socket={this.props.socket} key={idx}/>;
 				})
 			}
 			</div>

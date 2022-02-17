@@ -18,13 +18,16 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @WebSocketServer()
     server: Server;
 
-    getUserClassbyName(str:string):clientClass| null
+    getUserClassbyName(str:string):clientClass
     {
+        var ret = null;
         this.clients.forEach( element => {
-            if(element._login === str)
-                return element;
+            console.log("foreach "+ element._login +" === " +str + " " + str.localeCompare(element._login));
+            if( str.localeCompare(element._login) === 0){
+                console.log('okay ' + element)
+                ret = element;}
         })
-        return null
+        return ret
     }
 
     afterInit(server: any) {
@@ -39,21 +42,33 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     handleDisconnect(client: Socket) {
         this.clients.delete(client.id);
     }
-    
+
     @SubscribeMessage('inviteFriend')
     async inviteFriend(client: Socket, data:any){
+        console.log(data.login)
         var user = this.clients.get(client.id);
-        var dbUser = await this.userService.findOneByLogin(data.login)
-        dbUser.waitingFriends.push(data.login)
-        await this.userService
-       if (user)
+        var ret = await this.userService.addWaitingFriend(data.login, user._login)
+       if (user && ret === 1)
         {
-            var ret : clientClass;
-            if(ret = this.getUserClassbyName(data.login))
-            {
-                ret._socket.emit('inviteNotif', {login: data.login})
-            }
+            var clientToNotify : clientClass = this.getUserClassbyName(data.login);
+            if(clientToNotify)
+                clientToNotify._socket.emit('inviteNotif', {login: user._login})
         }
         return null;
+    }
+
+    @SubscribeMessage('acceptFriend')
+    async acceptFriend(client: Socket, data:any){
+        console.log(data.login)
+        var user = this.clients.get(client.id);
+        this.userService.removeWaitingFriend(user._token, data.login)
+        this.userService.addFriend(user._token, data.login)
+    }
+
+    @SubscribeMessage('denyFriend')
+    async denyFriend(client: Socket, data:any){
+        console.log(data.login)
+        var user = this.clients.get(client.id);
+        this.userService.removeWaitingFriend(user._token, data.login)
     }
 }
