@@ -62,7 +62,6 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 				else
 					title.style.boxShadow= "0px 16px 13px 0px hsl(0deg 0% 7%)";
 			});
-	
 	};
 
 	render(){

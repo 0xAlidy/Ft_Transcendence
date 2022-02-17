@@ -17,3 +17,12 @@ body {
 h1 {
   letter-spacing: 1px;
 }
+
+:root{
+  --main-color: #fee154;
+  --black-color: #1f1f1f;
+  --grey-color: #333333;
+  --white-color: #f3f3f3;
+  --red-color: #cc0000;
+  --green-color: #007000;
+}

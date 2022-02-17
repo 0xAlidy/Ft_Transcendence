@@ -278,6 +278,14 @@ export class UsersService {
     return await qrcode.toDataURL(secret.otpauth_url);
   }
 
+  async disableSecret(data:any)
+  {
+    var user = await this.findOne(data.token);
+    user.secret = 'null';
+    user.secretEnabled = false;
+    await this.usersRepository.save(user);
+  }
+
   async verifyNumber(data:any)
   {
     var user = await this.findOne(data.token);

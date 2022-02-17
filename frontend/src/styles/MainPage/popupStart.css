@@ -3,31 +3,45 @@
   text-align: center;
   flex-direction: column;
   align-items: center;
-  border-radius: 40px;
+  border-radius: 25px;
   width: 800px;
   height: 800px;
-  background-color: #333333;
+  background-color: var(--grey-color);
   margin-top: 50px;
-  box-shadow: 0px 0px 20px 20000px hsl(0deg 0% 6% / 95%), 0px 8px 15px 10px hsl(0deg 0% 8%);
-  color: #f3f3f3;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  box-shadow: 0px 0px 20px 20000px hsl(0deg 0% 6% / 95%), 0px 9px 12px 5px hsl(0deg 0% 8%), inset 0px 0px 20px 3px hsl(0deg 0% 7%);;
+  color: var(--white-color);
+  overflow: hidden;
 }
 
 #popUpStart h1 {
-  color: #fee154;
-	border: groove 2px #fee154;
-	background-color: #1f1f1f;
-	border-radius: 20px;
-	padding: 10px 50%;  /* 100px ? */
+  color: var(--main-color);
+	background-color: var(--black-color);
 	font-size: 50px;
 	text-transform: uppercase;
 	box-shadow:0px 10px 13px 4px hsl(0deg 0% 7%);
+	border-bottom:  solid 2px var(--main-color);
+	width: 100%;
+	padding: 15px 0px;
+	margin:0;
+	z-index: 2;
+}
+
+#contentStart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y:scroll;
+	width: 100%;
+}
+
+#shadow {
+  width: 96%;
+	z-index: 1;
 }
 
 #popUpStart h2 {
-  color: #fee154;
-	border-bottom: groove 2px #fee154;
+  color: var(--main-color);
+	border-bottom: groove 2px var(--main-color);
 	font-size: 40px;
 	text-transform: uppercase;
   margin: 20px 0px;
@@ -44,7 +58,7 @@
 }
 
 .button{
-  background-color: #fee154;
+  background-color: var(--main-color);
   height: 40px;
   border-radius: 20px;
 }

@@ -66,4 +66,10 @@ export class UsersController {
     {
       return await this.UsersService.secretEnabled(data);
     }
+
+    @Post('disableSecret')
+    async disableSecret(@Body() data:any)
+    {
+      return await this.UsersService.disableSecret(data);
+    }
 }

@@ -84,6 +84,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 				console.log("ERROR socket")
 		}
 	}
+	
 	notify = (login:string) => {
 		if(this.state.socket)
 		{
@@ -138,7 +139,9 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 			}
 		}
 
-		return (<>	<ToastContainer
+		return (
+		<>	
+			<ToastContainer
 				position="top-left"
 				autoClose={false}
 				hideProgressBar={false}
@@ -147,7 +150,8 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 				rtl={false}
 				pauseOnFocusLoss
 				draggable
-				pauseOnHover/>
+				pauseOnHover
+			/>
 			<div id="MainPage">
 				{this.state.User && this.state.socket &&
 				<>
@@ -171,7 +175,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 				</>
 				}
 			</div>
-				 </>
+		</>
     	)
 	}
 };

@@ -1,5 +1,5 @@
 #MainPage {
-  background: #1F1F1F;
+  background: var(--black-color);
   height: 100%;
   width: 100%;
   display: grid;

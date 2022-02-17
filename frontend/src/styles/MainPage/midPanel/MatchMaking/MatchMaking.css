@@ -9,7 +9,7 @@
 
 .grid{
 	display: grid;
-	background-color: #1f1f1f;
+	background-color: var(--black-color);
 	border-radius: 30px;
 	grid-template-columns: 2fr 1fr 2fr;
 	grid-template-rows: 2fr 1fr 2fr;
@@ -23,8 +23,8 @@
 }
 
 .specButton{
-	color:#1f1f1f;
-	background-color: #fee154;
+	color:var(--black-color);
+	background-color: var(--main-color);
 }
 
 .listSpec {

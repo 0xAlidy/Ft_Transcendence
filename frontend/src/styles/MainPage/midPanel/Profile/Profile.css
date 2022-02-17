@@ -7,7 +7,7 @@
 	border-radius: 25px;
 	overflow: hidden;
 	box-shadow: inset 0px 0px 20px 3px hsl(0deg 0% 7%);
-	background-color: #333333;
+	background-color: var(--grey-color);
 }
 
 #profile span {
@@ -29,11 +29,11 @@
 }
 
 #profile h1 {
-	color: #fee154;
+	color: var(--main-color);
 	font-size: 50px;
-	border-bottom:  solid 2px #fee154;
+	border-bottom:  solid 2px var(--main-color);
 	box-shadow: 0px 16px 13px 0px hsl(0deg 0% 7%);
-	background-color: #1f1f1f;
+	background-color: var(--black-color);
 	width: 100%;
 	padding: 15px 0px;
 	text-transform: uppercase;
@@ -42,9 +42,9 @@
 }
 
 #profile h2 {
-	color: #fee154;
-	border: groove 2px #fee154;
-	background-color: #1f1f1f;
+	color: var(--main-color);
+	border: groove 2px var(--main-color);
+	background-color: var(--black-color);
 	padding: 10px 20%;
 	text-transform: uppercase;
 	border-radius: 10px;
@@ -74,6 +74,7 @@
 	flex-direction: column;
 	align-items: center;
 	width: 100%;
+	height: 100%;
 }
 
 #profile #security h1 {
@@ -86,7 +87,7 @@
 	height:140px;
 	border-radius: 50%;
 	align-self: center;
-	border: groove 2px #fee154;
+	border: groove 2px var(--main-color);
 	background-color: white;
 	box-shadow: 0px 10px 13px 4px hsl(0deg 0% 7%);
 }

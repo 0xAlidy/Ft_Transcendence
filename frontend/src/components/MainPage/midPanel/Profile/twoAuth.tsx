@@ -14,23 +14,53 @@ export default class TwoAuth extends React.Component<{token:string},{secretEnabl
 			verify: null,
 		};
 		this.secretEnabled = this.secretEnabled.bind(this);
-		this.click = this.click.bind(this);
+		this.enable = this.enable.bind(this);
+		this.disable = this.disable.bind(this);
 		this.handleNumberChange= this.handleNumberChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 	};
 
 	async secretEnabled(){
 		await axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/secretEnabled", {token: this.props.token}).then(resp =>
-				this.setState({ secretEnabled: resp.data })
-			);
+			this.setState({ secretEnabled: resp.data })
+		);
 	}
 
-	async click(){
-		if (!this.state.qr)
+	async enable(){
+		if (this.state.qr)
+		{
+			this.setState({
+				qr: "",
+				verify: null,
+				number: null,
+			})
+		}
+		else
 		{
 			await axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/generateSecret", {token: this.props.token}).then(resp =>
-				this.setState({ qr: resp.data })
+				this.setState({ 
+					qr: resp.data,
+					verify: null
+				})
 			);
+		}
+	}
+
+	async disable(){
+		if (this.state.qr)
+		{
+			this.setState({
+				qr: "",
+				verify: null,
+				number: null,
+			})
+		}
+		else
+		{
+			this.setState({
+				qr: "true",
+				verify: null
+			})
 		}
 	}
 
@@ -40,9 +70,27 @@ export default class TwoAuth extends React.Component<{token:string},{secretEnabl
 
 	async handleSubmit(event:any) {
 		event.preventDefault();
-		await axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/verifyNumber", {token: this.props.token, number: this.state.number}).then(resp =>
-			this.setState({ verify:resp.data })
-		);
+		if (this.state.verify !== true)
+			await axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/verifyNumber", {token: this.props.token, number: this.state.number}).then(resp =>
+				this.setState({ verify:resp.data })
+			);
+		if (this.state.qr === "true" && this.state.verify === true)
+		{
+			await axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/disableSecret", {token: this.props.token}).then();
+			this.setState({ 
+				secretEnabled:false,
+				qr: "",
+				number: null,
+			});
+		}
+		else if (this.state.qr !== "true" && this.state.verify === true)
+		{
+			this.setState({
+				secretEnabled:true,
+				qr: "",
+				number: null,
+			});
+		}
 	}
 
 	async componentDidMount() {
@@ -52,29 +100,45 @@ export default class TwoAuth extends React.Component<{token:string},{secretEnabl
 	render(){
 		return (
 			<div id="twoAuth">
-				<p>Two-factor Authentication (2FA):</p>
+				<h3>Two-factor Authentication (2FA):</h3>
 				{
 					this.state.secretEnabled ?
-						<p>Deja activé</p>
-					:
 					<>
-						<button onClick={this.click}>activate 2FA </button>
+						<button onClick={this.disable}>Disable 2FA</button>
 						{
 							this.state.qr &&
-							<div>
-								<h2>Veuillez scanner ce Qrcode sur votre application d'authentification: </h2>
-								<img src={this.state.qr} alt="QrCode" />
-								<form onSubmit={this.handleSubmit}>
-									<label>Saisir le code de votre application: </label>
+							<form onSubmit={this.handleSubmit}>
+								<span>
+									<label>Enter your application code :</label>
 									<input type="number" name="code" id="number" onChange= {this.handleNumberChange}></input>
-									<button>Verifier</button>
-									{ this.state.verify === true ? <h2 style={{color:'green'}}>Bravo l'auth est active !</h2> : null }
-									{ this.state.verify === false ? <h2 style={{color:'red'}}>Le code est invalide !</h2> : null }
+								</span>
+								<button>Submit</button>
+								{ this.state.verify === true  ? <h4 className='score-win'>The 2fa has been enabled</h4> : null}
+								{ this.state.verify === false ? <h4  className='score-lose'>The code is wrong</h4> : null }
+							</form>
+						}
+						</>
+						:
+						<>
+						<button onClick={this.enable}>Enable 2FA</button>
+						{
+							this.state.qr &&
+							<>
+								<h3>Please scan this Qrcode on your authentication application :</h3>
+								<img src={this.state.qr} alt="QrCode"/>
+								<form onSubmit={this.handleSubmit}>
+									<span>
+										<label>Enter your application code </label>
+										<input type="number" name="code" id="number" onChange= {this.handleNumberChange}></input>
+									</span>
+									{ this.state.verify === true ? <h4  className='score-win'>The 2fa has been disabled</h4> : null}
+									{ this.state.verify === false ? <h4  className='score-lose'>The code is wrong</h4> : null }
+									<button>Submit</button>
 								</form>
-							</div>
+							</>
 						}
 					</>
-				}
+				}			
 			</div>
 		)
 	};

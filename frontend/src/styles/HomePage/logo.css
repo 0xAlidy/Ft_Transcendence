@@ -1,6 +1,6 @@
 #logo
 {
-  color:#1f1f1f;
+  color: var(--black-color);
   min-width: 350px;
   width: 50vw;
   overflow: visible;
