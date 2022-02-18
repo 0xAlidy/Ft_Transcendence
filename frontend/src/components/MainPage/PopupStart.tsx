@@ -71,8 +71,6 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 		}
 	}
 
-	
-
 	async handleSubmit(event:any) {
 		event.preventDefault();
 		await axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/verifyNumber", {token: this.props.User.token, number: this.state.number}).then(resp =>
@@ -125,11 +123,13 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 				{
 					this.state.options === 1 && // CONNECTION AVEC 2FA
 					<>
-						<form onSubmit={this.handleSubmit}>
-							<label>Saisir le code de votre application: </label>
+						<h1>Security</h1>
+						<form id="form2FA" onSubmit={this.handleSubmit}>
+							<p>Two Factor Authentification is active on your account</p> 
+							<label>Enter your application code to access the site</label>
 							<input type="number" name="code" id="number" onChange= {this.handleNumberChange}></input>
-							<button>Verifier</button>
-							{ this.state.verify === false ? <h2 style={{color:'red'}}>Le code est invalide !</h2> : null }
+							<button>Submit</button>
+							{ this.state.verify === false ? <h2>The code is wrong</h2> : null }
 						</form>
 					</>
 				}

@@ -20,7 +20,7 @@ export class ChatGateway implements OnGatewayInit {
   async afterInit(server: any) {
     this.logger.log('Initialized!');
     this.rooms = await this.chatService.getAllRoomName()
-    this.chatService.create('general', 'system', null);
+    this.chatService.create('general', 'system', "");
   }
 
 
@@ -89,6 +89,11 @@ export class ChatGateway implements OnGatewayInit {
     if (Message.message[0] == '/'){
         this.chatService.systemMsg(Message, this.clients);
         Message.sender = "system";
+        if (Message.message.startsWith('/priv')){
+          var rooms = await this.chatService.getAllRoomName; //todo /priv undifined 
+          if (rooms)
+            this.server.emit('updateRooms',{rooms: rooms})
+        }
         client.emit('ReceiveMessage', Message)
       }
       else{

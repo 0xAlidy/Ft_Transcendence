@@ -66,7 +66,7 @@ const Popup = (props:any) => {
     );
   };
 
-export default class Chat extends React.Component <{socket:Socket, User:user}, {openNewPass:boolean,openNewRoom:boolean,RowsStyle:string;activeRoom:string, msgInput:string, rooms:opt[], loaded:boolean, date:string, loadEmoji:boolean,chosenEmoji:any,chatInput:any, messages:Msg[]}>{
+export default class Chat extends React.Component <{socket:Socket, User:user}, {openNewPass:boolean,openNewRoom:boolean,RowsStyle:string;activeRoom:string, msgInput:string, rooms:any, loaded:boolean, date:string, loadEmoji:boolean,chosenEmoji:any,chatInput:any, messages:Msg[]}>{
 	// roomList:Room[] = [];
 	mRef:HTMLDivElement | null;
 	inputRef:HTMLInputElement | null;
@@ -119,7 +119,8 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			data.rooms.forEach((element:string) => {
 				arr.push({value:element,label:element})
 			});
-			this.setState({rooms:arr, loaded:true});
+			var ret = this.parseRoom(arr)
+			this.setState({rooms:ret, loaded:true});
 		});
 		this.props.socket.on('needPassword', (data:any) => {
 			this.needPass = data.room;
@@ -128,6 +129,29 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 			this.setState({openNewPass:true})
 		})
 
+	}
+
+	parseRoom(arr:opt[]){
+		var room:opt[] = [];
+		var priv:opt[] = [];
+		var grouped = [];
+		arr.forEach((element:opt) => {
+			console.log(element)
+			if (element.label[0] == '-'){
+				var name = element.label.slice(1, element.label.indexOf('/') -1 );
+				var label = element.label.split('/').at(1)
+				if (label)
+					element.label = label;
+				console.log("name " + name)
+				if (name == this.props.User.login)
+					priv.push(element)
+			}
+			else
+				room.push(element)
+		});
+		grouped = [{label: "Room", options:room}, {label:"priv", options:priv}];
+		console.log(grouped);
+		return grouped;
 	}
 
 	messagesRef = (ref:HTMLDivElement) => {
