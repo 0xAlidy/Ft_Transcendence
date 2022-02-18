@@ -233,6 +233,7 @@ export class UsersService {
     return user;
   }
 
+
   async setIsActive(nickname:string, bool: boolean){
     const user = await this.findOneByNickname(nickname);
     if (user){
