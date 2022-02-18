@@ -1,13 +1,13 @@
 import * as React from "react";
 import Select from 'react-select';
-import { Room } from "./class";
+//import { Room } from "./class";
 import MenuPng from '../../../assets/menu.png'
 import { Socket } from "socket.io-client";
 
 
 export default class ChatMenu extends React.Component <{socket:Socket , roomList:any, newRoom: any, actRoom:any, onMenuOpen:any}, {activeRoom:string | null, inputRoomName:string, options:{value:string,label:string}[]}>{
 	chatMenu:HTMLDivElement|null;
-	general: Room = {name:"general", id:0, password:"", userList:[]};
+	//general: Room = {name:"general", id:0, password:"", userList:[]};
 	default = {value:"general", label:"general"}
 	flipflap:boolean;
     constructor(props:any) {
@@ -54,7 +54,7 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
     openMenu = () => {
 		if(this.flipflap){
 			this.flipflap = false;
-			this.props.onMenuOpen('250px auto 40px')
+			this.props.onMenuOpen('650px auto 40px')
 		}else{
 			this.flipflap = true;
 			this.props.onMenuOpen('40px auto 40px')
