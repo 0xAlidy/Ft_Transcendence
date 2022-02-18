@@ -85,6 +85,20 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 	async componentDidMount(){
 		let file = await fetch("https://cdn.intra.42.fr/users/medium_"+ this.props.User.login +".jpg").then(r => r.blob()).then(blobFile => new File([blobFile], "fileNameGoesHere", { type: "image/png" }))
 		this.setState({src: file});
+
+		const box = document.getElementById("contentStart");
+		const shadow = document.getElementById("shadow");
+		const title = document.getElementById("title");
+		if (box !== null && shadow !== null && title !== null)
+			box.addEventListener("scroll", function() { 
+				if (this.scrollTop > 5)
+				{
+					shadow.style.boxShadow= "0px -11px 20px 13px #fee154";
+					title.style.boxShadow= "none";
+				}
+				else
+					title.style.boxShadow= "0px 16px 13px 0px hsl(0deg 0% 7%)";
+			});
 	}
 
 	render(){
@@ -94,15 +108,18 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 				{
 					this.state.options === 0 && // PREMIERE CONNECTION
 					<>
-						<h1>Complete Profile</h1>
-						<h2>Avatar</h2>
-						<AvatarEditor ref={this.setEditorRef} crossOrigin='anonymous' image={this.state.src} width={100} height={100} borderRadius={100} color={[255, 255, 255, 0.6]} scale={1.1} rotate={0}/>
-						<p>Center your picture you can change it later</p>
-						<h2>NickName</h2>
-						<EditBox onChange={this.setName} value={this.state.nickname} User={this.props.User}/>
-						<TwoAuth token={this.props.User.token}/>
-						<button className='button' onClick={this.validate}>validate</button>
-						{this.state.error && <p>Nickname error</p>}
+						<h1 id="title">Complete Profile</h1>
+						<span id="shadow"></span>
+						<div id="contentStart">
+							<h2>Avatar</h2>
+							<AvatarEditor ref={this.setEditorRef} crossOrigin='anonymous' image={this.state.src} width={100} height={100} borderRadius={100} color={[255, 255, 255, 0.6]} scale={1.1} rotate={0}/>
+							<p>Center your picture you can change it later</p>
+							<h2>NickName</h2>
+							<EditBox onChange={this.setName} value={this.state.nickname} User={this.props.User}/>
+							<TwoAuth token={this.props.User.token}/>
+							<button className='button' onClick={this.validate}>validate</button>
+							{this.state.error && <p>Nickname error</p>}
+						</div>
 					</>
 				}
 				{

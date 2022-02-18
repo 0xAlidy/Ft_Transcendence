@@ -10,6 +10,7 @@
   height: 25px;
   margin-left: 10px;
   filter: invert(90%) sepia(44%) saturate(2847%) hue-rotate(317deg) brightness(113%) contrast(99%);
+  cursor: pointer;
 }
 
 #editName {
@@ -20,15 +21,17 @@
 }
 
 .nicknameChange {
-  color: #007000;
+  color: var(--green-color);
   font-style: italic;
   font-size: 20px;
+  margin: 10px 0px 0px 0px;
 }
 
 .nicknameError {
-  color: #cc0000;
+  color: var(--red-color);
   font-style: italic;
   font-size: 20px;
+  margin: 10px 0px 0px 0px;
 }
 
 .ProfileLogin{
@@ -37,7 +40,7 @@
 }
 
 .ProfileInput{
-  background-color: #1f1f1f;
+  background-color: var(--black-color);
   border: none;
   padding: 5px 10px;
   border-radius: 10px;
@@ -46,14 +49,14 @@
 }
 
 .ProfileInput:focus{
-  outline: #fee154 groove 2px;
+  outline: var(--main-color) groove 2px;
 }
 
 .ProfilePicture{
-margin: 1.6%;
-border: 1px solid black;
-width: 10%;
-height: 80%;
-border-radius: 50%;
-align-self: center;
+  margin: 1.6%;
+  border: 1px solid black;
+  width: 10%;
+  height: 80%;
+  border-radius: 50%;
+  align-self: center;
 }

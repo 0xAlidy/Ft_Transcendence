@@ -3,7 +3,7 @@
 
 #HomePage{
     height: 100%;
-    background: #333333;
+    background: var(--grey-color);
     display: flex;
     flex-direction: column;
     justify-content: center;

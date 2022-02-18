@@ -11,9 +11,9 @@
 }
 
 #history h1:first-child {
-	color: #fee154;
-	border: groove 2px #fee154;
-	background-color: #1f1f1f;
+	color: var(--main-color);
+	border: groove 2px var(--main-color);
+	background-color: var(--black-color);
 	border-radius: 20px;
 	padding: 10px 100%;  /* 100px ? */
 	font-size: 50px;
@@ -24,7 +24,7 @@
 
 #history .profileShortcut img{
 	width: 85px;
-	border: 2px #fee154 groove;
+	border: 2px var(--main-color) groove;
 	background-color: white;
 	box-shadow: 0px 10px 13px 4px hsl(0deg 0% 7%);
 }
@@ -37,10 +37,10 @@
 }
 
 .vs {
-	box-shadow: #fee154;
-	color: #fee154;
-	border:groove 2px #fee154;
-	background-color: #1f1f1f;
+	box-shadow: var(--main-color);
+	color: var(--main-color);
+	border:groove 2px var(--main-color);
+	background-color: var(--black-color);
 	border-radius: 20px;
 	padding: 12px 20px;
 	box-shadow: 0px 10px 13px 4px hsl(0deg 0% 7%);
@@ -58,13 +58,13 @@
 	font-weight: bold;
 	font-size: 20px;
 	box-shadow: inset 0px 0px 11px 0px rgb(3, 3, 3), 0px 10px 13px 4px hsl(0deg 0% 7%);
-	border-top:2px #fee154 groove;
-	border-bottom:2px #fee154 groove;
+	border-top:2px var(--main-color) groove;
+	border-bottom:2px var(--main-color) groove;
 }
 
 .itemMatch-win
 {
- 	background-color: #fee154;
+ 	background-color: var(--main-color);
 }
 
 .itemMatch-lose{
@@ -76,11 +76,11 @@
 }
 
 .score-win{
-	color: #007000;
+	color: var(--green-color);
 }
 
 .score-lose{
-	color: #cc0000;
+	color: var(--red-color);
 }
 
 .name {
