@@ -20,7 +20,7 @@ export class ChatRooms {
   @Column()
   IsPassword:boolean;
 
-  @Column()
+  @Column({default: false})
   IsPrivate:boolean;
 
   @Column("text",{ array:true, default: []})
@@ -38,8 +38,6 @@ export class ChatRooms {
   constructor(name :string | null, owner:string | null , password:string|null, priv:boolean, privUser:string[] | null){
     if (priv)
       this.IsPrivate = priv;
-    else 
-      this.IsPrivate = false;
     if (priv === true)
     {
       this.owner = "";
