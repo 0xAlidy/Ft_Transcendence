@@ -5,7 +5,6 @@ export default class Auth extends React.Component<{token: any, connect : any, lo
 	componentDidMount() {
     const data = {
       token: queryString.parse(this.props.location).token,
-      login: queryString.parse(this.props.location).name,
     }
 
     if (data === null)

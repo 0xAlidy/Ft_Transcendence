@@ -113,7 +113,7 @@
   border: none;
 	font-size: 15px;
   margin: 0px;
-  color: var(--red-color);
+  color: var(--lose-color);
 }
 
 #form2FA input{

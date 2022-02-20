@@ -1,9 +1,90 @@
+.ColorMenu {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
+.ColorMenu li {
+    position: absolute;
+    list-style: none;
+    transform-origin: 100px;
+    left: 0;
+    transition: 0.5s;
+    transition-delay:  calc(0.1s * var(--i));
+    transform: rotate(0deg) translateX(80px);
+}
 
-#ColorMenu{
-    background-color: var(--grey-color);
-    cursor: pointer;
-    border-radius: 20px;
+.ColorMenu.active li {
+    transform:  rotate(calc(360deg / 6 * var(--i)));
+}
+
+.toggle {
+    position: absolute;
     width: 50px;
     height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    border-radius: 50%;
+    background-color: var(--black-color);
+    cursor: pointer;
+    box-shadow: 0 3px 4px rgba(0,0,0,0,0.15);
+    font-size: 2em;
+    transition: 1.25s;
+    color: var(--main-color);
+}
+
+.ColorMenu.active .toggle{
+    transform: rotate(315deg);
+}
+
+.colorIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    transform:  rotate(calc(360deg / -6 * var(--i)));
+    transition: 0.5s;
+    cursor: pointer;
+    opacity: 0.3;
+}
+
+.colorIcon:hover {
+    opacity: 1;
+}
+
+#color0
+{
+    color: var(--blue-color);
+}
+
+#color1
+{
+    color: var(--green-color);
+}
+
+#color2
+{
+    color: var(--purple-color);
+}
+
+#color3
+{
+    color: var(--red-color);
+}
+
+#color4
+{
+    color: var(--yellow-color);
+}
+
+#color5
+{
+    color: var(--white-color);
 }

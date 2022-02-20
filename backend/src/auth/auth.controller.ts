@@ -17,7 +17,7 @@ export class AuthController {
 	@UseGuards(AuthGuard("42"))
 	async FTLoginRedirect(@Req() req: any, @Res() res:any): Promise<any> {
     	this.UsersService.create(req.user.login, req.user.token);
-		return res.redirect('http://' + req.headers.host.split(":").at(0) + ':3000/auth'+ '?token='+ req.user.token+'&name='+ req.user.nickname);
+		return res.redirect('http://' + req.headers.host.split(":").at(0) + ':3000/auth'+ '?token='+ req.user.token);
 	}
 
 	@Get("/me")

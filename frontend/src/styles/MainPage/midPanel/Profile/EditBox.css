@@ -21,14 +21,14 @@
 }
 
 .nicknameChange {
-  color: var(--green-color);
+  color: var(--win-color);
   font-style: italic;
   font-size: 20px;
   margin: 10px 0px 0px 0px;
 }
 
 .nicknameError {
-  color: var(--red-color);
+  color: var(--lose-color);
   font-style: italic;
   font-size: 20px;
   margin: 10px 0px 0px 0px;
