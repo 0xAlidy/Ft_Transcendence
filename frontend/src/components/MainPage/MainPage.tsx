@@ -137,6 +137,9 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 			else if (e.isFriendListOpen){
 				this.setState({selector: 'friends'});
 			}
+			else if (e.isRulesOpen){
+				this.setState({selector: 'rules'});
+			}
 		}
 
 		return (
@@ -166,6 +169,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 						{this.state.selector === 'admin' && <AdminPanel/>}
 						{this.state.selector === 'game' && <MatchMaking token={this.state.User.token} socket={this.state.socket}/>}
 						{this.state.selector === 'friends' && <FriendPanel User={this.state.User}/>}
+						{this.state.selector === 'rules' && <p>RULES</p>}
 						<IGame ref={this.ref} socket={this.state.socket}/>
 					{/* <button onClick={this.notify}>oui</button> */}
 					</div>

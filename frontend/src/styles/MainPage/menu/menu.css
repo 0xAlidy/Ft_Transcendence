@@ -1,63 +1,76 @@
-.menuContainer{
-    width:75%;
-    height:auto;
+#menuContainer{
     display: flex;
     flex-direction: column;
-    text-align: center;
-    /* justify-content: center; */
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 33%;
 }
+
 .menuButton{
+    display: flex;
+    justify-content: center;
     border-radius: 20px;
     cursor: pointer;
-    text-align: left;
-    overflow: hidden;
-    margin-left: 50%;
-    margin-top: 10px;
-    min-width: 70px;
-    width: 35%;
-    height: 76px;
-    /* border: 3px solid var(--main-color); */
-    color: var(--black-color);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    transition: all 0.5s ease ;
+    transition: all 0.8s;
+    padding: 20px;
+    margin: 0px;
 }
-.menuButton:hover{
-    margin-left: 5%;
-    background-color: var(--main-color);
-    width: 200px;
-    color: #000;
+
+.menuButton:last-child{
+    margin-bottom: 0px;
 }
-.menuButton .menuIcon{
-    filter: invert(73%) sepia(44%) saturate(523%) hue-rotate(7deg) brightness(109%) contrast(104%);
-    width: 50px;
-    margin-left: 10px;
-    margin-right: 13px;
-}
-.menuButton:hover .menuIcon {
-    width: 40px;
-    transition: all .5s ease ;
-    filter:none;
-}
-.menuButton .menuIconProfile{
+
+#iconProfile{
     border-radius: 50%;
     width: 50px;
-    margin-left: 10px;
-    margin-right: 13px;
 }
-.menuButton:hover .menuIconProfile {
-    width: 40px;
-    transition: all .5s ease ;
-    filter:none;
+
+.menuButton h2{
+    margin: 0;
+    align-self: center;
+    font-size: 0px;
+    transition: all 1s;
 }
-.horizontal{
-    display: flex;
+
+.icon {
+    color:var(--main-color);
+    font-size: 40px;
+    align-self: center;
+    transition: all 2s;
+}
+
+.menuButton:hover{
+    background-color: var(--main-color);
     color: var(--black-color);
-    flex-direction: row;
-    font-size: 0pt;
+    transition: all 0.5s, padding 0s;
+    margin: 30px 0px;
 }
-.menuButton:hover .horizontal {
-    font-size: 23pt;
-    transition: all .5s ease ;
+
+.menuButton:hover h2{
+    display: block;
+    font-size: 25px;
+    transition: all 1s;
+}
+
+.menuButton:hover #iconProfile {
+    margin-right: 5px;
+}
+
+.menuButton:hover .icon {
+    color: var(--black-color);
+    margin-right: 5px;
+    transition: color 1s;
+}
+
+#rules{
+    display: flex;
+    justify-content: center;
+    color: var(--main-color);
+}
+
+#rules h2 {
+    border-bottom: 1px solid var(--main-color);
+    text-transform: uppercase;
+    cursor: pointer;
 }

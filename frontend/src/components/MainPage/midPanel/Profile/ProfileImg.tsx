@@ -81,11 +81,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 		else
 			this.setState({webcamOption: false})
 	}
-
-	handlePhoto(url:string){
-		console.log(url);
-	}
-
+	
 	render(){
 		const validate = (url:string) =>{
 			this.setState({url: url});

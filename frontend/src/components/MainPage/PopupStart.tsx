@@ -116,7 +116,7 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 							<EditBox onChange={this.setName} value={this.state.nickname} User={this.props.User}/>
 							<TwoAuth token={this.props.User.token}/>
 							<button className='button' onClick={this.validate}>validate</button>
-							{this.state.error && <p>Nickname error</p>}
+							{this.state.error && <p style={{color: "#cc0000"}}>Nickname error</p>}
 						</div>
 					</>
 				}
