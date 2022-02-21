@@ -186,12 +186,8 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						{this.state.selector === 'history' && <History User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'admin' && <AdminPanel/>}
 						{this.state.selector === 'game' && <MatchMaking user={this.state.User} socket={this.state.socket}/>}
-<<<<<<< HEAD
 						{this.state.selector === 'friends' && <FriendPanel User={this.state.User} socket={this.state.socket}/>}
-=======
-						{this.state.selector === 'friends' && <FriendPanel User={this.state.User}/>}
 						{this.state.selector === 'rules' && <p>RULES</p>}
->>>>>>> 0c9e672673f0144bf368505948dac29c1aeb5295
 						<IGame ref={this.ref} socket={this.state.socket}/>
 					{/* <button onClick={this.notify}>oui</button> */}
 					</div>
