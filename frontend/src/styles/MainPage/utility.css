@@ -1,0 +1,74 @@
+.notifContainer{
+    margin-left: 25px;
+}
+
+.notif {
+    display: flex;
+    flex-direction: column !important;
+    background-color: var(--grey-color) !important;
+    border-radius: 20px !important;
+    box-shadow: 0px 10px 13px 0px hsl(0deg 0% 7%) !important;
+    color: var(--white-color) !important;
+    cursor: grab !important;
+    font-family: var(--font-family);
+}
+
+.titleNotif{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    
+}
+
+.iconNewFriend{
+    font-size: 25px;
+    color: var(--main-color);
+    transition: 1s;
+}
+
+.titleNotif h2{
+    margin: 0px 0px 0px 20px;
+    text-align: center;
+    font-size: 15px;
+    color: var(--white-color);
+}
+
+.profileNotif{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profileNotif h3{
+    font-size: 0px;
+    transition: 1s;
+    margin: 0;
+}
+
+.notif:hover .profileNotif h3 {
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+.buttonNotifWrap{
+    display: flex;
+    justify-content: center;
+}
+
+.buttonNotif{
+   cursor: pointer;
+   margin: 10px 5px;
+   font-size: 0px;
+   padding: 5px;
+   background-color: var(--main-color);
+   border-style: none;
+   border-radius: 5px;
+   transition: all 1s;
+}
+
+.notif:hover .buttonNotif{
+    font-size: 20px;
+    background-color: var(--grey-color);
+    color: var(--main-color);
+}

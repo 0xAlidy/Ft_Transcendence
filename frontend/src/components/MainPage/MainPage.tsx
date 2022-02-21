@@ -1,6 +1,7 @@
 import React from 'react'
 import Chat from './Chat/Chat'
 import '../../styles/MainPage/MainPage.css'
+import '../../styles/MainPage/utility.css'
 import { ReactComponent as Logo } from '../../assets/logo.svg';
 import { io, Socket} from "socket.io-client";
 import Menu from './Menu/Menu';
@@ -108,7 +109,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 		{
 			var ret: JSX.Element = <InviteNotif user={this.state.User} socket={this.state.socket} login={login}/>
 			var er: JSX.Element = <InviteButton login={login} socket={this.state.socket}/>
-			toast.dark(ret,{closeButton:er, onClose:this.refreshUser});
+			toast(ret, { className: 'notif', bodyClassName: "bodyNotif", closeButton:er, onClose:this.refreshUser });
 			// toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>); PAS TOUCHE JE VAIS OUBLIER SINON
 		}
 	}
@@ -163,15 +164,15 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 		return (
 		<>
 			<ToastContainer
+				className="notifContainer"
 				position="top-left"
 				autoClose={false}
 				hideProgressBar={false}
-				newestOnTop={false}
+				newestOnTop
 				closeOnClick={false}
 				rtl={false}
 				pauseOnFocusLoss
 				draggable
-				pauseOnHover
 			/>
 			<div id="MainPage">
 				{this.state.User && this.state.socket &&

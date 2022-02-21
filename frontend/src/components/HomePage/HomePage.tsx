@@ -5,7 +5,7 @@ import '../../styles/HomePage/HomePage.css'
 function HomePage(){
 
   function handleButtonClick(){
-    var id = "d42d44ee8052b31b332b4eb135916c028f156dbb4d3c7e277030f3b2bc08d87c";
+    var id = "552b0c33e721d8fe183bb2dfa4d53df2e93915fe79f46596d8afe9f264b6378b";
     window.location.href = 'https://api.intra.42.fr/oauth/authorize?client_id=' + id + '&redirect_uri=http%3A%2F%2F'+ window.location.host.split(":").at(0) + '%3A667%2Fauth%2Fredirect&response_type=code';
   }
 

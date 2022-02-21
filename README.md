@@ -46,6 +46,7 @@ TO DO :
 - history navigation
 - Website owner/moderators
 - History begin with the most recent
+- block user when receive a friend request
 
 PATCH:
 - Je vois ma room quand j'host

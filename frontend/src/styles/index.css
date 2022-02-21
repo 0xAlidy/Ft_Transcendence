@@ -30,4 +30,7 @@ h1 {
   --purple-color:#a400ff;
   --red-color: #cc0000;
   --yellow-color: #fee154;
+  --font-family: 'Varela Round', 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
 }
