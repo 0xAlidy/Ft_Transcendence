@@ -9,6 +9,11 @@ Avant de lancer l'application :
 
 - Verifier l'id dans HomePage.tsx soit la meme que dans le backend
 
+
+Creer un compte invité :
+
+http://localhost:667/auth/invite?login=
+
 INFORMATIONS :
 
 - Front : http://localhost:3000
@@ -38,14 +43,9 @@ TO DO :
 - Ruleset is available somewhere on the website and can be consulted by users
 - Bloquer user
 - their status (offline/online/in a game)
+- history navigation
+- Website owner/moderators
+- History begin with the most recent
 
 PATCH:
-- Pas de pop up de ma propre image
-- Erreur connexion (rarement)
-- PNG image
 - Je vois ma room quand j'host
-- crash avec webcam
-
-?
-- matchmacking fast
-- Website owner/moderators
