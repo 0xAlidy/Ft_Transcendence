@@ -1,7 +1,7 @@
 import React from 'react'
 import Chat from './Chat/Chat'
 import '../../styles/MainPage/MainPage.css'
-import LOGO from '../../assets/logo.png'
+import { ReactComponent as Logo } from '../../assets/logo.svg';
 import { io, Socket} from "socket.io-client";
 import Menu from './Menu/Menu';
 import IGame from './midPanel/Game/Game';
@@ -159,7 +159,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 				{this.state.User && this.state.socket &&
 				<>
 					<div className="logo">
-						<img src={LOGO} alt="" className="mainLogo"/>
+						<Logo className="mainLogo"/>
 					</div>
 					<Menu onChange={Ref} imgsrc={this.state.User.imgUrl}/>
 					<Chat socket={this.state.socket} User={this.state.User} />

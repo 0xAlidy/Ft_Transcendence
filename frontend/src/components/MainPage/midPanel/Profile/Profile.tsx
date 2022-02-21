@@ -47,7 +47,7 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 	async componentDidMount(){
 		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.props.token).then(res => {
 			this.setState({User: res.data, nickname: res.data.nickname})
-		})
+	})
 
 		const box = document.getElementById("boxProfile");
 		const shadow = document.getElementById("shadow");
@@ -56,7 +56,7 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 			box.addEventListener("scroll", function() { 
 				if (this.scrollTop > 47)
 				{
-					shadow.style.boxShadow= "0px -11px 20px 13px #fee154";
+					shadow.style.boxShadow= "0px -11px 20px 13px var(--main-color)";
 					title.style.boxShadow= "none";
 				}
 				else

@@ -61,6 +61,8 @@
   min-height: 50px;
   height: 90%;
   max-height: 200px;
+  color: var(--main-color);
+  transition: color 1s;
 }
 
 /*              */

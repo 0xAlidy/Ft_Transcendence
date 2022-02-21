@@ -73,4 +73,5 @@
     border-bottom: 1px solid var(--main-color);
     text-transform: uppercase;
     cursor: pointer;
+    transition: all 2s;
 }

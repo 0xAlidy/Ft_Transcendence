@@ -1,7 +1,7 @@
-// @ts-nocheck
 import React from "react";
 import '../../../styles/MainPage/menu/menu.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// @ts-ignore 
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 import ColorMenu from './ColorMenu/ColorMenu';
 

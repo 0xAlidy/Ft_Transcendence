@@ -1,12 +1,11 @@
-// @ts-nocheck
 import React from 'react'
 import '../../../../styles/MainPage/menu/ColorMenu/ColorMenu.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// @ts-ignore 
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
-export default class ColorMenu extends React.Component<{}, {color:Array, save:string|null}>
+export default class ColorMenu extends React.Component<{}, {color:Array<string>, save:string|null}>
 {
-
     constructor(props :any) {
 		super(props);
 		this.state = {
@@ -28,6 +27,7 @@ export default class ColorMenu extends React.Component<{}, {color:Array, save:st
         if (active)
         {
             document.documentElement.style.setProperty('--main-color', this.state.color[index]);
+            document.querySelector("svg")
         }
     }
 

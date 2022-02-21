@@ -16,17 +16,6 @@ export default class History extends React.Component<{User:user, socket:Socket},
 			}
 	};
 
-	//loadMatchs =  () => {
-	//	var self = this;
-	//	this.state.matchs.map((function(item, idx) {
-	//		return <ItemMatch match={item} token={self.props.User.token} name={item.split('/').at(4)} key={idx}/>;
-	//	}))
-	//};
-
-	// createMatchElement = (newMatch:Match) => {
-	// 	return (
-	// 			<ItemMatch match={newMatch} name={this.props.name} key={newMatch.id}/>
-	// 	)
 	async componentDidMount() {
 		var data = (await axios.get("http://" + window.location.host.split(":").at(0) + ":667/matchs?name="+ this.props.User.login +"&token="+ this.props.User.token)).data;
 		this.setState({matchs: data});
@@ -37,7 +26,7 @@ export default class History extends React.Component<{User:user, socket:Socket},
 			box.addEventListener("scroll", function() { 
 				if (this.scrollTop > 40)
 				{
-					shadow.style.boxShadow= "0px -11px 20px 13px #fee154";
+					shadow.style.boxShadow= "0px -11px 20px 13px var(--main-color)";
 					title.style.boxShadow= "none";
 				}
 				else

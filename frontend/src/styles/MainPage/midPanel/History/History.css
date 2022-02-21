@@ -85,14 +85,7 @@
 
 .score {
 	font-size: 30px;
-}
-
-.score-win{
-	color: var(--win-color);
-}
-
-.score-lose{
-	color: var(--lose-color);
+	color: var(--black-color);
 }
 
 .name {

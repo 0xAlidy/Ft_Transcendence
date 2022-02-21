@@ -7,10 +7,11 @@
 }
 
 .editButton{
-  height: 25px;
+  font-size: 25px;
   margin-left: 10px;
-  filter: invert(90%) sepia(44%) saturate(2847%) hue-rotate(317deg) brightness(113%) contrast(99%);
+  color: var(--main-color);
   cursor: pointer;
+  transition: all 2s;
 }
 
 #editName {

@@ -50,7 +50,7 @@
     width: 40px;
     height: 40px;
     transform:  rotate(calc(360deg / -6 * var(--i)));
-    transition: 0.5s;
+    transition: 2s;
     cursor: pointer;
     opacity: 0.3;
 }

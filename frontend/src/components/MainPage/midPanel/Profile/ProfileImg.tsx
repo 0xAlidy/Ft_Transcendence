@@ -1,10 +1,11 @@
 import React from 'react'
 import AvatarEditor from 'react-avatar-editor'
-import EDIT from '../../../../assets/edit-button.png'
-import CLOSE from '../../../../assets/exit.png'
 import '../../../../styles/MainPage/midPanel/Profile/ProfileImg.css'
 import Camera from './Camera'
-// import Upload from './upload'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// @ts-ignore 
+import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
+
 interface user{
 	WSId: string;
 	id: number;
@@ -90,7 +91,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
         <div className='ProfileImgdiv'>
 			<div className='ProfileButton'>
 				<button  onClick={this.open}>
-					<img src={this.state.displayChoices === false ? EDIT: CLOSE} alt=""/>
+					{this.state.displayChoices === false ? <FontAwesomeIcon className="chooseButton" icon={solid('pen-to-square')}/> : <FontAwesomeIcon  className="chooseButton" icon={solid('circle-xmark')}/>}
 				</button>
 			</div>
 			

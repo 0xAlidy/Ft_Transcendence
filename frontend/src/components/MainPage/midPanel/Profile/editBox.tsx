@@ -1,8 +1,9 @@
 import React from 'react'
 import '../../../../styles/MainPage/midPanel/Profile/EditBox.css'
-import EDIT from '../../../../assets/edit-button.png'
-import DONE from '../../../../assets/check.png'
 import axios from 'axios'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// @ts-ignore 
+import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
 export default class EditBox extends React.Component<{ value:any, User:any, onChange:any},{editMode:boolean, nicknameError:string | boolean}>{
 	input: HTMLInputElement|null;
@@ -61,8 +62,8 @@ export default class EditBox extends React.Component<{ value:any, User:any, onCh
 			<div id="editName">
 				{
 					this.state.editMode === true ?
-					<><input ref={this.setRef} placeholder={this.props.value} className="ProfileInput" /><img src={DONE} alt="" onClick={this.validate} className="editButton"/></>
-					:<><div className="ProfileLogin">{this.props.value}</div><img src={EDIT} alt="" className="editButton" onClick={this.click}/></>
+					<><input ref={this.setRef} placeholder={this.props.value} className="ProfileInput" /><FontAwesomeIcon onClick={this.validate} className="editButton" icon={solid('check')}/></>
+					:<><div className="ProfileLogin">{this.props.value}</div><FontAwesomeIcon onClick={this.click} className="editButton" icon={solid('pen-to-square')}/></>
 				}
 			</div>
 			{
