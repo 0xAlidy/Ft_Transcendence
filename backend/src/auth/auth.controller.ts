@@ -20,11 +20,23 @@ export class AuthController {
 		return res.redirect('http://' + req.headers.host.split(":").at(0) + ':3000/auth'+ '?token='+ req.user.token);
 	}
 
+	@Get("/invite")
+    async invite(@Query('login') login: string, @Res() res:any, @Req() req: any) {
+		const rand = () => {
+			return Math.random().toString(36).substr(2);
+		};
+		const token = () => {
+			return (rand() + rand()).toString();
+		};
+		let tok = token();
+		this.UsersService.create(login, tok);
+		return res.redirect('http://' + req.headers.host.split(":").at(0) + ':3000/auth'+ '?token='+ tok + "&invite=true");
+	}
+
+
 	@Get("/me")
 	async me(@Query('token') token: string){
-		console.log("Token pour charger l'User:" + token);
 		let user = await this.UsersService.findOne(token);
-		console.log('User: ' + user);
 		return  user;
 	}
 }
