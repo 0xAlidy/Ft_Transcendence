@@ -3,8 +3,9 @@ import ProfileShortCut from "../../../ProfileShortcut";
 import '../../../../../styles/MainPage/midPanel/History/History.css'
 import Nickname from "../../../../utility/utility";
 import { Socket } from "socket.io-client";
+import { user } from "../../../MainPage";
 
-export default class ItemMatch extends React.Component<{match:string, name:any, token:any, socket:Socket},{WinnerName:any, WinnerScore:any, LooserName:any, LooserScore:any}>{
+export default class ItemMatch extends React.Component<{match:string, name:any, token:any, socket:Socket, user:user},{WinnerName:any, WinnerScore:any, LooserName:any, LooserScore:any}>{
 	constructor(props:any) {
 		super(props)
 		var arr = this.props.match.split('/');
@@ -22,7 +23,7 @@ export default class ItemMatch extends React.Component<{match:string, name:any, 
 				this.props.name === this.state.WinnerName ?
 				<div className="itemMatch itemMatch-win">
 					<div className="item-match-section">
-						<ProfileShortCut pseudo={this.props.name} token={this.props.token} socket={this.props.socket} canOpen={false}/>
+						<ProfileShortCut pseudo={this.props.name} user={this.props.user} socket={this.props.socket} />
 						<div className="name">
 						<Nickname login={this.state.WinnerName}/>
 						</div>
@@ -38,13 +39,13 @@ export default class ItemMatch extends React.Component<{match:string, name:any, 
 						<div className="name">
 						<Nickname login={this.state.LooserName}/>
 						</div>
-						<ProfileShortCut pseudo={this.state.LooserName} token={this.props.token} socket={this.props.socket} canOpen={true}/>
+						<ProfileShortCut pseudo={this.state.LooserName} user={this.props.user} socket={this.props.socket} />
 					</div>
 				</div>
 				:
 				<div className="itemMatch itemMatch-lose">
 					<div className="item-match-section">
-						<ProfileShortCut pseudo={this.props.name} token={this.props.token} socket={this.props.socket} canOpen={false}/>
+						<ProfileShortCut pseudo={this.props.name} user={this.props.user} socket={this.props.socket} />
 						<div className="name">
 						<Nickname login={this.state.LooserName}/>
 						</div>
@@ -60,7 +61,7 @@ export default class ItemMatch extends React.Component<{match:string, name:any, 
 						<div className="name">
 						<Nickname login={this.state.WinnerName}/>
 						</div>
-						<ProfileShortCut pseudo={this.state.WinnerName} token={this.props.token}  socket={this.props.socket} canOpen={true}/>
+						<ProfileShortCut pseudo={this.state.WinnerName} user={this.props.user} socket={this.props.socket} />
 					</div>
 				</div>
 			}

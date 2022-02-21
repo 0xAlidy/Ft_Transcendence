@@ -15,10 +15,18 @@ import MatchMaking from './midPanel/MatchMaking/MatchMaking';
 import Popup from 'reactjs-popup';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { DuelNotif, InviteButton, InviteNotif } from '../utility/utility';
+import {InviteButton, InviteNotif } from '../utility/utility';
 
 
 export interface user{
+	waitingFriends: string[];
+
+	friends: string[];
+
+	blockedUsers: string[];
+
+	rooms: string[];
+
 	WSId: string;
 	id: number;
 	imgUrl: string;
@@ -65,33 +73,40 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 				this.setState({User: res.data, url: res.data.imgUrl})
 			})
 			if (this.state.User)
-				this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token}})})
-			if (this.state.socket){
-				this.state.socket.on('startGame', () => {
-					this.openGame();
-				});
-				this.state.socket.on('closeGame', () => {
-					this.closeGame();
-				});
-				this.state.socket.on('popupScore', (data:any) => {
-					this.setState({popupInfo:{open:true, win:data.win, adv:data.adv}})
-				});
-				this.state.socket.on('inviteNotif', (data:any) => {
-					this.notify(data.login);
-				});
+			{
+					this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token}})})
+					if (this.state.socket)
+					{
+						console.log(this.state.User.waitingFriends)
+						this.state.User.waitingFriends.forEach(element => {
+							this.notify(element);
+						});
+						this.state.socket.on('startGame', () => {
+							this.openGame();
+						});
+						this.state.socket.on('closeGame', () => {
+							this.closeGame();
+						});
+						this.state.socket.on('popupScore', (data:any) => {
+							this.setState({popupInfo:{open:true, win:data.win, adv:data.adv}})
+						});
+						this.state.socket.on('inviteNotif', (data:any) => {
+							this.notify(data.login);
+						});
+					}
+					else
+						console.log("ERROR socket")
 			}
-			else
-				console.log("ERROR socket")
 		}
 	}
-	
+
 	notify = (login:string) => {
-		if(this.state.socket)
+		if(this.state.socket && this.state.User)
 		{
-			var ret: JSX.Element = <InviteNotif token={this.props.token} socket={this.state.socket} login={login}/>
+			var ret: JSX.Element = <InviteNotif user={this.state.User} socket={this.state.socket} login={login}/>
 			var er: JSX.Element = <InviteButton login={login} socket={this.state.socket}/>
 			toast.dark(ret,{closeButton:er});
-			toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>);
+			// toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>); PAS TOUCHE JE VAIS OUBLIER SINON
 		}
 	}
 
@@ -140,7 +155,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 		}
 
 		return (
-		<>	
+		<>
 			<ToastContainer
 				position="top-left"
 				autoClose={false}
@@ -164,7 +179,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 						{this.state.selector === 'profile' && <Profile token={this.props.token} refreshUser={this.refreshUser}/>}
 						{this.state.selector === 'history' && <History User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'admin' && <AdminPanel/>}
-						{this.state.selector === 'game' && <MatchMaking token={this.state.User.token} socket={this.state.socket}/>}
+						{this.state.selector === 'game' && <MatchMaking user={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'friends' && <FriendPanel User={this.state.User}/>}
 						<IGame ref={this.ref} socket={this.state.socket}/>
 					{/* <button onClick={this.notify}>oui</button> */}

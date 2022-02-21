@@ -26,7 +26,7 @@ export default class MessageItem extends React.Component <{msg:Msg, User:user,ac
 					{ this.system === false && <p>{this.props.msg.date}</p>}
 				</div>
                 { this.system === false && <div className="imgBlock">
-                   <ProfileShortCut pseudo={this.props.msg.sender} token={this.props.User.token} socket={this.props.socket} canOpen={true}/>
+                   <ProfileShortCut pseudo={this.props.msg.sender} user={this.props.User} socket={this.props.socket} />
                 </div>
 				}
             </div>

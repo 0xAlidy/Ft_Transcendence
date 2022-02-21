@@ -37,9 +37,12 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
     async handleConnection(client: Socket, ...args: any[]) {
         var user = await this.userService.findOne(client.handshake.query.token as string);
+        await this.userService.setIsActive(user.token, true);
         this.clients.set(client.id,new clientClass(client, user.login, user.token));
     }
-    handleDisconnect(client: Socket) {
+    async handleDisconnect(client: Socket) {
+        var user = this.clients.get(client.id)
+        await this.userService.setIsActive(user._token, false);
         this.clients.delete(client.id);
     }
 
@@ -61,14 +64,21 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     async acceptFriend(client: Socket, data:any){
         console.log(data.login)
         var user = this.clients.get(client.id);
-        this.userService.removeWaitingFriend(user._token, data.login)
-        this.userService.addFriend(user._token, data.login)
+        // this.userService.removeWaitingFriend(user._token, data.login)
+        await this.userService.addFriend(user._token, data.login)
+    }
+    @SubscribeMessage('removeFriend')
+    async removeFriend(client: Socket, data:any){
+        console.log(data.login)
+        var user = this.clients.get(client.id);
+        // this.userService.removeWaitingFriend(user._token, data.login)
+        await this.userService.removeFriend(user._token, data.login)
     }
 
     @SubscribeMessage('denyFriend')
     async denyFriend(client: Socket, data:any){
         console.log(data.login)
         var user = this.clients.get(client.id);
-        this.userService.removeWaitingFriend(user._token, data.login)
+        await this.userService.removeWaitingFriend(user._token, data.login)
     }
 }

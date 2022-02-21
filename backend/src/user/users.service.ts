@@ -62,8 +62,13 @@ export class UsersService {
   }
   async removeWaitingFriend(token:string, login:string){
     var user = await this.findOne(token)
-    user.waitingFriends.splice(user.waitingFriends.indexOf(login),1)
-    this.usersRepository.save(user);
+    console.log(user.login +' '+login)
+    var index = user.waitingFriends.indexOf(login);
+    console.log(index);
+    console.log(user.waitingFriends);
+    user.waitingFriends.splice(index,1);
+    console.log(user.waitingFriends)
+    await this.usersRepository.save(user);
   }
 
   async addWaitingFriend(login:string, friend:string)
@@ -97,6 +102,8 @@ export class UsersService {
   {
     var user = await this.findOne(token);
     var friend = await this.findOneByLogin(login)
+    var index = user.waitingFriends.indexOf(login);
+    user.waitingFriends.splice(index,1);
     user.friends.push(login);
     friend.friends.push(user.login)
     await this.usersRepository.save(user);
@@ -146,6 +153,20 @@ export class UsersService {
     return await this.findOneByLogin(login);
   }
 
+
+  async getUserImage(token:string, login:string){
+
+    var verif = await this.findOne(token);
+    if (verif){
+      var user = await this.findOneByLogin(login);
+      if(user)
+      return({
+        imgUrl: user.imgUrl
+      })
+    }
+    return null;
+  }
+
   async getUserPublic(token:string, login:string){
 
     var verif = await this.findOne(token);
@@ -153,10 +174,12 @@ export class UsersService {
       var user = await this.findOneByLogin(login);
       if(user)
       return({
+        waiting:(user.waitingFriends.indexOf(verif.login) !== -1 ? true:false),
         imgUrl: user.imgUrl,
         isActive: user.isActive,
         lvl: user.lvl,
         login: user.login,
+        friends: user.friends,
         nickname: user.nickname,
         numberOfLoose: user.numberOfLoose,
         numberOfWin: user.numberOfWin,
@@ -234,8 +257,8 @@ export class UsersService {
   }
 
 
-  async setIsActive(nickname:string, bool: boolean){
-    const user = await this.findOneByNickname(nickname);
+  async setIsActive(token:string, bool: boolean){
+    const user = await this.findOne(token);
     if (user){
       user.isActive = bool;
       await this.usersRepository.save(user);

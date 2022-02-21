@@ -28,6 +28,10 @@ export class UsersController {
       return await this.UsersService.getUserPublic(token, name);
     }
 
+    @Get('/getUserImage')
+    async getUserImage(@Query('token') token: string, @Query('name') name: string) {
+      return await this.UsersService.getUserImage(token, name);
+    }
     @Get('/getNickname')
     async getNickname(@Query('login') login: string) {
       return await this.UsersService.getNickame(login);

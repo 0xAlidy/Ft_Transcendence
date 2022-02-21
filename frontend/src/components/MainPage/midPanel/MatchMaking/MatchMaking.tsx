@@ -1,6 +1,7 @@
 import React from "react";
 import { Socket } from "socket.io-client";
 import '../../../../styles/MainPage/midPanel/MatchMaking/MatchMaking.css'
+import { user } from "../../MainPage";
 import ItemSpec from "./itemSpec";
 interface specRoomsData{
 	name:string,
@@ -8,12 +9,12 @@ interface specRoomsData{
 	right:string,
 	token:string
 }
-export default class MatchMaking extends React.Component<{socket:Socket, token:string},{Searching:boolean, rooms:specRoomsData[]}>{
+export default class MatchMaking extends React.Component<{socket:Socket, user:user},{Searching:boolean, rooms:specRoomsData[]}>{
 	constructor(props :any) {
 		super(props);
-		this.state = {Searching:false, rooms:[{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.token},{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.token},{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.token},{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.token},{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.token},{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.token}]}
+		this.state = {Searching:false, rooms:[{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.user.token}]}
 		this.props.socket.on('SpecRooms', (data:any) => {
-			data.spec.token = this.props.token
+			data.spec.token = this.props.user.token
 			this.setState({rooms: data.spec})
 		})
 	}
@@ -33,7 +34,7 @@ export default class MatchMaking extends React.Component<{socket:Socket, token:s
 			<div className='listSpec'>
 			{
 				this.state.rooms.map((item :specRoomsData, idx) => {
-					return <ItemSpec data={item} onSpecCLick={this.onSpecClick} token={item.token} socket={this.props.socket} key={idx}/>;
+					return <ItemSpec data={item} onSpecCLick={this.onSpecClick} user={this.props.user} socket={this.props.socket} key={idx}/>;
 				})
 			}
 			</div>
