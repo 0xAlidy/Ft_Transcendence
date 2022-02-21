@@ -20,6 +20,6 @@ export class FTStrategy extends PassportStrategy(Strategy, '42')
 	{
 		const user =  await this.authServe.validateUser(accessToken, profile.username)
 		return user;
-	  }
+	}
 }
 

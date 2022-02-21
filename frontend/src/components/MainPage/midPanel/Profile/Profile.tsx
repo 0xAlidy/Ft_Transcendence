@@ -40,10 +40,6 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 		this.setState({ nickname: nickname });
 	};
 
-	handleRefresh = () => {
-		//this.props.refreshUser()
-	}
-
 	async componentDidMount(){
 		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.props.token).then(res => {
 			this.setState({User: res.data, nickname: res.data.nickname})
@@ -74,7 +70,7 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 					<div id="topBox">
 						<div id="player">
 							<h2>Player</h2>
-							<ProfileImg User={this.state.User} refreshUser={this.handleRefresh}/>
+							<ProfileImg User={this.state.User} refreshUser={this.props.refreshUser}/>
 							<EditBox value={this.state.nickname} onChange={this.setName} User={this.state.User}/>
 						</div>
 						<div id="statistics">

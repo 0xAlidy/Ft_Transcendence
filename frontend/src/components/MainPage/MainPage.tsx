@@ -36,7 +36,7 @@ export interface user{
 }
 interface popupScore{open:boolean, win:boolean, adv:string}
 
-export default class MainPage extends React.Component<{ token: string },{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, url:string|null, popupInfo:popupScore | null}>{
+export default class MainPage extends React.Component<{ token: string },{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, popupInfo:popupScore | null}>{
 	menuState: any
 	selector : any;
 	ref:any;
@@ -48,7 +48,6 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 			lastSelect:'game',
 			gameOpen:false,
 			selector: 'game',
-			url:null,
 			socket: null,
 			User: null,
 			popupOpen: false,
@@ -60,9 +59,8 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 	async componentDidMount() {
 		if (this.state.token)
 		{
-			console.log("debug connection error" + this.state.token)
 			await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
-				this.setState({User: res.data, url: res.data.imgUrl})
+				this.setState({ User: res.data })
 			})
 			if (this.state.User)
 				this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token}})})
@@ -97,7 +95,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 
 	refreshUser = async () => {
 		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
-			this.setState({User: res.data, url: res.data.imgUrl})
+			this.setState({ User: res.data })
 		})
 	}
 
