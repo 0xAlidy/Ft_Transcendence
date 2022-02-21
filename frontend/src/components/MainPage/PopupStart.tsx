@@ -5,6 +5,7 @@ import AvatarEditor from 'react-avatar-editor';
 import EditBox from './midPanel/Profile/editBox';
 import TwoAuth from './midPanel/Profile/twoAuth';
 import axios from 'axios';
+import profileIMG from '../../assets/profile.png'
 
 interface user{
 	WSId: string;
@@ -23,7 +24,7 @@ interface user{
 	xp: 0;
 }
 
-export default class PopupStart extends React.Component<{ User:user, onChange:any},{error:boolean, src:string | File,options:number, nickname:string | null, number:number | null, verify:boolean | null}>{
+export default class PopupStart extends React.Component<{ User:user, onChange:any, invite:boolean},{error:boolean, src:string|null | File,options:number, nickname:string | null, number:number | null, verify:boolean | null}>{
 	editor:AvatarEditor | null;
 	constructor(props :any) {
 		super(props);
@@ -32,7 +33,7 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 			number: null,
 			verify: null,
 			error: false,
-			src: "https://cdn.intra.42.fr/users/medium_"+ this.props.User.login +".jpg",
+			src: null,
 			options: this.props.User.firstConnection ? 0 : (this.props.User.secretEnabled ? 1 : 2)
 		};
 		this.editor = null;
@@ -71,8 +72,6 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 		}
 	}
 
-	
-
 	async handleSubmit(event:any) {
 		event.preventDefault();
 		await axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/verifyNumber", {token: this.props.User.token, number: this.state.number}).then(resp =>
@@ -83,9 +82,12 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 	}
 
 	async componentDidMount(){
-		let file = await fetch("https://cdn.intra.42.fr/users/medium_"+ this.props.User.login +".jpg").then(r => r.blob()).then(blobFile => new File([blobFile], "fileNameGoesHere", { type: "image/png" }))
-		this.setState({src: file});
-
+		if (!this.props.invite)
+		{
+			let file = await fetch("https://cdn.intra.42.fr/users/medium_"+ this.props.User.login +".jpg")
+			.then(r => r.blob()).then(blobFile => new File([blobFile], "fileNameGoesHere", { type: "image/png" }))
+			this.setState({src: file});
+		}
 		const box = document.getElementById("contentStart");
 		const shadow = document.getElementById("shadow");
 		const title = document.getElementById("title");
@@ -112,24 +114,26 @@ export default class PopupStart extends React.Component<{ User:user, onChange:an
 						<span id="shadow"></span>
 						<div id="contentStart">
 							<h2>Avatar</h2>
-							<AvatarEditor ref={this.setEditorRef} crossOrigin='anonymous' image={this.state.src} width={100} height={100} borderRadius={100} color={[255, 255, 255, 0.6]} scale={1.1} rotate={0}/>
+							<AvatarEditor ref={this.setEditorRef} crossOrigin='anonymous' image={this.state.src ? this.state.src : profileIMG} width={100} height={100} borderRadius={100} color={[255, 255, 255, 0.6]} scale={1.1} rotate={0}/>
 							<p>Center your picture you can change it later</p>
 							<h2>NickName</h2>
 							<EditBox onChange={this.setName} value={this.state.nickname} User={this.props.User}/>
 							<TwoAuth token={this.props.User.token}/>
 							<button className='button' onClick={this.validate}>validate</button>
-							{this.state.error && <p>Nickname error</p>}
+							{this.state.error && <p style={{color: "#cc0000"}}>Nickname error</p>}
 						</div>
 					</>
 				}
 				{
 					this.state.options === 1 && // CONNECTION AVEC 2FA
 					<>
-						<form onSubmit={this.handleSubmit}>
-							<label>Saisir le code de votre application: </label>
+						<h1>Security</h1>
+						<form id="form2FA" onSubmit={this.handleSubmit}>
+							<p>Two Factor Authentification is active on your account</p> 
+							<label>Enter your application code to access the site</label>
 							<input type="number" name="code" id="number" onChange= {this.handleNumberChange}></input>
-							<button>Verifier</button>
-							{ this.state.verify === false ? <h2 style={{color:'red'}}>Le code est invalide !</h2> : null }
+							<button>Submit</button>
+							{ this.state.verify === false ? <h2>The code is wrong</h2> : null }
 						</form>
 					</>
 				}

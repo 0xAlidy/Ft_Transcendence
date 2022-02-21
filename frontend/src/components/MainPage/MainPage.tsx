@@ -1,7 +1,7 @@
 import React from 'react'
 import Chat from './Chat/Chat'
 import '../../styles/MainPage/MainPage.css'
-import LOGO from '../../assets/logo.png'
+import { ReactComponent as Logo } from '../../assets/logo.svg';
 import { io, Socket} from "socket.io-client";
 import Menu from './Menu/Menu';
 import IGame from './midPanel/Game/Game';
@@ -44,7 +44,7 @@ export interface user{
 }
 interface popupScore{open:boolean, win:boolean, adv:string}
 
-export default class MainPage extends React.Component<{ token: string },{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, url:string|null, popupInfo:popupScore | null}>{
+export default class MainPage extends React.Component<{ token: string, invite:boolean },{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, popupInfo:popupScore | null}>{
 	menuState: any
 	selector : any;
 	ref:any;
@@ -56,7 +56,6 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 			lastSelect:'game',
 			gameOpen:false,
 			selector: 'game',
-			url:null,
 			socket: null,
 			User: null,
 			popupOpen: false,
@@ -68,9 +67,8 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 	async componentDidMount() {
 		if (this.state.token)
 		{
-			console.log("debug connection error" + this.state.token)
 			await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
-				this.setState({User: res.data, url: res.data.imgUrl})
+				this.setState({ User: res.data })
 			})
 			if (this.state.User)
 			{
@@ -112,7 +110,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 
 	refreshUser = async () => {
 		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
-			this.setState({User: res.data, url: res.data.imgUrl})
+			this.setState({ User: res.data })
 		})
 	}
 
@@ -152,6 +150,9 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 			else if (e.isFriendListOpen){
 				this.setState({selector: 'friends'});
 			}
+			else if (e.isRulesOpen){
+				this.setState({selector: 'rules'});
+			}
 		}
 
 		return (
@@ -171,7 +172,7 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 				{this.state.User && this.state.socket &&
 				<>
 					<div className="logo">
-						<img src={LOGO} alt="" className="mainLogo"/>
+						<Logo className="mainLogo"/>
 					</div>
 					<Menu onChange={Ref} imgsrc={this.state.User.imgUrl}/>
 					<Chat socket={this.state.socket} User={this.state.User} />
@@ -181,12 +182,13 @@ export default class MainPage extends React.Component<{ token: string },{lastSel
 						{this.state.selector === 'admin' && <AdminPanel/>}
 						{this.state.selector === 'game' && <MatchMaking user={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'friends' && <FriendPanel User={this.state.User}/>}
+						{this.state.selector === 'rules' && <p>RULES</p>}
 						<IGame ref={this.ref} socket={this.state.socket}/>
 					{/* <button onClick={this.notify}>oui</button> */}
 					</div>
 					{this.state.popupInfo && <Popup open={this.state.popupInfo.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>}
 					{/*this.state.popupInvite && <Popup open={this.state.popupInvite.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>*/}
-					<PopupStart User={this.state.User} onChange={this.CompleteProfile}/>
+					<PopupStart User={this.state.User} onChange={this.CompleteProfile} invite={this.props.invite}/>
 				</>
 				}
 			</div>

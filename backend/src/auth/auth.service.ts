@@ -7,21 +7,14 @@ export class AuthService {
 
 	async validateUser(token :string, login:string): Promise<any>
 	{
-		const user = await this.usersService.findOneByLogin(login);
+		let user = await this.usersService.findOneByLogin(login);
 		if (user && user.token !== token) {
-			this.usersService.changetoken(login, token);
-			const { ...result } = user;
-			return result;
-	  	}
-	  	if (user && user.token === token) {
-			const { ...result } = user;
-			return result;
+			user = await this.usersService.changetoken(login, token);
 	  	}
 	  	if (!user) {
-			const ret = await this.usersService.create(login, token);
-			const { ...result } = ret;
-			return result;
+			user = await this.usersService.create(login, token);
 	  	}
-	 	return null;
+		const { ...result } = user;
+		return result;
 	}
 }

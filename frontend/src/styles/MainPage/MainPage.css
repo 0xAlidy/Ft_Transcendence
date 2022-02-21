@@ -28,12 +28,13 @@
 
 .menu {
   grid-area: menu;
-  justify-content: left;
-  width: 75%;
+  width: 100%;
   height :100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
 }
 
 .game { 
@@ -60,6 +61,8 @@
   min-height: 50px;
   height: 90%;
   max-height: 200px;
+  color: var(--main-color);
+  transition: color 1s;
 }
 
 /*              */

@@ -14,11 +14,14 @@ export class ChatRooms {
   @Column()
   owner:string;
 
-  @Column({default:'', nullable: true})
+  @Column({default:''})
   password:string;
 
   @Column()
   IsPassword:boolean;
+
+  @Column({default: false})
+  IsPrivate:boolean;
 
   @Column("text",{ array:true, default: []})
   blockedUsers: string[];
@@ -26,17 +29,34 @@ export class ChatRooms {
   @Column("text",{ array:true, default: []})
   users: string[];
 
+  @Column("text", {array: true, default: []})
+  adminList: string[];
+
   @Column('jsonb',{ default: []})
   messages: Msg[];
 
-  constructor(name :string, owner:string, password:string|null){
-    this.name = name;
-    this.owner = owner;
-    if( password === '')
+  constructor(name :string | null, owner:string | null , password:string|null, priv:boolean, privUser:string[] | null){
+    if (priv)
+      this.IsPrivate = priv;
+    if (priv === true)
+    {
+      this.owner = "";
+      this.name = "-" + privUser[0] + " /" + privUser[1];
       this.IsPassword = false;
-    else{
-      this.password = password;
-      this.IsPassword = true;
+      this.password = "";
+      this.users = privUser
+      this.adminList = privUser;
+    }
+    else {
+      this.name = name;
+      this.owner = owner;
+      this.adminList= [this.owner];
+      if( password === '')
+        this.IsPassword = false;
+      else{
+        this.password = password;
+        this.IsPassword = true;
+      }
     }
   }
 

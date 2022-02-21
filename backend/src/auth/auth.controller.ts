@@ -17,13 +17,26 @@ export class AuthController {
 	@UseGuards(AuthGuard("42"))
 	async FTLoginRedirect(@Req() req: any, @Res() res:any): Promise<any> {
     	this.UsersService.create(req.user.login, req.user.token);
-		return res.redirect('http://' + req.headers.host.split(":").at(0) + ':3000/auth'+ '?token='+ req.user.token+'&name='+ req.user.nickname);
+		return res.redirect('http://' + req.headers.host.split(":").at(0) + ':3000/auth'+ '?token='+ req.user.token);
 	}
+
+	@Get("/invite")
+    async invite(@Query('login') login: string, @Res() res:any, @Req() req: any) {
+		const rand = () => {
+			return Math.random().toString(36).substr(2);
+		};
+		const token = () => {
+			return (rand() + rand()).toString();
+		};
+		let tok = token();
+		this.UsersService.create(login, tok);
+		return res.redirect('http://' + req.headers.host.split(":").at(0) + ':3000/auth'+ '?token='+ tok + "&invite=true");
+	}
+
 
 	@Get("/me")
 	async me(@Query('token') token: string){
-		console.log("Token pour charger l'User:" + token);
-		const {...result} = await this.UsersService.findOne(token);
-		return  result;
+		let user = await this.UsersService.findOne(token);
+		return  user;
 	}
 }

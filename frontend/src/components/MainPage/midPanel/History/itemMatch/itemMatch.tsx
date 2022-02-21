@@ -27,13 +27,13 @@ export default class ItemMatch extends React.Component<{match:string, name:any, 
 						<div className="name">
 						<Nickname login={this.state.WinnerName}/>
 						</div>
-						<div className="score score-win">
+						<div className="score">
 							{this.state.WinnerScore}
 						</div>
 					</div>
 					<h2 className="vs">VS</h2>
 					<div className="item-match-section">
-						<div className="score score-lose">
+						<div className="score">
 							{this.state.LooserScore}
 						</div>
 						<div className="name">
@@ -49,13 +49,13 @@ export default class ItemMatch extends React.Component<{match:string, name:any, 
 						<div className="name">
 						<Nickname login={this.state.LooserName}/>
 						</div>
-						<div className="score score-lose">
+						<div className="score">
 							{this.state.LooserScore}
 						</div>
 					</div>
 					<h2 className="vs">VS</h2>
 					<div className="item-match-section">
-						<div className="score score-win">
+						<div className="score">
 							{this.state.WinnerScore}
 						</div>
 						<div className="name">

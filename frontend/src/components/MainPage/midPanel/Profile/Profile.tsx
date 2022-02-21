@@ -40,14 +40,10 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 		this.setState({ nickname: nickname });
 	};
 
-	handleRefresh = () => {
-		//this.props.refreshUser()
-	}
-
 	async componentDidMount(){
 		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.props.token).then(res => {
 			this.setState({User: res.data, nickname: res.data.nickname})
-		})
+	})
 
 		const box = document.getElementById("boxProfile");
 		const shadow = document.getElementById("shadow");
@@ -56,7 +52,7 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 			box.addEventListener("scroll", function() { 
 				if (this.scrollTop > 47)
 				{
-					shadow.style.boxShadow= "0px -11px 20px 13px #fee154";
+					shadow.style.boxShadow= "0px -11px 20px 13px var(--main-color)";
 					title.style.boxShadow= "none";
 				}
 				else
@@ -74,7 +70,7 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 					<div id="topBox">
 						<div id="player">
 							<h2>Player</h2>
-							<ProfileImg User={this.state.User} refreshUser={this.handleRefresh}/>
+							<ProfileImg User={this.state.User} refreshUser={this.props.refreshUser}/>
 							<EditBox value={this.state.nickname} onChange={this.setName} User={this.state.User}/>
 						</div>
 						<div id="statistics">
