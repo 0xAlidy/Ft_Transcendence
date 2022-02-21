@@ -38,6 +38,7 @@
 #shadow {
   width: 96%;
 	z-index: 1;
+  transition: all 2s;
 }
 
 #popUpStart h2 {
