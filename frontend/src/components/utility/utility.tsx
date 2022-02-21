@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import axios from 'axios';
 import ProfileShortCut from '../MainPage/ProfileShortcut';
 import { Socket } from 'socket.io-client';
+import { user } from '../MainPage/MainPage';
 
 
 export default class Nickname extends React.Component<{login:string},{nickname:string|null}>{
@@ -20,12 +21,12 @@ export default class Nickname extends React.Component<{login:string},{nickname:s
 	}
 };
 
-export function InviteNotif(props:{login:string, token:string, socket:Socket}){
+export function InviteNotif(props:{login:string, socket:Socket, user:user}){
 	return (<>
 			{"✌️ You receive a friend request!"}
 			<br/>
 			<div style={{display: 'flex',width:'100%'}}>
-				<ProfileShortCut pseudo={props.login} token={props.token} socket={props.socket} canOpen={true}/>
+				<ProfileShortCut pseudo={props.login} user={props.user} socket={props.socket} />
 				<div style={{fontWeight:'bolder', fontSize:'20pt',margin:'auto auto', color:"#fee154"}}>{props.login}</div>
 			</div>
 			</>);
@@ -47,7 +48,7 @@ export function InviteNotif(props:{login:string, token:string, socket:Socket}){
 			</>)
   }
 
-  export function DuelNotif(props:{login:string, token:string, socket:Socket}){
+  export function DuelNotif(props:{login:string, user:user, socket:Socket}){
 	// Vous pouvez utiliser des Hooks ici !
 	const [resp, setResp] = useState(0);
 	const accept = () =>{
@@ -63,7 +64,7 @@ export function InviteNotif(props:{login:string, token:string, socket:Socket}){
 			{"⚔️ You receive a duel request!"}
 			<br/>
 			<div style={{display: 'flex',width:'100%'}}>
-				<ProfileShortCut pseudo={props.login} token={props.token} socket={props.socket} canOpen={true}/>
+				<ProfileShortCut pseudo={props.login} user={props.user} socket={props.socket} />
 				{resp === 0 && <>
 					<div style={{fontWeight:'bolder', fontSize:'20pt',margin:'auto auto', color:"#fee154"}}>{props.login}</div>
 					<button style={{fontSize:'20pt', width:'50px', height:'50px', borderRadius:'50%', backgroundColor:'#fee154'}} onClick={() => accept()}>⚔️</button>

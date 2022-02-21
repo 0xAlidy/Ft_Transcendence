@@ -42,7 +42,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         if (this.clients.get(client.id))
         {
             this.userService.changeWSId(this.clients.get(client.id)._login, 'null');
-            this.userService.setIsActive(this.clients.get(client.id)._login, false);
             var roomtoleave : string = this.clients.get(client.id)._room;
             if(roomtoleave !== 'lobby')
             {
@@ -186,7 +185,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     abandon(client: Socket): void {
         var user = this.clients.get(client.id);
         var room = this.rooms.get(this.clients.get(client.id)._room)
-       
+
         if (room)
         {
             if(room.isSpectate(this.clients.get(client.id))){

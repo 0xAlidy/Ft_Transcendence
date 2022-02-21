@@ -41,7 +41,7 @@ export default class History extends React.Component<{User:user, socket:Socket},
 				{
 					this.state.matchs.map((item, idx) => {
 						console.log(item , idx)
-						return <ItemMatch match={item} token={this.props.User.token} socket={this.props.socket} name={this.props.User.login} key={idx}/>;
+						return <ItemMatch match={item} token={this.props.User.token} socket={this.props.socket} user={this.props.User} name={this.props.User.login} key={idx}/>
 					})
 				}
 			</div>
