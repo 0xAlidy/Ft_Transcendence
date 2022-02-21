@@ -35,11 +35,6 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 			socket.emit('refreshUser')
 	}
 
-	afterInit(server: any) {
-		this.logger.log('Initialized!');
-		this.logger.log('Waiting for incoming connection...');
-	}
-
 	async handleConnection(client: Socket, ...args: any[]) {
 		var user = await this.userService.findOne(client.handshake.query.token as string);
 		await this.userService.setIsActive(user.token, true);

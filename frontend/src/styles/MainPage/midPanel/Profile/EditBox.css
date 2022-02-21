@@ -7,10 +7,11 @@
 }
 
 .editButton{
-  height: 25px;
+  font-size: 25px;
   margin-left: 10px;
-  filter: invert(90%) sepia(44%) saturate(2847%) hue-rotate(317deg) brightness(113%) contrast(99%);
+  color: var(--main-color);
   cursor: pointer;
+  transition: all 2s;
 }
 
 #editName {
@@ -21,14 +22,14 @@
 }
 
 .nicknameChange {
-  color: var(--green-color);
+  color: var(--win-color);
   font-style: italic;
   font-size: 20px;
   margin: 10px 0px 0px 0px;
 }
 
 .nicknameError {
-  color: var(--red-color);
+  color: var(--lose-color);
   font-style: italic;
   font-size: 20px;
   margin: 10px 0px 0px 0px;

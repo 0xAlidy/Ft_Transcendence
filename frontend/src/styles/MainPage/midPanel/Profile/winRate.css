@@ -9,9 +9,9 @@
 }
 
 .score-win{
-	color: var(--green-color);
+	color: var(--win-color);
 }
 
 .score-lose{
-	color: var(--red-color);
+	color: var(--lose-color);
 }

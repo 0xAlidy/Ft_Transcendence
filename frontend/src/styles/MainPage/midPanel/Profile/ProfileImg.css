@@ -10,16 +10,17 @@
     width: 100%;
 }
 
-.ProfileButton img {
-    width: 25px;
-    filter: invert(90%) sepia(44%) saturate(2847%) hue-rotate(317deg) brightness(113%) contrast(99%);
+.chooseButton {
+    font-size: 25px;
+    color: var(--main-color);
     cursor: pointer;
+    transition: all 2s;
 }
 
 .ProfileButton button{
     border: none;
     background-color: unset;
-    margin-left: 160px;
+    margin-left: 155px;
     margin-bottom: 3px;
 }
 
@@ -37,16 +38,15 @@
 
 .ChooseOption
 {
-	background-color: #1f1f1f;
+	background-color: var(--black-color);
     border-radius: 20px;
     cursor: pointer;
     margin: 10px 0px 0px 10px;
     padding: 10px;
     color: var(--main-color);
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    transition: all 0.5s ease ;
+    transition: all 1s;
 }
 
 .ChooseOption:hover{

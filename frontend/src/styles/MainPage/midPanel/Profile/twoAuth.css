@@ -48,7 +48,7 @@
   font-weight: bold;
   letter-spacing: 3;
   box-shadow: 0px 8px 10px 2px var(--black-color);
-  transition: all 0.3s ease 0s;
+  transition: all 0.3s ease 0s, background-color 2s;
   animation: 1s slidein;
   margin-bottom: 10px;
 }

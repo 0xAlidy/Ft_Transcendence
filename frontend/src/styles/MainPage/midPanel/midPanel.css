@@ -11,6 +11,7 @@
 	/*animation: 4s Color infinite;*/
 	overflow-y: scroll;
 	scrollbar-width: none;
+	transition: 2s;
 }
 
 ::-webkit-scrollbar {

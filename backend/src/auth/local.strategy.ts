@@ -19,11 +19,7 @@ export class FTStrategy extends PassportStrategy(Strategy, '42')
 	async validate(accessToken: string, refreshToken: string, profile: Profile, done: (err: any, user: any, info?: any) => void): Promise<any>
 	{
 		const user =  await this.authServe.validateUser(accessToken, profile.username)
-		const payload = {
-		  user,
-		  accessToken,
-		};
 		return user;
-	  }
+	}
 }
 

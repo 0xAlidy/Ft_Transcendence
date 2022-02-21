@@ -23,6 +23,11 @@ h1 {
   --black-color: #1f1f1f;
   --grey-color: #333333;
   --white-color: #f3f3f3;
+  --lose-color: #cc0000;
+  --win-color: #007000;
+  --blue-color: #00f8ff;
+  --green-color: #73ff00; /*#2bfa00*/
+  --purple-color:#a400ff;
   --red-color: #cc0000;
-  --green-color: #007000;
+  --yellow-color: #fee154;
 }
