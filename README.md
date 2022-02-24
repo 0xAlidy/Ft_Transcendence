@@ -38,15 +38,20 @@ Yellow:     #FEE154
 White:      #F2F2F2
 
 TO DO :
+- Pop Up Duel
 - Spectactor mode
 - Additionnal features
-- Ruleset is available somewhere on the website and can be consulted by users
+
 - Bloquer user
-- their status (offline/online/in a game)
+
 - history navigation
 - Website owner/moderators
-- History begin with the most recent
 - block user when receive a friend request
+
+- History begin with the most recent
+- History friends
+- their status (offline/online/in a game)
+- Ruleset is available somewhere on the website and can be consulted by users
 
 PATCH:
 - Je vois ma room quand j'host

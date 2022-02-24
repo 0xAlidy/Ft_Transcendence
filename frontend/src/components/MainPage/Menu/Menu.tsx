@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 import ColorMenu from './ColorMenu/ColorMenu';
 
-export default class Menu extends React.Component<{onChange : any, imgsrc:string}, {isFriendListOpen:boolean, isProfileOpen: boolean, isGameOpen: boolean, isHistoryOpen: boolean, isAdminOpen: boolean, isRulesOpen: boolean}>{
+export default class Menu extends React.Component<{token:string, onChange : any, imgsrc:string}, {isFriendListOpen:boolean, isProfileOpen: boolean, isGameOpen: boolean, isHistoryOpen: boolean, isAdminOpen: boolean, isRulesOpen: boolean}>{
 	constructor(props :any) {
 		super(props);
 		this.state = {
@@ -51,7 +51,7 @@ export default class Menu extends React.Component<{onChange : any, imgsrc:string
 	render(){
 		return (
 			<div className="menu">
-				<ColorMenu/>
+				<ColorMenu token={this.props.token}/>
 				<nav id="menuContainer">
 					{
 						!this.state.isProfileOpen &&

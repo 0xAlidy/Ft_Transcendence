@@ -56,6 +56,9 @@ export class User {
   @Column({ default: 'null' })
   imgUrl: string;
 
+  @Column({ default: ''})
+  color:string;
+
 
   constructor(login: string, token: string){
     this.login = login;
