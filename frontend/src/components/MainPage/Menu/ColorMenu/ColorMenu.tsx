@@ -1,10 +1,11 @@
 import React from 'react'
 import '../../../../styles/MainPage/menu/ColorMenu/ColorMenu.css'
+import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // @ts-ignore 
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
-export default class ColorMenu extends React.Component<{}, {color:Array<string>, save:string|null}>
+export default class ColorMenu extends React.Component<{token:string}, {color:Array<string>, save:string|null}>
 {
     constructor(props :any) {
 		super(props);
@@ -27,7 +28,6 @@ export default class ColorMenu extends React.Component<{}, {color:Array<string>,
         if (active)
         {
             document.documentElement.style.setProperty('--main-color', this.state.color[index]);
-            document.querySelector("svg")
         }
     }
 
@@ -40,9 +40,11 @@ export default class ColorMenu extends React.Component<{}, {color:Array<string>,
         }
     }
 
-    changeColor(index:number)
+    async changeColor(index:number)
     {
-        this.setState({save: document.documentElement.style.getPropertyValue('--main-color')});
+        this.setState({save: document.documentElement.style.getPropertyValue('--main-color')}, async () =>{
+            await axios.post("HTTP://" + window.location.host.split(":").at(0) + ":667/user/setColor", {token: this.props.token, color: this.state.save}).then();
+        } );
     }
 
     generateIndex(i:number){

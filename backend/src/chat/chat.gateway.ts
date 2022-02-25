@@ -99,6 +99,11 @@ export class ChatGateway implements OnGatewayInit {
     else if (Message.message.startsWith('/')){
         this.chatService.systemMsg(Message, this.clients);
         Message.sender = "system";
+        if (Message.message.startsWith('/priv')){
+          var rooms = await this.chatService.getAllRoomName; //todo /priv undifined
+          if (rooms)
+            this.server.emit('updateRooms',{rooms: rooms})
+        }
         client.emit('ReceiveMessage', Message)
       }
       else{

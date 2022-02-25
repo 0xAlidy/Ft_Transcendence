@@ -42,7 +42,9 @@ export interface user{
 	token: string;
 	xp: 0;
 	firstConnection: boolean;
+	color:string;
 }
+
 interface popupScore{open:boolean, win:boolean, adv:string}
 
 export default class MainPage extends React.Component<{ token: string, invite:boolean },{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, popupInfo:popupScore | null}>{
@@ -71,8 +73,11 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
 				this.setState({ User: res.data })
 			})
+			
 			if (this.state.User)
 			{
+					if (this.state.User.color)
+						document.documentElement.style.setProperty('--main-color', this.state.User.color);
 					this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token}})})
 					if (this.state.socket)
 					{
@@ -180,13 +185,13 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 					<div className="logo">
 						<Logo className="mainLogo"/>
 					</div>
-					<Menu onChange={Ref} imgsrc={this.state.User.imgUrl}/>
+					<Menu token={this.props.token} onChange={Ref} imgsrc={this.state.User.imgUrl}/>
 					<Chat socket={this.state.socket} User={this.state.User} />
 					<div className="game" id="game">
 						{this.state.selector === 'profile' && <Profile token={this.props.token} refreshUser={this.refreshUser}/>}
 						{this.state.selector === 'history' && <History User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'admin' && <AdminPanel/>}
-						{this.state.selector === 'game' && <MatchMaking user={this.state.User} socket={this.state.socket}/>}
+						<MatchMaking open={this.state.selector === 'game'} user={this.state.User} socket={this.state.socket}/>
 						{this.state.selector === 'friends' && <FriendPanel User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'rules' && <p>RULES</p>}
 						<IGame ref={this.ref} socket={this.state.socket}/>

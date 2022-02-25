@@ -36,7 +36,7 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 	}
 
 	afterInit(server: any) {
-		
+
 	}
 	async handleConnection(client: Socket, ...args: any[]) {
 		var user = await this.userService.findOne(client.handshake.query.token as string);
@@ -53,12 +53,12 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 	async inviteFriend(client: Socket, data:any){
 		console.log(data.login)
 		var user = this.clients.get(client.id);
-		var ret = await this.userService.addWaitingFriend(data.login, user._login)
-		if(this.getUserClassbyName(data.login))
-			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
-		this.refreshFrontBySocket(client);
+		var ret = await this.userService.addWaitingFriend(data.login, user._login, user._token)
 	   if (user && ret === 1)
-		{
+	   {
+			if(this.getUserClassbyName(data.login))
+				this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
+			this.refreshFrontBySocket(client);
 			var clientToNotify : clientClass = this.getUserClassbyName(data.login);
 			if(clientToNotify)
 				clientToNotify._socket.emit('inviteNotif', {login: user._login})
