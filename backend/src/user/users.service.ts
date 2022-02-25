@@ -71,14 +71,21 @@ export class UsersService {
     await this.usersRepository.save(user);
   }
 
-  async addWaitingFriend(login:string, friend:string)
+  async addWaitingFriend(login:string, friend:string, token:string)
   {
-      var user = await this.findOneByLogin(login);
-      if(user.waitingFriends.indexOf(friend) < 0 && user.friends.indexOf(friend) < 0)
+      var frienduser = await this.findOneByLogin(friend)
+      if(frienduser.waitingFriends.indexOf(login) === -1)
       {
-        user.waitingFriends.push(friend);
-        await this.usersRepository.save(user);
-        return 1;
+        var user = await this.findOneByLogin(login);
+        if(user.waitingFriends.indexOf(friend) < 0 && user.friends.indexOf(friend) < 0)
+        {
+          user.waitingFriends.push(friend);
+          await this.usersRepository.save(user);
+          return 1;
+        }
+      }
+      else{
+        this.addFriend(token, login);
       }
       return 0;
   }

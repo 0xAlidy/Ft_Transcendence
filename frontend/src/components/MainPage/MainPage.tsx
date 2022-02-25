@@ -185,7 +185,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						{this.state.selector === 'profile' && <Profile token={this.props.token} refreshUser={this.refreshUser}/>}
 						{this.state.selector === 'history' && <History User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'admin' && <AdminPanel/>}
-						{this.state.selector === 'game' && <MatchMaking user={this.state.User} socket={this.state.socket}/>}
+						<MatchMaking open={this.state.selector === 'game'} user={this.state.User} socket={this.state.socket}/>
 						{this.state.selector === 'friends' && <FriendPanel User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'rules' && <p>RULES</p>}
 						<IGame ref={this.ref} socket={this.state.socket}/>
