@@ -28,11 +28,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10000;
+    z-index: 1;
     border-radius: 50%;
     background-color: var(--black-color);
     cursor: pointer;
-    box-shadow: 0 3px 4px rgba(0,0,0,0,0.15);
     font-size: 2em;
     transition: 1.25s;
     color: var(--main-color);

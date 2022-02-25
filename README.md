@@ -9,6 +9,11 @@ Avant de lancer l'application :
 
 - Verifier l'id dans HomePage.tsx soit la meme que dans le backend
 
+
+Creer un compte invité :
+
+http://localhost:667/auth/invite?login=
+
 INFORMATIONS :
 
 - Front : http://localhost:3000
@@ -33,19 +38,20 @@ Yellow:     #FEE154
 White:      #F2F2F2
 
 TO DO :
+- Pop Up Duel
 - Spectactor mode
 - Additionnal features
-- Ruleset is available somewhere on the website and can be consulted by users
+
 - Bloquer user
+
+- history navigation
+- Website owner/moderators
+- block user when receive a friend request
+
+- History begin with the most recent
+- History friends
 - their status (offline/online/in a game)
+- Ruleset is available somewhere on the website and can be consulted by users
 
 PATCH:
-- Pas de pop up de ma propre image
-- Erreur connexion (rarement)
-- PNG image
 - Je vois ma room quand j'host
-- crash avec webcam
-
-?
-- matchmacking fast
-- Website owner/moderators

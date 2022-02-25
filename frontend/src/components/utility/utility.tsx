@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 import ProfileShortCut from '../MainPage/ProfileShortcut';
+import '../../styles/MainPage/utility.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// @ts-ignore 
+import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { Socket } from 'socket.io-client';
 import { user } from '../MainPage/MainPage';
 
@@ -22,30 +26,51 @@ export default class Nickname extends React.Component<{login:string},{nickname:s
 };
 
 export function InviteNotif(props:{login:string, socket:Socket, user:user}){
-	return (<>
-			{"✌️ You receive a friend request!"}
-			<br/>
-			<div style={{display: 'flex',width:'100%'}}>
-				<ProfileShortCut pseudo={props.login} user={props.user} socket={props.socket} />
-				<div style={{fontWeight:'bolder', fontSize:'20pt',margin:'auto auto', color:"#fee154"}}>{props.login}</div>
+	return (
+		<>
+			<div className='titleNotif'>
+				<FontAwesomeIcon className="iconNewFriend" icon={solid('user-plus')}/>
+				<h2>You received a friend request !</h2>
 			</div>
-			</>);
+			<div className='profileNotif'>
+				<ProfileShortCut pseudo={props.login} user={props.user} socket={props.socket} />
+				<h3>{props.login}</h3>
+			</div>
+		</>
+	);
   }
   export function InviteButton(props:any){
+
 	// Vous pouvez utiliser des Hooks ici !
 	const accept = () =>{
 		props.socket.emit('acceptFriend', {login:props.login})
 		props.closeToast()
 	}
+
 	const deny = () =>{
 		props.socket.emit('denyFriend', {login:props.login})
 		props.closeToast()
 	}
 
-	return (<>
-					<button style={{fontSize:'20pt', width:'50px', height:'50px', borderRadius:'50%', backgroundColor:'#fee154'}} onClick={() => accept()}>✓</button>
-					<button style={{fontSize:'20pt', width:'50px', height:'50px', borderRadius:'50%', backgroundColor:'#cc0000'}} onClick={() => deny()}>X</button>
-			</>)
+	const block = () =>{
+		// BLOCK USER
+		props.closeToast()
+	}
+
+
+	return (
+		<div className='buttonNotifWrap'>
+			<button className='buttonNotif' onClick={() => accept()}>
+				<FontAwesomeIcon className="buttonIcon" icon={solid('check')}/>
+			</button>
+			<button className='buttonNotif' onClick={() => deny()}>
+				<FontAwesomeIcon className="buttonIcon" icon={solid('xmark')}/>
+			</button>
+			<button className='buttonNotif' onClick={() => block()}>
+				<FontAwesomeIcon className="buttonIcon" icon={solid('ban')}/>
+			</button>
+		</div>
+	)
   }
 
   export function DuelNotif(props:{login:string, user:user, socket:Socket}){

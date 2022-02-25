@@ -338,4 +338,11 @@ export class UsersService {
     var user = await this.findOne(data.token);
     return user.secretEnabled;
   }
+
+  async setColor(data:any)
+  {
+    var user =  await this.findOne(data.token);
+    user.color = data.color;
+    await this.usersRepository.save(user);
+  }
 }

@@ -5,7 +5,7 @@ import Nickname from "../../../../utility/utility";
 import { Socket } from "socket.io-client";
 import { user } from "../../../MainPage";
 
-export default class ItemMatch extends React.Component<{match:string, name:any, token:any, socket:Socket, user:user},{WinnerName:any, WinnerScore:any, LooserName:any, LooserScore:any}>{
+export default class ItemMatch extends React.Component<{match:string, name:any, socket:Socket, user:user},{WinnerName:any, WinnerScore:any, LooserName:any, LooserScore:any}>{
 	constructor(props:any) {
 		super(props)
 		var arr = this.props.match.split('/');
