@@ -86,14 +86,19 @@ export class ChatGateway implements OnGatewayInit {
   }
   @SubscribeMessage('sendMessage')
   async handleMessage(client: Socket, Message: { sender: string, dest: string, message: string, date: string}) {
-    if (Message.message[0] == '/'){
+	if (Message.message.startsWith('/priv')){
+		Message.message = await this.chatService.addPriv(Message.message, Message.sender, this.clients, Message.dest);
+		if (Message.message.startsWith("new")){
+			console.log("update rooms")
+			var rooms = await this.chatService.getAllRoomName();
+			this.server.emit('updateRooms',{rooms: rooms})
+		}
+		Message.sender = "system";
+		client.emit('ReceiveMessage', Message)
+	}
+    else if (Message.message.startsWith('/')){
         this.chatService.systemMsg(Message, this.clients);
         Message.sender = "system";
-        if (Message.message.startsWith('/priv')){
-          var rooms = await this.chatService.getAllRoomName; //todo /priv undifined 
-          if (rooms)
-            this.server.emit('updateRooms',{rooms: rooms})
-        }
         client.emit('ReceiveMessage', Message)
       }
       else{

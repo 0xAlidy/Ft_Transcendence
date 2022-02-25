@@ -1,33 +1,32 @@
 /*
-
-- block = don t see message									//	/block "pseudo"
-- unblock = see again										//	/unblock "pseudo"
+- pas afficher les message des gens bloquer / refuser les privs conv 
 - admin cmd =	- change pass define it or remove it 		//	/pass "new"     /pass rm
-- set admin													//	/admin "pseudo"
+done - set admin													//	/admin "pseudo"
 - ban 														//	/ban "pseudo"
-- unban 													//	/unban "pseudo"
+- unban 														//	/unban "pseudo"
 - mute 														//	/mute "pseudo" time(minutes)
 - private room
 
 
 
 - help = montre les cmd possible 							//  /help
-- message tu n es pas admin vas te faire encule tu t es tromper encule tu t es tromper tu n es bon qu a boycoter encule tu t es tromper
+done - message tu n es pas admin vas te faire encule tu t es tromper encule tu t es tromper tu n es bon qu a boycoter encule tu t es tromper
+bug sysmessage 
 
 */
 
 
 import * as React from "react";
-import "../../../styles/MainPage/Chat/Chat.css"
-import Send from '../../../assets/send.png'
+import "../../../styles/MainPage/Chat/Chat.css";
+import Send from '../../../assets/send.png';
 import { Socket } from "socket.io-client";
 import ChatMenu from "./chatMenu";
-import {user} from '../MainPage'
+import {user} from '../MainPage';
 import MessageItem from "./message";
 
 export class Message{
 	message: string;
-	dest: string;
+	dest: string;     
 	sender: string;
 	date: string;
 	constructor(Cont:string , dest:string, sender: string, date:string){
@@ -116,6 +115,7 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
         });
 		this.props.socket.on('updateRooms', (data:any) => {
 			var arr:opt[] = [];
+			console.log(data.rooms)
 			data.rooms.forEach((element:string) => {
 				arr.push({value:element,label:element})
 			});
@@ -131,26 +131,33 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 
 	}
 
+	getNameParse(str:string){
+		var name = [];
+		name.push(str.slice(1, str.indexOf('/') - 1 ))
+		name.push(str.split('/').at(1))
+		return name
+	};
+
 	parseRoom(arr:opt[]){
 		var room:opt[] = [];
 		var priv:opt[] = [];
 		var grouped = [];
 		arr.forEach((element:opt) => {
-			console.log(element)
 			if (element.label[0] == '-'){
-				var name = element.label.slice(1, element.label.indexOf('/') -1 );
-				var label = element.label.split('/').at(1)
-				if (label)
-					element.label = label;
-				console.log("name " + name)
-				if (name == this.props.User.login)
+				var name = this.getNameParse(element.label)
+				if (name[0] && name[1]){
+					if (name[0] == this.props.User.login)
+						element.label = name[1];
+					else 
+						element.label = name[0];
+				}
+				if (name[0] == this.props.User.login || name[1] == this.props.User.login)
 					priv.push(element)
 			}
 			else
 				room.push(element)
 		});
 		grouped = [{label: "Room", options:room}, {label:"priv", options:priv}];
-		console.log(grouped);
 		return grouped;
 	}
 
@@ -272,8 +279,9 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 					/>}
 
 					{
-						this.state.messages.map(( (item) => {
+						this.state.messages.map((item, index) => {
 							var classForItem;
+							console.log(item)
 							if (item.sender === this.props.User.login)
 								classForItem = "msgItem"
 							else if (item.sender === "system")
@@ -281,9 +289,9 @@ export default class Chat extends React.Component <{socket:Socket, User:user}, {
 							else
 								classForItem = "msgOtherItem"
 							return (
-								<MessageItem msg={item} User={this.props.User} activeRoom={this.state.activeRoom} socket={this.props.socket} class={classForItem}/>
+								<MessageItem key={"key"+ index} msg={item} User={this.props.User} activeRoom={this.state.activeRoom} socket={this.props.socket} class={classForItem}/>
 							)
-						}))
+						})
 					}
 				</div>
 				</div>
