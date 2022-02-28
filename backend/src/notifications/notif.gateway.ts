@@ -1,5 +1,5 @@
 import { Logger } from "@nestjs/common";
-import {OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer} from "@nestjs/websockets";
+import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { clientClass } from "src/game/class/client.class";
 import { MatchsService } from "src/matchs/matchs.service";
@@ -8,9 +8,8 @@ import { UsersService } from "src/user/users.service";
 
 @WebSocketGateway({cors: true})
 export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-	constructor(private userService: UsersService){
-	}
-	index:number = 0;
+	constructor(private userService: UsersService){}
+	index: number = 0;
 	private logger: Logger = new Logger('WS-notifications');
 	clients = new Map<string, clientClass>();
 	clientsSearching:clientClass[]= [];
@@ -18,76 +17,105 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 	@WebSocketServer()
 	server: Server;
 
-	getUserClassbyName(str:string):clientClass
-	{
+	getUserClassbyName(str: string): clientClass {
 		var ret = null;
-		this.clients.forEach( element => {
-			console.log("foreach "+ element._login +" === " +str + " " + str.localeCompare(element._login));
-			if( str.localeCompare(element._login) === 0){
-				console.log('okay ' + element)
-				ret = element;}
+		this.clients.forEach(element => {
+			if (str.localeCompare(element._login) === 0){
+				ret = element;
+			}
 		})
-		return ret
+		return ret;
 	}
 
-	refreshFrontBySocket(socket:Socket){
-		if(socket)
+	refreshFrontBySocket(socket: Socket) {
+		if (socket)
 			socket.emit('refreshUser')
 	}
 
-	afterInit(server: any) {
-		
-	}
+	afterInit(server: any) { }
+
 	async handleConnection(client: Socket, ...args: any[]) {
 		var user = await this.userService.findOne(client.handshake.query.token as string);
-		await this.userService.setIsActive(user.token, true);
-		this.clients.set(client.id,new clientClass(client, user.login, user.token));
+		await this.userService.setStatus(user.token, 1);
+		this.clients.forEach(element => {
+			this.refreshFrontBySocket(element._socket);
+		})
+		this.clients.set(client.id, new clientClass(client, user.login, user.token));
 	}
+
 	async handleDisconnect(client: Socket) {
 		var user = this.clients.get(client.id)
-		await this.userService.setIsActive(user._token, false);
+		await this.userService.setStatus(user._token, 0);
+		this.clients.forEach(element => {
+			this.refreshFrontBySocket(element._socket);
+		})
 		this.clients.delete(client.id);
 	}
 
 	@SubscribeMessage('inviteFriend')
-	async inviteFriend(client: Socket, data:any){
-		console.log(data.login)
-		var user = this.clients.get(client.id);
-		var ret = await this.userService.addWaitingFriend(data.login, user._login)
-		if(this.getUserClassbyName(data.login))
-			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
-		this.refreshFrontBySocket(client);
-	   if (user && ret === 1)
+	async inviteFriend(client: Socket, data:any) {
+		var temp = this.clients.get(client.id);
+		var user = await this.userService.findOne(temp._token);
+		var other =  await this.userService.findOneByLogin(data.login);
+		if (user.waitingFriends.indexOf(other.login) !== -1)
+			await this.acceptFriend(client, data);
+		else
 		{
-			var clientToNotify : clientClass = this.getUserClassbyName(data.login);
-			if(clientToNotify)
-				clientToNotify._socket.emit('inviteNotif', {login: user._login})
+			await this.userService.addWaitingFriend(other.login, user.login)
+			var clientToNotify : clientClass = this.getUserClassbyName(other.login);
+			if (clientToNotify)
+				clientToNotify._socket.emit('inviteNotif', {login: user.login})
 		}
-		return null;
+		if (this.getUserClassbyName(other.login))
+			this.refreshFrontBySocket(this.getUserClassbyName(other.login)._socket);
+		this.refreshFrontBySocket(client);
 	}
 
 	@SubscribeMessage('acceptFriend')
 	async acceptFriend(client: Socket, data:any){
-		console.log(data.login)
 		var user = this.clients.get(client.id);
 		await this.userService.addFriend(user._token, data.login)
-		this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
+		user._socket.emit('closeInviteFriend', {login: data.login})
+		if (this.getUserClassbyName(data.login))
+			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
 		this.refreshFrontBySocket(client);
 	}
+
 	@SubscribeMessage('removeFriend')
 	async removeFriend(client: Socket, data:any){
-		console.log(data.login)
 		var user = this.clients.get(client.id);
 		await this.userService.removeFriend(user._token, data.login)
-		if(this.getUserClassbyName(data.login))
+		if (this.getUserClassbyName(data.login))
 			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
 		this.refreshFrontBySocket(client);
 	}
 
 	@SubscribeMessage('denyFriend')
 	async denyFriend(client: Socket, data:any){
-		console.log(data.login)
 		var user = this.clients.get(client.id);
 		await this.userService.removeWaitingFriend(user._token, data.login)
+		if (this.getUserClassbyName(data.login))
+			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
+		this.refreshFrontBySocket(client);
+	}
+
+	@SubscribeMessage('blockUser')
+	async blockUser(client: Socket, data:any){
+		client.emit('removeFriend', {login:data.login});
+		client.emit('denyFriend', {login:data.login})
+		var user = this.clients.get(client.id);
+		await this.userService.addBlocked(user._token, data.login)
+		if (this.getUserClassbyName(data.login))
+			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
+		this.refreshFrontBySocket(client);
+	}
+
+	@SubscribeMessage('unblockUser')
+	async unblockUser(client: Socket, data:any){
+		var user = this.clients.get(client.id);
+		await this.userService.removeBlocked(user._token, data.login)
+		if (this.getUserClassbyName(data.login))
+			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
+		this.refreshFrontBySocket(client);
 	}
 }

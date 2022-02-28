@@ -21,7 +21,7 @@ export class User {
   numberOfWin: number;
 
   @Column({ default: 0 })
-  numberOfLoose: number;
+  numberOfLose: number;
 
   @Column("text",{ array:true, default: []})
   waitingFriends: string[];
@@ -41,8 +41,8 @@ export class User {
   @Column({default: 'null'})
   WSId: string;
 
-  @Column({ default: true })
-  isActive: boolean;
+  @Column({ default: 0 })
+  status: number;
 
   @Column({ default: 'null' })
   secret: string;

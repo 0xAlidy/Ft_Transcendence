@@ -1,41 +1,23 @@
-import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import {User} from "./user.entity";
+import { User } from "./user.entity";
+import { UserPublic } from '../interfaces'
 var qrcode = require('qrcode');
 var speakeasy = require('speakeasy');
-
-/*
-interface SecretData {
-  otpauth_url: string
-}
-
-interface userPublic{
-  imgUrl: string;
-  isActive: false;
-  lvl: number;
-  name: string;
-  nickname: string;
-  numberOfLoose: number;
-  numberOfWin: number;
-  xp: number;
-}
-*/
 
 @Injectable()
 export class UsersService {
   private logger: Logger = new Logger('UsersService');
 
-  constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>){ }
+  constructor(@InjectRepository(User) private usersRepository: Repository<User>){}
 
   async create(login: string, token: string)
   {
-    const user = new  User(login, token);
-    const all = await this.usersRepository.find();
-    var ok = true;
-    var existing :User;
+    const user:User = new User(login, token);
+    const all:User[] = await this.usersRepository.find();
+    let ok:boolean = true;
+    let existing:User;
     all.forEach(elem => {
       if (login === elem.login)
       {
@@ -50,37 +32,20 @@ export class UsersService {
       return await this.usersRepository.save(existing);
   }
 
-  async friendRequest(token:string, nickname:string)
+  async removeWaitingFriend(token:string, login:string)
   {
-    var user = await this.findOne(token);
-    if (user)
-    {
-      var other = await this.findOneByNickname(nickname);
-      other.waitingFriends.push(user.nickname);
-      await this.usersRepository.save(other);
-    }
-  }
-  async removeWaitingFriend(token:string, login:string){
     var user = await this.findOne(token)
-    console.log(user.login +' '+login)
     var index = user.waitingFriends.indexOf(login);
-    console.log(index);
-    console.log(user.waitingFriends);
-    user.waitingFriends.splice(index,1);
-    console.log(user.waitingFriends)
+    if (index !== -1)
+      user.waitingFriends.splice(index, 1);
     await this.usersRepository.save(user);
   }
 
-  async addWaitingFriend(login:string, friend:string)
+  async addWaitingFriend(login:string, loginFriend:string)
   {
-      var user = await this.findOneByLogin(login);
-      if(user.waitingFriends.indexOf(friend) < 0 && user.friends.indexOf(friend) < 0)
-      {
-        user.waitingFriends.push(friend);
-        await this.usersRepository.save(user);
-        return 1;
-      }
-      return 0;
+    var user = await this.findOneByLogin(login);
+    user.waitingFriends.push(loginFriend);
+    await this.usersRepository.save(user);
   }
 
   async addRoom(token:string, room:string)
@@ -98,13 +63,17 @@ export class UsersService {
     await this.usersRepository.save(user);
   }
 
-  async addFriend(token:string, login:string)
+  async addFriend(token:string, loginFriend:string)
   {
     var user = await this.findOne(token);
-    var friend = await this.findOneByLogin(login)
-    var index = user.waitingFriends.indexOf(login);
-    user.waitingFriends.splice(index,1);
-    user.friends.push(login);
+    var friend = await this.findOneByLogin(loginFriend)
+    var index = user.waitingFriends.indexOf(friend.login);
+    if (index !== -1)
+      user.waitingFriends.splice(index,1);
+    index = friend.waitingFriends.indexOf(user.login);
+    if (index !== -1)
+      friend.waitingFriends.splice(index,1);
+    user.friends.push(loginFriend);
     friend.friends.push(user.login)
     await this.usersRepository.save(user);
     await this.usersRepository.save(friend);
@@ -120,17 +89,18 @@ export class UsersService {
     await this.usersRepository.save(friend);
   }
 
-  async addBlocked(token:string, room:string)
+  async addBlocked(token:string, login:string)
   {
     var user = await this.findOne(token);
-    user.rooms.push(room);
+    user.blockedUsers.push(login);
     await this.usersRepository.save(user);
   }
 
-  async removeBlocked(token:string, room:string)
+  async removeBlocked(token:string, login:string)
   {
     var user = await this.findOne(token);
-    user.rooms.push(room);
+    const index = user.blockedUsers.indexOf(login);
+    user.blockedUsers.splice(index, 1);
     await this.usersRepository.save(user);
   }
 
@@ -167,27 +137,29 @@ export class UsersService {
     return null;
   }
 
-  async getUserPublic(token:string, login:string){
-
+  async getUserPublic(token:string, login:string):Promise<UserPublic>{
     var verif = await this.findOne(token);
     if (verif){
       var user = await this.findOneByLogin(login);
-      if(user)
-      return({
-        waiting:(user.waitingFriends.indexOf(verif.login) !== -1 ? true:false),
-        imgUrl: user.imgUrl,
-        isActive: user.isActive,
-        lvl: user.lvl,
-        login: user.login,
-        friends: user.friends,
-        nickname: user.nickname,
-        numberOfLoose: user.numberOfLoose,
-        numberOfWin: user.numberOfWin,
-        xp: user.xp,
-      })
+      let isFriend = user.friends.indexOf(verif.login) !== -1 ? 1 : 0; // 0 = none, 1 = friend, 2 = waiting, 3 = blockMe
+      isFriend = user.waitingFriends.indexOf(verif.login) !== -1 ? 2 : isFriend;
+      //isFriend = user.blockedUsers.indexOf(verif.login) !== -1 ? 3 : isFriend;
+      if (user)
+        return({
+          isFriend: isFriend,
+          imgUrl: user.imgUrl,
+          status: user.status,
+          lvl: user.lvl,
+          login: user.login,
+          nickname: user.nickname,
+          numberOfLose: user.numberOfLose,
+          numberOfWin: user.numberOfWin,
+          xp: user.xp,
+        })
     }
     return null;
   }
+
   async getNickame(login:string)
   {
     var user = await this.findOneByLogin(login);
@@ -195,6 +167,7 @@ export class UsersService {
       return(user.nickname)
     return null;
   }
+
   async changeImgUrl(data:any)
   {
     var user = await this.findOne(data.token);
@@ -257,10 +230,10 @@ export class UsersService {
   }
 
 
-  async setIsActive(token:string, bool: boolean){
+  async setStatus(token:string, status:number){
     const user = await this.findOne(token);
     if (user){
-      user.isActive = bool;
+      user.status = status;
       await this.usersRepository.save(user);
     }
   }
@@ -289,7 +262,7 @@ export class UsersService {
   async loose(token:string)
   {
     var user = await this.findOne(token);
-    user.numberOfLoose++;
+    user.numberOfLose++;
     await this.usersRepository.save(user);
   }
 

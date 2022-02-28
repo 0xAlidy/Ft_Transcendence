@@ -2,104 +2,123 @@ import React from 'react'
 import '../../../src/styles/MainPage/profileShortcut.css'
 import axios from 'axios';
 import Popup from 'reactjs-popup';
+import Gauge from './midPanel/Profile/gauge';
+import WinRate from './midPanel/Profile/winRate';
 import { Socket } from 'socket.io-client';
-import { user } from './MainPage';
-// import { Socket } from 'socket.io-client';
+import { UserPublic, User } from '../../interfaces'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// @ts-ignore 
+import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
-interface userPublic{
-	imgUrl: string;
-	isActive: boolean;
-	waiting:boolean;
-	lvl: number;
-	name: string;
-	nickname: string;
-	numberOfLoose: number;
-	friends:string [];
-	numberOfWin: number;
-	xp: number;
-}
-export default class ProfileShortCut extends React.Component<{pseudo:string, socket:Socket,  user:user},{canOpen: boolean,isFriend:number | null, opened:boolean, User:userPublic|null, online:boolean|null, img:string|null}>{
-	MatchList: any = [];
+export default class ProfileShortCut extends React.Component<{login: string, socket: Socket,  User: User}, {canOpen: boolean, opened: boolean, User: UserPublic | null, img: string | null}> {
 	constructor(props:any) {
 		super(props)
-		this.state={
-				canOpen: this.props.pseudo !== this.props.user.login,
-				img: null,
-				opened:false,
-				User:null,
-				online:null, // 0 offline // 1 online // 2 ingame
-				isFriend:null, // 0 not friend // 1 waiting // 2 friend
-			}
+		this.state = {
+			canOpen: this.props.login !== this.props.User.login,
+			img: null,
+			opened: false,
+			User: null,
+		}
 	};
+
 	async componentDidMount() {
-		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUserImage?token="+ this.props.user.token +'&name='+ this.props.pseudo)
-		.then(res => this.setState({img: res.data.imgUrl}))
+		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUserImage?token="+ this.props.User.token +'&name='+ this.props.login)
+		.then(res => this.setState({ img: res.data.imgUrl }))
 	}
 
-	addFriend = () =>{
-		this.props.socket.emit('inviteFriend', {login:this.props.pseudo})
-		this.setState({isFriend:1})
+	addFriend = () => {
+		this.props.socket.emit('inviteFriend', { login:this.props.login })
 	}
-	removeFriend = () =>{
-		this.props.socket.emit('removeFriend', {login:this.props.pseudo})
-		this.setState({isFriend:0})
+
+	removeFriend = () => {
+		this.props.socket.emit('removeFriend', { login:this.props.login })
 	}
-	open = async () =>{
-		console.log('open')
-		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.user.token +'&name='+ this.props.pseudo)
-		.then(res => this.setState({User: res.data}))
-		if(this.state.User)
+
+	blockUser = () => {
+		this.props.socket.emit('blockUser', { login:this.props.login })
+	}
+
+	open = async () => {
+		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
+		.then(res => this.setState({ User: res.data }))
+		this.setState({ opened:true })
+		if (this.state.canOpen)
 		{
-			if (this.state.User.waiting)
-				this.setState({isFriend: 1, online:this.state.User.isActive, opened:true})
-			else
-				this.setState({isFriend: (this.state.User.friends.indexOf(this.props.user.login) !== -1? 2 : 0), online:this.state.User.isActive, opened:true})
+			let page = document.getElementById("MainPage");
+			if (page)
+				page.classList.toggle("blur");
 		}
-		this.setState({opened:true})
+		this.props.socket.on('refreshUser', async (data:any) => {
+			console.log('refresh Friend')
+			await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
+			.then(res => this.setState({ User: res.data }))
+		});
+	}
+
+	close = () => {
+		this.setState({opened:false, User:null});
+		let page = document.getElementById("MainPage");
+		if (page)
+			page.classList.toggle("blur");
+	}
+
+	setColorStatus = (status:number): string => {
+		if (status === 0)
+			return "var(--grey-color)";
+		if (status === 1)
+			return "var(--win-color)";
+		return "var(--lose-color)";
 	}
 
 	render(){
 		return (
-			<>
-					<div className="profileShortcut">
-						<Popup open={this.state.opened && this.state.canOpen} closeOnEscape={true} closeOnDocumentClick={true} onClose={() =>{this.setState({opened:false, User:null})}}>
-							{this.state.User && <div className="PopupContainer">
-								<div id='profilSection'>
-									<span>
-										<img alt="UserImage" src={this.state.User.imgUrl} style={{borderRadius:"50%"}}/>
-										<div style={{backgroundColor:(this.state.online ?'green':'grey'), borderRadius:'50%', width:'20px', height:'20px'}}/>
-									</span>
-									<div className="popupName">{this.state.User.nickname}</div>
-								</div>
-								<div id='levelSection'>
-									<div className="lvl">LEVEL<br/>{this.state.User.lvl}</div>
-									<div className="ratio">W/L<br/>{this.state.User.numberOfWin+'/'+this.state.User.numberOfLoose}</div>
-								</div>
-								<div id='buttonSection'>
-									<div className="mp">
-										<button className='ProfileShortcutButton'>MP</button>
-									</div>
-									<div className="addFriend">
-										{this.state.isFriend === 0 &&
-										<button className='ProfileShortcutButton' onClick={this.addFriend}>addFriend</button>
-										}
-										{this.state.isFriend === 1 &&
-										<button className='ProfileShortcutButton' >waiting</button>
-										}
-										{this.state.isFriend === 2 &&
-										<button className='ProfileShortcutButton' onClick={this.removeFriend}>{"removeFriend"}</button>
-										}
-									</div>
-									<div className="duel">
-										<button className='ProfileShortcutButton'>DUEL</button></div>
-									<div className="history">
-										<button className='ProfileShortcutButton'>HISTORY</button></div>
-								</div>
-							</div>}
-						</Popup>
-						{this.state.img && <img alt="UserProfile" src={this.state.img} style={{maxHeight:'100%'}} onClick={this.open}/>}
+			<div className="profileShortcut">
+				<Popup open={this.state.opened && this.state.canOpen} closeOnEscape={true} closeOnDocumentClick={true} onClose={this.close}>
+				{
+					this.state.User &&
+					<div className="PopupContainer">
+						<div id='profilSection'>
+							<span>
+								<img alt="UserImage" src={this.state.User.imgUrl} style={{borderRadius:"50%"}}/>
+								{this.state.User.isFriend === 1 &&
+								<div style={{backgroundColor:this.setColorStatus(this.state.User.status)}} className="status"/>
+								}
+							</span>
+							<h2 className="popupName">{this.state.User.nickname}</h2>
+						</div>
+						<div id='levelSection'>
+							<Gauge percent={this.state.User.xp.toString()} lvl={this.state.User.lvl.toString()}/>
+							<WinRate win={this.state.User.numberOfWin} loose={this.state.User.numberOfLose}/>
+						</div>
+						<div id='buttonSection'>
+							<FontAwesomeIcon className="chooseButton" icon={solid('message')}/>
+							<FontAwesomeIcon className="chooseButton" icon={solid('table-list')}/>
+							{
+								this.state.User.isFriend === 1 && this.state.User.status === 1 &&
+								<>
+									<FontAwesomeIcon className="chooseButton" icon={solid('hand-fist')}/>
+									<FontAwesomeIcon className="chooseButton" icon={solid('hat-wizard')}/>
+								</>
+							}
+							{
+								this.state.User.isFriend === 0 &&
+								<FontAwesomeIcon className="chooseButton" onClick={this.addFriend} icon={solid('user-plus')}/>
+							}
+							{
+								this.state.User.isFriend === 1 &&
+								<FontAwesomeIcon className="chooseButton" onClick={this.removeFriend} icon={solid('user-xmark')}/>
+							}
+							{
+								this.state.User.isFriend === 2 &&
+								<FontAwesomeIcon className="chooseButton" icon={solid('clock')}/>
+							}						
+							<FontAwesomeIcon className="chooseButton" onClick={this.blockUser} icon={solid('ban')}/>
+						</div>
 					</div>
-			</>
+				}
+				</Popup>
+				{this.state.img && <img alt="UserProfile" src={this.state.img} style={{maxHeight:'100%'}} onClick={this.open}/>}
+			</div>
     	)
 	}
 };

@@ -14,40 +14,14 @@ import PopupStart from './PopupStart';
 import FriendPanel from './midPanel/FriendsPanel/FriendPanel';
 import MatchMaking from './midPanel/MatchMaking/MatchMaking';
 import Popup from 'reactjs-popup';
+import { User } from '../../interfaces'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {InviteButton, InviteNotif } from '../utility/utility';
 
-
-export interface user{
-	waitingFriends: string[];
-
-	friends: string[];
-
-	blockedUsers: string[];
-
-	rooms: string[];
-
-	WSId: string;
-	id: number;
-	imgUrl: string;
-	isActive: false;
-	lvl: number;
-	login: string;
-	nickname: string;
-	numberOfLoose: number;
-	numberOfWin: number;
-	secret: string;
-	secretEnabled: false;
-	token: string;
-	xp: 0;
-	firstConnection: boolean;
-	color:string;
-}
-
 interface popupScore{open:boolean, win:boolean, adv:string}
 
-export default class MainPage extends React.Component<{ token: string, invite:boolean },{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, popupInfo:popupScore | null}>{
+export default class MainPage extends React.Component<{ token: string, invite:boolean },{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:User|null, popupOpen:boolean, popupInfo:popupScore | null}>{
 	menuState: any
 	selector : any;
 	ref:any;
@@ -73,15 +47,25 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
 				this.setState({ User: res.data })
 			})
-			
+
+			window.onpopstate = (event:any) => {
+				if(event){
+					if (window.history.state.selector)
+						this.setState({selector: window.history.state.selector})
+					else
+					{
+						window.location.href = "HTTP://" + window.location.host.split(":").at(0) + ":3000";
+					}
+				}
+			}
 			if (this.state.User)
 			{
+					window.history.pushState({selector: this.state.selector}, '', "/");
 					if (this.state.User.color)
 						document.documentElement.style.setProperty('--main-color', this.state.User.color);
 					this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token}})})
 					if (this.state.socket)
 					{
-						console.log(this.state.User.waitingFriends)
 						this.state.User.waitingFriends.forEach(element => {
 							this.notify(element);
 						});
@@ -98,8 +82,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 							this.notify(data.login);
 						});
 						this.state.socket.on('refreshUser', async (data:any) => {
-		console.log('refresh')
-
+							console.log('refresh')
 							await this.refreshUser()
 						});
 					}
@@ -110,7 +93,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 	}
 
 	notify = (login:string) => {
-		if(this.state.socket && this.state.User)
+		if (this.state.socket && this.state.User)
 		{
 			var ret: JSX.Element = <InviteNotif user={this.state.User} socket={this.state.socket} login={login}/>
 			var er: JSX.Element = <InviteButton login={login} socket={this.state.socket}/>
@@ -123,9 +106,11 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
 			this.setState({ User: res.data })
 		})
+		if (this.state.socket)
+			this.state.socket.emit("refreshUser")
 	}
 
-	CompleteProfile = (User:user) => {
+	CompleteProfile = (User:User) => {
 		this.setState({ User: User });
 	}
 
@@ -144,27 +129,29 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 
 	}
 
-	render(){
-		const Ref = (e: any) => {
-			if (e.isAdminOpen){
-				this.setState({selector: 'admin'});
-			}
-			else if (e.isGameOpen){
-				this.setState({selector: 'game'});
-			}
-			else if (e.isHistoryOpen){
-				this.setState({selector: 'history'});
-			}
-			else if (e.isProfileOpen){
-				this.setState({selector: 'profile'});
-			}
-			else if (e.isFriendListOpen){
-				this.setState({selector: 'friends'});
-			}
-			else if (e.isRulesOpen){
-				this.setState({selector: 'rules'});
-			}
+	menuChange = async (e: any) => {		
+		if (e.isAdminOpen){
+			this.setState({selector: 'admin'}, () => {window.history.pushState({selector: this.state.selector}, '', "/")});
 		}
+		else if (e.isGameOpen){
+			this.setState({selector: 'game'}, () => {window.history.pushState({selector: this.state.selector}, '', "/")});
+		}
+		else if (e.isHistoryOpen){
+			this.setState({selector: 'history'}, () => {window.history.pushState({selector: this.state.selector}, '', "/")});
+		}
+		else if (e.isProfileOpen){
+			this.setState({selector: 'profile'}, () => {window.history.pushState({selector: this.state.selector}, '', "/")});
+		}
+		else if (e.isFriendListOpen){
+			this.setState({selector: 'friends'}, () => {window.history.pushState({selector: this.state.selector}, '', "/")});
+		}
+		else if (e.isRulesOpen){
+			this.setState({selector: 'rules'}, () => {window.history.pushState({selector: this.state.selector}, '', "/")});
+		}
+	}
+
+	render(){
+		
 
 		return (
 		<>
@@ -185,7 +172,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 					<div className="logo">
 						<Logo className="mainLogo"/>
 					</div>
-					<Menu token={this.props.token} onChange={Ref} imgsrc={this.state.User.imgUrl}/>
+					<Menu token={this.props.token} onChange={this.menuChange} imgsrc={this.state.User.imgUrl}/>
 					<Chat socket={this.state.socket} User={this.state.User} />
 					<div className="game" id="game">
 						{this.state.selector === 'profile' && <Profile token={this.props.token} refreshUser={this.refreshUser}/>}
@@ -194,7 +181,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						{this.state.selector === 'game' && <MatchMaking user={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'friends' && <FriendPanel User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'rules' && <p>RULES</p>}
-						<IGame ref={this.ref} socket={this.state.socket}/>
+						<IGame ref={this.menuChange} socket={this.state.socket}/>
 					{/* <button onClick={this.notify}>oui</button> */}
 					</div>
 					{this.state.popupInfo && <Popup open={this.state.popupInfo.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>}

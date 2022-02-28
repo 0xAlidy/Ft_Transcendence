@@ -1,18 +1,17 @@
 import React from 'react'
 import '../../../../styles/MainPage/midPanel/midPanel.css'
 import '../../../../styles/MainPage/midPanel/FriendsPanel/FriendPanel.css'
-import { user } from '../../MainPage'
-import ProfileShortCut from '../../ProfileShortcut'
+import { User } from '../../../../interfaces'
+import FriendItem from './FriendItem'
 import { Socket } from 'socket.io-client'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// @ts-ignore 
-import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
-export default class FriendPanel extends React.Component<{User:user, socket:Socket},{select:number}>{
+export default class FriendPanel extends React.Component<{User:User, socket:Socket},{select:number, status:number, User:any}>{
 	constructor(props:any){
 		super(props)
 		this.state = {
-			select:0
+			select: 0,
+			status: 0,
+			User:null
 		}
 	}
 
@@ -64,26 +63,15 @@ export default class FriendPanel extends React.Component<{User:user, socket:Sock
 					</div>
 					<span id="shadow"></span>
 					<div className="list">
-					
-							{this.state.select === 0 ? 
-								this.props.User.friends.map((value:string,index:number) => {
-									return (
-										<div key={'friends' + index} className="friendBox">
-											<ProfileShortCut pseudo={value} socket={this.props.socket} user={this.props.User}/>
-											<div style={{backgroundColor:(this.props.User.isActive ?'green':'grey'), borderRadius:'50%', width:'20px', height:'20px'}}/>
-											<h3>{value}</h3>
-											<FontAwesomeIcon className="chooseButton" icon={solid('message')}/>
-											<FontAwesomeIcon className="chooseButton" icon={solid('table-list')}/>
-											<FontAwesomeIcon className="chooseButton" icon={solid('hand-fist')}/>
-											<FontAwesomeIcon className="chooseButton" icon={solid('hat-wizard')}/>
-											<FontAwesomeIcon className="chooseButton" icon={solid('user-xmark')}/>
-											<FontAwesomeIcon className="chooseButton" icon={solid('ban')}/>
-										</div>
-									);
-								})
-								:
-								<p>SALUT</p>
-							}
+						{this.state.select === 0 ?
+							this.props.User.friends.map((login:string, index:number) => {
+								return (<FriendItem key={'friends' + index} login={login} socket={this.props.socket} User={this.props.User}/>)		
+							})
+							:
+							this.props.User.blockedUsers.map((login:string, index:number) => {
+								//return (<blockedItem key={'friends' + index} login={login} socket={this.props.socket} User={this.props.User}/>)		
+							})
+						}
 					</div>
 				</div>
 			</div>

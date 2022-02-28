@@ -41,17 +41,14 @@ TO DO :
 - Pop Up Duel
 - Spectactor mode
 - Additionnal features
-
 - Bloquer user
-
 - history navigation
 - Website owner/moderators
 - block user when receive a friend request
-
-- History begin with the most recent
 - History friends
 - their status (offline/online/in a game)
 - Ruleset is available somewhere on the website and can be consulted by users
+- Message du même utilisateur d'affilé = dans la meme bulle
 
 PATCH:
 - Je vois ma room quand j'host

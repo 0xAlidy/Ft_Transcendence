@@ -1,7 +1,7 @@
 import React from "react";
 import { Socket } from "socket.io-client";
 import '../../../../styles/MainPage/midPanel/MatchMaking/MatchMaking.css'
-import { user } from "../../MainPage";
+import { User } from "../../../../interfaces";
 import ItemSpec from "./itemSpec";
 interface specRoomsData{
 	name:string,
@@ -9,7 +9,7 @@ interface specRoomsData{
 	right:string,
 	token:string
 }
-export default class MatchMaking extends React.Component<{socket:Socket, user:user},{Searching:boolean, rooms:specRoomsData[]}>{
+export default class MatchMaking extends React.Component<{socket:Socket, user:User},{Searching:boolean, rooms:specRoomsData[]}>{
 	constructor(props :any) {
 		super(props);
 		this.state = {Searching:false, rooms:[{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.user.token}]}
