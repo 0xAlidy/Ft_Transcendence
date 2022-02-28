@@ -16,10 +16,14 @@ export class Match {
 
   @Column()
   LooserScore:number;
-  constructor(WinnerName :string, WinnerScore:number, LooserName:string, LooserScore:number){
+
+  @Column()
+  isArcade:boolean;
+  constructor(WinnerName :string, WinnerScore:number, LooserName:string, LooserScore:number, isArcade:boolean){
     this.WinnerName = WinnerName;
     this.WinnerScore = WinnerScore;
     this.LooserName = LooserName;
     this.LooserScore = LooserScore;
+    this.isArcade = isArcade;
   }
 }

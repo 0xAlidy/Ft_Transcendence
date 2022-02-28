@@ -30,6 +30,9 @@ export default class ProfileShortCut extends React.Component<{pseudo:string, soc
 				online:null, // 0 offline // 1 online // 2 ingame
 				isFriend:null, // 0 not friend // 1 waiting // 2 friend
 			}
+			// this.props.socket.on('updateProfile'+ this.props.pseudo,(data:any) =>{
+
+			// })
 	};
 	async componentDidMount() {
 		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUserImage?token="+ this.props.user.token +'&name='+ this.props.pseudo)

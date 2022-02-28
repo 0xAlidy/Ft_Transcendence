@@ -16,10 +16,11 @@ import MatchMaking from './midPanel/MatchMaking/MatchMaking';
 import Popup from 'reactjs-popup';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {InviteButton, InviteNotif } from '../utility/utility';
+import {DuelButton, DuelNotif, InviteButton, InviteNotif } from '../utility/utility';
 
 
 export interface user{
+
 	waitingFriends: string[];
 
 	friends: string[];
@@ -47,11 +48,10 @@ export interface user{
 
 interface popupScore{open:boolean, win:boolean, adv:string}
 
-export default class MainPage extends React.Component<{ token: string, invite:boolean },{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, popupInfo:popupScore | null}>{
+export default class MainPage extends React.Component<{ token: string, invite:boolean},{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:user|null, popupOpen:boolean, popupInfo:popupScore | null}>{
 	menuState: any
 	selector : any;
 	ref:any;
-
 	constructor(props :any) {
 		super(props);
 		this.state = {
@@ -66,14 +66,13 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 		};
 		this.ref = React.createRef();
 	}
-
 	async componentDidMount() {
 		if (this.state.token)
 		{
 			await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
 				this.setState({ User: res.data })
 			})
-			
+
 			if (this.state.User)
 			{
 					if (this.state.User.color)
@@ -97,6 +96,9 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						this.state.socket.on('inviteNotif', (data:any) => {
 							this.notify(data.login);
 						});
+						this.state.socket.on('inviteDuel', (data:any) => {
+							this.notifyDuel(data.adv, data.room);
+						});
 						this.state.socket.on('refreshUser', async (data:any) => {
 		console.log('refresh')
 
@@ -114,6 +116,15 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 		{
 			var ret: JSX.Element = <InviteNotif user={this.state.User} socket={this.state.socket} login={login}/>
 			var er: JSX.Element = <InviteButton login={login} socket={this.state.socket}/>
+			toast(ret, { className: 'notif', bodyClassName: "bodyNotif", closeButton:er, onClose:this.refreshUser });
+			// toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>); PAS TOUCHE JE VAIS OUBLIER SINON
+		}
+	}
+	notifyDuel = (login:string, room:string) => {
+		if(this.state.socket && this.state.User)
+		{
+			var ret: JSX.Element = <DuelNotif user={this.state.User} login={login} socket={this.state.socket}/>
+			var er: JSX.Element = <DuelButton room={room} login={login} socket={this.state.socket}/>
 			toast(ret, { className: 'notif', bodyClassName: "bodyNotif", closeButton:er, onClose:this.refreshUser });
 			// toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>); PAS TOUCHE JE VAIS OUBLIER SINON
 		}
@@ -146,23 +157,26 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 
 	render(){
 		const Ref = (e: any) => {
-			if (e.isAdminOpen){
-				this.setState({selector: 'admin'});
-			}
-			else if (e.isGameOpen){
-				this.setState({selector: 'game'});
-			}
-			else if (e.isHistoryOpen){
-				this.setState({selector: 'history'});
-			}
-			else if (e.isProfileOpen){
-				this.setState({selector: 'profile'});
-			}
-			else if (e.isFriendListOpen){
-				this.setState({selector: 'friends'});
-			}
-			else if (e.isRulesOpen){
-				this.setState({selector: 'rules'});
+			if (this.state.selector !== 'none')
+			{
+				if (e.isAdminOpen){
+					this.setState({selector: 'admin'});
+				}
+				else if (e.isGameOpen){
+					this.setState({selector: 'game'});
+				}
+				else if (e.isHistoryOpen){
+					this.setState({selector: 'history'});
+				}
+				else if (e.isProfileOpen){
+					this.setState({selector: 'profile'});
+				}
+				else if (e.isFriendListOpen){
+					this.setState({selector: 'friends'});
+				}
+				else if (e.isRulesOpen){
+					this.setState({selector: 'rules'});
+				}
 			}
 		}
 
@@ -191,7 +205,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						{this.state.selector === 'profile' && <Profile token={this.props.token} refreshUser={this.refreshUser}/>}
 						{this.state.selector === 'history' && <History User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'admin' && <AdminPanel/>}
-						<MatchMaking open={this.state.selector === 'game'} user={this.state.User} socket={this.state.socket}/>
+						{this.state.selector === 'game' && <MatchMaking user={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'friends' && <FriendPanel User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'rules' && <p>RULES</p>}
 						<IGame ref={this.ref} socket={this.state.socket}/>
