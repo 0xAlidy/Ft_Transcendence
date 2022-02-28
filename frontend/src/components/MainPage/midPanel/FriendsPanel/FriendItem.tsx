@@ -34,6 +34,25 @@ export default class FriendItem extends React.Component<{login:string, User:User
 		return "var(--lose-color)";
 	}
 
+    mp = () =>{
+
+    }
+    history = () =>{
+
+    }
+    inviteDuel = (login:string) =>{
+        this.props.socket.emit('createPrivateSession', {login: login, arcade:false})
+    }
+    inviteDuelArcade = (login:string) =>{
+        this.props.socket.emit('createPrivateSession', {login: login, arcade:true})
+    }
+    removeFriend = () =>{
+
+    }
+    ban = () =>{
+
+    }
+
     render(){
         return (
             <>
@@ -43,12 +62,12 @@ export default class FriendItem extends React.Component<{login:string, User:User
                     <ProfileShortCut login={this.props.login} socket={this.props.socket} User={this.props.User}/>
                     <div style={{backgroundColor:this.setColorStatus(this.props.User.status)}} className="statusFriendItem"/>
                     <h3>{this.state.UserFriend.nickname}</h3>
-                    <FontAwesomeIcon className="chooseButton" icon={solid('message')}/>
-                    <FontAwesomeIcon className="chooseButton" icon={solid('table-list')}/>
-                    <FontAwesomeIcon className="chooseButton" icon={solid('hand-fist')}/>
-                    <FontAwesomeIcon className="chooseButton" icon={solid('hat-wizard')}/>
-                    <FontAwesomeIcon className="chooseButton" icon={solid('user-xmark')}/>
-                    <FontAwesomeIcon onClick={this.blockUser} className="chooseButton" icon={solid('ban')}/>
+                    <FontAwesomeIcon className="chooseButton" onClick={this.mp} icon={solid('message')}/>
+                    <FontAwesomeIcon className="chooseButton" onClick={this.history} icon={solid('table-list')}/>
+                    <FontAwesomeIcon className="chooseButton" onClick={() => this.inviteDuel(this.state.UserFriend.login)} icon={solid('hand-fist')}/>
+                    <FontAwesomeIcon className="chooseButton" onClick={() => this.inviteDuelArcade(this.state.UserFriend.login)} icon={solid('hat-wizard')}/>
+                    <FontAwesomeIcon className="chooseButton" onClick={this.removeFriend} icon={solid('user-xmark')}/>
+                    <FontAwesomeIcon className="chooseButton" onClick={this.ban} icon={solid('ban')}/>
                 </div>
             }
             </>
