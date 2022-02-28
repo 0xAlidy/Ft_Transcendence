@@ -82,10 +82,6 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						this.state.socket.on('inviteDuel', (data:any) => {
 							this.notifyDuel(data.adv, data.room);
 						});
-						this.state.socket.on('refreshUser', async (data:any) => {
-							console.log('refresh')
-							await this.refreshUser()
-						});
 					}
 					else
 						console.log("ERROR socket")
@@ -102,6 +98,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			// toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>); PAS TOUCHE JE VAIS OUBLIER SINON
 		}
 	}
+
 	notifyDuel = (login:string, room:string) => {
 		if(this.state.socket && this.state.User)
 		{
@@ -116,8 +113,8 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
 			this.setState({ User: res.data })
 		})
-		if (this.state.socket)
-			this.state.socket.emit("refreshUser")
+		/*if (this.state.socket)
+			this.state.socket.emit("refreshUser")*/
 	}
 
 	CompleteProfile = (User:User) => {

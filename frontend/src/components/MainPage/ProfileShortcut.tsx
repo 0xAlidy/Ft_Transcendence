@@ -22,8 +22,17 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 	};
 
 	async componentDidMount() {
-		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUserImage?token="+ this.props.User.token +'&name='+ this.props.login)
-		.then(res => this.setState({ img: res.data.imgUrl }))
+		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
+		.then(res => this.setState({ User: res.data }))
+		this.props.socket.on('refreshUser', async (data:any) => {
+			console.log("refreshUser :" + data.login);
+			if (this.props.login === data.login)
+			{
+				console.log("CHANGE");
+				await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
+				.then(res => this.setState({ User: res.data }))
+			}
+		});
 	}
 
 	addFriend = () => {
@@ -37,6 +46,8 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 	blockUser = () => {
 		this.props.socket.emit('blockUser', { login:this.props.login })
 	}
+	//this.props.socket.emit('createPrivateSession', {login: login, arcade:false})
+
 
 	open = async () => {
 		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
@@ -48,11 +59,6 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 			if (page)
 				page.classList.toggle("blur");
 		}
-		this.props.socket.on('refreshUser', async (data:any) => {
-			console.log('refresh Friend')
-			await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
-			.then(res => this.setState({ User: res.data }))
-		});
 	}
 
 	close = () => {
@@ -117,7 +123,7 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 					</div>
 				}
 				</Popup>
-				{this.state.img && <img alt="UserProfile" src={this.state.img} style={{maxHeight:'100%'}} onClick={this.open}/>}
+				{this.state.User && <img alt="UserProfile" src={this.state.User.imgUrl} style={{maxHeight:'100%'}} onClick={this.open}/>}
 			</div>
     	)
 	}
