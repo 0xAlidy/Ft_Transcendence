@@ -5,6 +5,7 @@ import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { clientClass } from "./client.class";
 
 export class roomClass{
+	_isArcade:boolean;
 	_isJoinable = true;
 	_speed = 10;
 	_player: clientClass;
@@ -22,7 +23,7 @@ export class roomClass{
 	_numberOfSpec: number;
     private logger: Logger = new Logger('WS-game/Rooms');
 
-	constructor(name: string, playerOne : clientClass, playerTwo: clientClass, room: BroadcastOperator<DefaultEventsMap>){
+	constructor(name: string, playerOne : clientClass, playerTwo: clientClass, room: BroadcastOperator<DefaultEventsMap>, arcade:boolean){
 		this._name = name;
 		if(randomInt(0,1))
 		{
@@ -33,6 +34,7 @@ export class roomClass{
 			this._guest = playerOne;
 			this._player = playerTwo;
 		}
+		this._isArcade = arcade;
 		this._room = room;
 		this.logger.log(name + ' created.');
 	}
@@ -44,6 +46,30 @@ export class roomClass{
 		this._player._socket.leave(this._name)
 		this._player._socket.join('lobby')
 	}
+
+	async sleep(ms:number){
+		new Promise(r => setTimeout(r, ms));
+	}
+
+	async randomSpell(){
+		// x random between 200 < x < 600
+		// y random between 100 < y < 500
+		// spell random : (speed up for adv)(hide for adv)
+		if (this._isArcade)
+		{
+		var x = 400
+		var y = this.randomIntFromInterval(100, 500)
+		var spell = this.randomIntFromInterval(1, 10)
+		if(spell <= 2){
+			await this.sleep(this.randomIntFromInterval(1, 1000));
+			this._room.emit('spawnSpell',{x:x, y:y, spell:spell})
+		}
+	}
+	}
+	randomIntFromInterval(min, max) { // min and max included
+		return Math.floor(Math.random() * (max - min + 1) + min)
+	  }
+
 	abandon(client: string)
 	{
 		if(client === this._player._login)
@@ -82,13 +108,13 @@ export class roomClass{
 		this.logger.log(client._login + " join " + this._name + "as spectator.");
 	}
 	removeSpec(client: clientClass){
-		for( var i = 0; i < this._spectators.length; i++){ 
-    
-			if ( this._spectators[i]._id === client._socket.id) { 
-		
-				this._spectators.splice(i, 1); 
+		for( var i = 0; i < this._spectators.length; i++){
+
+			if ( this._spectators[i]._id === client._socket.id) {
+
+				this._spectators.splice(i, 1);
 			}
-		
+
 		}
 		this.logger.log(client._login + " leave " + this._name + "as spectator.");
 	}
@@ -109,6 +135,7 @@ export class roomClass{
 			this._scoreA += 1;
 		else
 			this._scoreB += 1;
+		console.log("scoreA:" + this._scoreA + "   scoreB:" + this._scoreB)
 		if (this._scoreB == 5 ||this._scoreA == 5)
 		{
 			this._room.emit('ballThrow', {velx: 0, vely: 0 , y: -100});
@@ -148,19 +175,20 @@ export class roomClass{
 	}
 	UpdatePos(id: number, y: number)
 	{
-		// this._spectators.forEach(element => {
-		// 	element._socket.emit('updatePos', {id: id, y: y});
-		// });
-		if(id == 1)
-			this._guest._socket.emit('updatePos', {y:y, id: id});
-		else
-			this._player._socket.emit('updatePos', {y:y, id: id});
+		var socket = (id === 2 ? this._player._socket: this._guest._socket)
+		socket.emit('updateBar'+ (id === 1 ? 'A':'B'), {y:y, id: id});
+		this.specMessage('updateBar'+ (id === 1 ? 'A':'B'), {y:y, id: id})
+	}
+	specMessage(msg:string, data:any)
+	{
 		this._spectators.forEach(element => {
-			element._socket.emit('updatePos', {y:y, id: id});
+			element._socket.emit(msg, data);
 		});
 	}
 	ballUpdate(data: any)
 	{
+		console.log(data)
 		this._room.emit('updateBall', data);
+		this.randomSpell();
 	}
 }

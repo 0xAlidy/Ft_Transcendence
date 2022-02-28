@@ -64,7 +64,7 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 			await this.userService.addWaitingFriend(other.login, user.login)
 			var clientToNotify : clientClass = this.getUserClassbyName(other.login);
 			if (clientToNotify)
-				clientToNotify._socket.emit('inviteNotif', {login: user.login})
+				clientToNotify._socket.emit('inviteNotif', {login: user.login});
 		}
 		if (this.getUserClassbyName(other.login))
 			this.refreshFrontBySocket(this.getUserClassbyName(other.login)._socket);

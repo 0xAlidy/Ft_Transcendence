@@ -17,6 +17,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     i : number;
     clients = new Map<string, clientClass>();
     clientsSearching:clientClass[]= [];
+    clientsSearchingArcade:clientClass[]= [];
     clientsOnWaitingRoom = new Map();
     @WebSocketServer()
     server: Server;
@@ -33,6 +34,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.clients.set(client.id,new clientClass(client, user.login, user.token));
         client.join('lobby');
         this.clients.get(client.id)._room = 'lobby';
+        this.updateRoom();
     }
     nicknameChange(){
 
@@ -53,19 +55,24 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     getUserClassbyName(str:string):clientClass| null
     {
+        var ret = null;
         this.clients.forEach( element => {
             if(element._login === str)
-                return element;
+                ret = element;
         })
-        return null
+        return ret
     }
 
     @SubscribeMessage('createPrivateSession')
     createPrivateSession(client: Socket, data: any){
         var cli = this.clients.get(client.id);
-        var guest = this.getUserClassbyName(data.inviteLogin);
-        this.rooms.set('room' +this.index, new roomClass(data.clientName + data.inviteName, cli , guest, this.server.to(data.clientName + data.inviteName)));
-        guest._socket.emit('invite', {adv:cli._login, room:data.clientName + data.inviteName})
+        console.log(data.login)
+        var guest = this.getUserClassbyName(data.login);
+        if(!guest)
+            return
+        this.rooms.set('Privroom' +this.index, new roomClass('Privroom' +this.index, cli , guest, this.server.to('Privroom' +this.index), data.arcade));
+        guest._socket.emit('inviteDuel', {adv:cli._login, room:'Privroom' +this.index})
+        this.index++;
     }
 
     @SubscribeMessage('joinPrivateSession')
@@ -73,40 +80,65 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         var room = this.rooms.get(data.room)
         room._player._room = data.room;
         room._guest._room = data.room;
-        var room = this.rooms.get('room' + this.index);
         room._player._socket.leave('lobby');
         room._player._socket.join(data.room);
         room._guest._socket.leave('lobby');
         room._guest._socket.join(data.room);
-        room._player._socket.emit('startGame', {id: 1, room: data.room, nameA: room._player._login, nameB: room._guest._login})
-        room._guest._socket.emit('startGame', {id: 2, room: data.room, nameA: room._player._login, nameB: room._guest._login});
+        room._player._socket.emit('startGame', {id: 1, room: data.room, nameA: room._player._login, nameB: room._guest._login, arcade:room._isArcade})
+        room._guest._socket.emit('startGame', {id: 2, room: data.room, nameA: room._player._login, nameB: room._guest._login, arcade:room._isArcade});
         room._isJoinable = false;
-        this.index++;
     }
 
+    @SubscribeMessage('searchArcade')
+    searchArcade(client: Socket): void {
+        this.clientsSearchingArcade.push(this.clients.get(client.id))
+        console.log(this.clients.get(client.id)._login + 'join waiting match')
+        if (this.clientsSearchingArcade.length == 2)
+        {
+            var userOne = this.clientsSearchingArcade.at(1)
+            var userTwo = this.clientsSearchingArcade.at(0)
+            this.clientsSearchingArcade.pop()
+            this.clientsSearchingArcade.pop()
+            var roomName = "arcade" + this.index;
+            userOne._room = roomName;
+            userTwo._room = roomName;
+            this.rooms.set(roomName, new roomClass(roomName, userOne , userTwo, this.server.to(roomName), true));
+            var room = this.rooms.get(roomName);
+            userOne._socket.leave('lobby');
+            userOne._socket.join(roomName);
+            userTwo._socket.leave('lobby');
+            userTwo._socket.join(roomName);
+            room._room.emit('SearchStatus', {bool: false})
+            room._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true})
+            room._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true});
+            room._isJoinable = false;
+            this.index++;
+            this.updateRoom();
+        }
+    }
 
     @SubscribeMessage('searchRoom')
     search(client: Socket): void {
         this.clientsSearching.push(this.clients.get(client.id))
         console.log(this.clients.get(client.id)._login + 'join waiting match')
-        client.emit('changeState', {bool : true})
         if (this.clientsSearching.length == 2)
         {
             var userOne = this.clientsSearching.at(1)
             var userTwo = this.clientsSearching.at(0)
             this.clientsSearching.pop()
             this.clientsSearching.pop()
-            var roomName = "room"+this.index;
+            var roomName = "room" + this.index;
+            this.rooms.set(roomName, new roomClass(roomName, userOne , userTwo, this.server.to(roomName), false));
+            var room = this.rooms.get(roomName);
             userOne._room = roomName;
             userTwo._room = roomName;
-            this.rooms.set('room' +this.index, new roomClass(roomName, userOne , userTwo, this.server.to(roomName)));
-            var room = this.rooms.get('room' + this.index);
             userOne._socket.leave('lobby');
             userOne._socket.join(roomName);
             userTwo._socket.leave('lobby');
             userTwo._socket.join(roomName);
-            this.rooms.get('room' + this.index)._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._login, nameB: room._guest._login})
-            this.rooms.get('room' + this.index)._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login});
+            room._room.emit('SearchStatus', {bool: false})
+            room._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true})
+            room._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true});
             room._isJoinable = false;
             this.index++;
             this.updateRoom();
@@ -143,6 +175,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             this.updateRoom();
         }
     }
+
     @SubscribeMessage('joinRoom')
     joinRoom(client: Socket, room: string ): void {
         this.rooms.forEach(element => {
@@ -165,20 +198,25 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 client.join(element._name);
                 element.addGuest(this.clients.get(client.id));
                 this.clients.get(client.id).setRoom(room);
-                element._player._socket.emit('startGame', {id: 1, room: room, nameA: element._player._login, nameB: element._guest._login})
-                client.emit('startGame', {id: 2, room: room, nameA: element._player._login, nameB: element._guest._login});
+                element._player._socket.emit('startGame', {id: 1, room: room, nameA: element._player._login, nameB: element._guest._login, arcade:true})
+                client.emit('startGame', {id: 2, room: room, nameA: element._player._login, nameB: element._guest._login, arcade:true});
                 element._isJoinable = false;
                 this.updateRoom();
             }
         });
     }
+
     @SubscribeMessage('cancel')
     cancelSearch(client: Socket): void {
         var index = this.clientsSearching.indexOf(this.clients.get(client.id))
         console.log(this.clients.get(client.id)._login + 'leave waiting match')
-        client.emit('changeState', {bool : false})
         if (index > -1) {
             this.clientsSearching.splice(index, 1); // 2nd parameter means remove one item only
+        }
+        var index = this.clientsSearchingArcade.indexOf(this.clients.get(client.id))
+        console.log(this.clients.get(client.id)._login + 'leave waiting match')
+        if (index > -1) {
+            this.clientsSearchingArcade.splice(index, 1); // 2nd parameter means remove one item only
         }
     }
     @SubscribeMessage('end')
@@ -199,13 +237,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 this.userService.win(room._guest._token);
                 this.userService.xp(room._guest._token, 50);
                 this.userService.loose(room._player._token);
-                this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA);
+                this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA, room._isArcade);
             }
             if (ret == 2){
                 this.userService.win(room._player._token);
                 this.userService.xp(room._player._token, 50);
                 this.userService.loose(room._guest._token);
-                this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB);
+                this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB, room._isArcade);
         }
         this.rooms.delete(room._name);
         this.updateRoom();}
@@ -225,18 +263,18 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
     @SubscribeMessage('playerMovement')
     PlayerMovement(client: Socket, data: any): void {
-        this.rooms.forEach(element => {
-            if(element._name == data.room)
-                element.UpdatePos(data.id, data.y);
-        });
+        var room = this.rooms.get(data.room)
+        if(room)
+            room.UpdatePos(data.id, data.y);
     }
     @SubscribeMessage('ball')
     ballUpdate(client: Socket, data: any): void {
-        this.rooms.forEach(element => {
-            if(element._name == data.room){
-                element.ballUpdate(data);
-            }
-        });
+        this.rooms.get(data.room).ballUpdate(data);
+    }
+    @SubscribeMessage('useSpell')
+    useSpell(client: Socket, data: any): void {
+        console.log(data)
+        this.rooms.get(data.room)._room.emit('spellUsed', data)
     }
 
     @SubscribeMessage('score')
@@ -254,7 +292,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         this.userService.xp(room._player._token, 50);
                         this.userService.xp(room._guest._token, 10);
                         this.userService.loose(room._guest._token);
-                        this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB);
+                        room._isArcade
+                        this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB, room._isArcade);
                     }
                     if(res == 2)
                     {
@@ -264,7 +303,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         this.userService.xp(room._player._token, 10);
                         this.userService.xp(room._guest._token, 50);
                         this.userService.loose(room._player._token);
-                        this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA);
+                        this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA, room._isArcade);
                     }
                     room.clean();
                 }

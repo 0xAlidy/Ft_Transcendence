@@ -20,7 +20,7 @@ export default class FriendPanel extends React.Component<{User:User, socket:Sock
 		const shadow = document.getElementById("shadow");
 		const title = document.getElementById("title");
 		if (box !== null && shadow !== null && title !== null)
-			box.addEventListener("scroll", function() { 
+			box.addEventListener("scroll", function() {
 				if (this.scrollTop > 5)
 				{
 					shadow.style.boxShadow= "0px -11px 20px 13px var(--main-color)";
@@ -29,6 +29,11 @@ export default class FriendPanel extends React.Component<{User:User, socket:Sock
 				else
 					title.style.boxShadow= "0px 16px 13px 0px hsl(0deg 0% 7%)";
 			});
+	}
+	componentDidUpdate(prevProps:{User:User, socket:Socket}, prevState:any) {
+		if (prevProps.User.friends !== this.props.User.friends) {
+			this.forceUpdate();
+		}
 	}
 
 	OpenBlocked = () =>{
@@ -52,7 +57,24 @@ export default class FriendPanel extends React.Component<{User:User, socket:Sock
 			friends.classList.add('active');
 		}
 	}
+	mp = () =>{
 
+	}
+	history = () =>{
+
+	}
+	inviteDuel = (login:string) =>{
+		this.props.socket.emit('createPrivateSession', {login: login, arcade:false})
+	}
+	inviteDuelArcade = (login:string) =>{
+		this.props.socket.emit('createPrivateSession', {login: login, arcade:true})
+	}
+	removeFriend = () =>{
+
+	}
+	ban = () =>{
+
+	}
 	render(){
 		return (
 			<div className="midPanel">

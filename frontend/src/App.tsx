@@ -7,6 +7,7 @@ import Auth from "./components/HomePage/Auth/Auth";
 import "./styles/root.css"
 
 
+
 function App() {
 	const [isConnect, setIsConnect] = useState(false);
 	const [invite, setInvite] = useState(false);
@@ -18,7 +19,7 @@ function App() {
 				<Auth  token={setToken} invite={setInvite} connect={setIsConnect} location={useLocation().search}/>
 			</Route>
 			<Route exact path="/">
-				{ isConnect ? <MainPage token={token} invite={invite}/>: <HomePage/> }
+				{ isConnect ? <MainPage token={token} invite={invite} />: <HomePage/> }
 			</Route>
 			<Route render={() => <Redirect to={{pathname: "/"}} />} />
 		</Switch>

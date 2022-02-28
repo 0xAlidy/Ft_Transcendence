@@ -17,15 +17,15 @@ import Popup from 'reactjs-popup';
 import { User } from '../../interfaces'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {InviteButton, InviteNotif } from '../utility/utility';
+import {DuelButton, DuelNotif, InviteButton, InviteNotif } from '../utility/utility';
 
 interface popupScore{open:boolean, win:boolean, adv:string}
 
 export default class MainPage extends React.Component<{ token: string, invite:boolean },{lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:User|null, popupOpen:boolean, popupInfo:popupScore | null}>{
+
 	menuState: any
 	selector : any;
 	ref:any;
-
 	constructor(props :any) {
 		super(props);
 		this.state = {
@@ -40,14 +40,12 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 		};
 		this.ref = React.createRef();
 	}
-
 	async componentDidMount() {
 		if (this.state.token)
 		{
 			await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
 				this.setState({ User: res.data })
 			})
-
 			window.onpopstate = (event:any) => {
 				if(event){
 					if (window.history.state.selector)
@@ -81,6 +79,9 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						this.state.socket.on('inviteNotif', (data:any) => {
 							this.notify(data.login);
 						});
+						this.state.socket.on('inviteDuel', (data:any) => {
+							this.notifyDuel(data.adv, data.room);
+						});
 						this.state.socket.on('refreshUser', async (data:any) => {
 							console.log('refresh')
 							await this.refreshUser()
@@ -97,6 +98,15 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 		{
 			var ret: JSX.Element = <InviteNotif user={this.state.User} socket={this.state.socket} login={login}/>
 			var er: JSX.Element = <InviteButton login={login} socket={this.state.socket}/>
+			toast(ret, { className: 'notif', bodyClassName: "bodyNotif", closeButton:er, onClose:this.refreshUser });
+			// toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>); PAS TOUCHE JE VAIS OUBLIER SINON
+		}
+	}
+	notifyDuel = (login:string, room:string) => {
+		if(this.state.socket && this.state.User)
+		{
+			var ret: JSX.Element = <DuelNotif user={this.state.User} login={login} socket={this.state.socket}/>
+			var er: JSX.Element = <DuelButton room={room} login={login} socket={this.state.socket}/>
 			toast(ret, { className: 'notif', bodyClassName: "bodyNotif", closeButton:er, onClose:this.refreshUser });
 			// toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>); PAS TOUCHE JE VAIS OUBLIER SINON
 		}

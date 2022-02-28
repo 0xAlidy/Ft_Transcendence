@@ -7,6 +7,7 @@ import { createCipheriv, randomBytes} from 'crypto';
 import { createDecipheriv } from 'crypto';
 import { Message } from '../message/message.entity';
 import { clientClass } from "src/chat/class/client.class";
+import { thisExpression } from "@babel/types";
 
  @Injectable()
  export class ChatRoomsService
@@ -22,19 +23,22 @@ import { clientClass } from "src/chat/class/client.class";
 	}
 
 	async create(name :string, owner:string, password:string) {
-		if( await this.findRoomByName(name) === undefined){
-			var newroom = new ChatRooms(name, owner, password, false, null)
-			await this.ChatRoomsRepository.save(newroom);
+		if (name){
+			if( await this.findRoomByName(name) === undefined){
+				var newroom = new ChatRooms(name, owner, password, false, null)
+				await this.ChatRoomsRepository.save(newroom);
+			}
+			return await this.getAllRoomName();
 		}
-		return await this.getAllRoomName();
+		return null;
 	}
 
 	async createPriv(user:string[]) {
 		var newroom = new ChatRooms(null, user[1], "", true,user)
 		console.log(newroom)
 		await this.ChatRoomsRepository.save(newroom);
-		return ;
-		// return  await this.getAllRoomName();
+		// return ;
+		return  await this.getAllRoomName();
 	}
 
 	async addMessage(data:any)
@@ -77,7 +81,7 @@ import { clientClass } from "src/chat/class/client.class";
 		return ret;
 	}
 
-	async getPrivRoomName(){
+	async getAllPrivRoom(){
 		var all = await this.ChatRoomsRepository.find()
 		var ret:string[]= [];
 		all.forEach(element => {
@@ -86,8 +90,6 @@ import { clientClass } from "src/chat/class/client.class";
 		});
 		return ret;
 	}
-
-
 
 	async isAuthorized(token:string, name:string){
 		var room = await this.findRoomByName(name)
@@ -134,7 +136,7 @@ import { clientClass } from "src/chat/class/client.class";
 		  if (room.users[i] === toFind)
 			return true
 		return false
-	  }4
+	  }
 
 	async isBanned(name:string, dest:string){
 		var room = await this.findRoomByName(dest)
@@ -153,23 +155,30 @@ import { clientClass } from "src/chat/class/client.class";
 	}
 
 	findClientByName(clientList:any, name:string){
-		clientList.forEach((item:clientClass) => {
-			console.log("-------------------------")
-			console.log(item._pseudo+ "     " + name)
-			console.log("-------------------------")
+		var ret = null;
+		clientList.forEach((item:any) => {
 			if (item._pseudo === name){
-				console.log("SUCCESS MOTHERFUCKER")
-				console.log(item)
-				return item
+				ret = item;//pk t null
 			}
 		});
-		return null;
+		console.log(ret)
+		return ret;
 	}
 
 	checkDoublon(tocheck:string, array:string[]){
 		for(var i = 0; i < array.length; i++)
 		  if (array[i] === tocheck)
 			return true
+		return false
+	}
+
+	async checkDoublonPriv(name1:string,name2:string){
+		var roomlist = await this.getAllRoomName();
+		roomlist.forEach(async element => {
+			var room = await this.findRoomByName(element)
+			if (room.IsPrivate === true  && await this.findUser(name1, element) && await this.findUser(name2, element))
+				return true
+		});
 		return false
 	}
 
@@ -191,7 +200,7 @@ import { clientClass } from "src/chat/class/client.class";
 		}
 		else{
 			console.log("to ban doesn t exist")
-			return "this user " + toBan + " doesn't exist in the room please try again if he deserve else go kill yourself"
+			return "this user " + toBan + " doesn't exist in the room please try again if he deserve"
 		}
 	}
 
@@ -202,7 +211,6 @@ import { clientClass } from "src/chat/class/client.class";
 			room.adminList.push(name)
 			this.ChatRoomsRepository.save(room)
 			var clientToAdd:clientClass = this.findClientByName(clientList, name);
-			console.log(clientToAdd)
 			if (clientToAdd){
 				clientToAdd._socket.emit('promoteAdmin')
 			}
@@ -213,11 +221,31 @@ import { clientClass } from "src/chat/class/client.class";
 
 
 
-	async addPriv(toPriv:string, sender:string,clientList:any){
+
+	async addPriv(toPriv:string, sender:string,clientList:any, dest:string){
 		var name = toPriv.split(' ').at(1);
-		var user = [sender, name]
-		await this.createPriv(user)
-		return "new priv room"
+		if (await this.userService.findOneByLogin(name)){
+			if (await this.checkDoublonPriv(name,sender) || name === sender)
+				return "t as deja une room avec lui fdp"
+			var user = [sender, name]
+			await this.createPriv(user)
+
+			//send other
+			var client = this.findClientByName(clientList, name);
+			if (client){
+				var roomlist = await this.getAllRoomName()
+
+				var newmsg = {sender: 'system', dest:dest, message: sender + " has started a new private room with you", date: ''}
+				client._socket.emit('updateRooms',{rooms: roomlist})
+				client._socket.emit('ReceiveMessage', {sender: 'system', dest:dest, message: sender + " has started a new private room with you", date: ''})
+			}
+			else
+				return "canno t find user"
+			return "new priv room width " + name
+		}
+		else {
+			return "this user doesn t exist try again ou t as deja une room avec lui"
+		}
 	}
 
 
@@ -242,15 +270,14 @@ import { clientClass } from "src/chat/class/client.class";
 			else 
 				return "echec t es pas admin fdp"
 		}
-		else if (data.message.startsWith('/priv')){
-			return await this.addPriv(data.message, data.sender, clientList)
-		}
+		// else if (data.message.startsWith('/priv')){
+		// 	return await this.addPriv(data.message, data.sender, clientList)
+		// }
 		// else if (data.message.beginWidth("/pass")){
 		// 	// this.changePass(data.message, data.dest)
 		// 	data.message = pass;
 		// }
 		else 
 			return unknow
-
 	}
 }
