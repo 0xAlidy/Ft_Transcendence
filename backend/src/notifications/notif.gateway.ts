@@ -35,8 +35,13 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 	afterInit(server: any) { }
 
 	async handleConnection(client: Socket, ...args: any[]) {
+		// if (this.getUserClassbyName())
 		var user = await this.userService.findOne(client.handshake.query.token as string);
 		await this.userService.setStatus(user.token, 1);
+		if(this.getUserClassbyName(user.login)){
+			// client.emit('caDegage');
+			// client.disconnect(true);
+		}
 		this.clients.forEach(element => {
 			this.refreshFrontBySocket(element._socket);
 		})
@@ -45,11 +50,14 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
 	async handleDisconnect(client: Socket) {
 		var user = this.clients.get(client.id)
-		await this.userService.setStatus(user._token, 0);
-		this.clients.forEach(element => {
-			this.refreshFrontBySocket(element._socket);
-		})
-		this.clients.delete(client.id);
+		if(user)
+		{
+			await this.userService.setStatus(user._token, 0);
+			this.clients.forEach(element => {
+				this.refreshFrontBySocket(element._socket);
+			})
+			this.clients.delete(client.id);
+		}
 	}
 
 	@SubscribeMessage('inviteFriend')
@@ -118,4 +126,14 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
 		this.refreshFrontBySocket(client);
 	}
+	@SubscribeMessage('askHistoryOf')
+	async askHistoryOf(client: Socket, data:any){
+		client.emit('menuChange', {selector:'history'})
+		client.emit('openHistoryOf', data)
+	}
+	@SubscribeMessage('askMenuChange')
+	async askMenuChange(client: Socket, data:any){
+		client.emit('menuChange', data)
+	}
+
 }

@@ -7,7 +7,7 @@ import { User } from '../../../../interfaces';
 import { Socket } from 'socket.io-client';
 
 
-export default class History extends React.Component<{User:User, socket:Socket},{matchs:string[]}>{
+export default class History extends React.Component<{login:string|null, User:User, socket:Socket},{matchs:string[]}>{
 	MatchList: any = [];
 	constructor(props:any) {
 		super(props)
@@ -32,6 +32,13 @@ export default class History extends React.Component<{User:User, socket:Socket},
 				else
 					title.style.boxShadow= "0px 16px 13px 0px hsl(0deg 0% 7%)";
 			});
+	}
+	async componentDidUpdate(prevProps:any) {
+		// Utilisation classique (pensez bien à comparer les props) :
+		if (this.props.login !== prevProps.login) {
+			var data = (await axios.get("http://" + window.location.host.split(":").at(0) + ":667/matchs?name="+ this.props.login +"&token="+ this.props.User.token)).data;
+			this.setState({matchs: data});
+		}
 	}
 
 	render(){

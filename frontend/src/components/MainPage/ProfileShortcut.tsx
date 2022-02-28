@@ -7,7 +7,7 @@ import WinRate from './midPanel/Profile/winRate';
 import { Socket } from 'socket.io-client';
 import { UserPublic, User } from '../../interfaces'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// @ts-ignore 
+// @ts-ignore
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
 export default class ProfileShortCut extends React.Component<{login: string, socket: Socket,  User: User}, {canOpen: boolean, opened: boolean, User: UserPublic | null, img: string | null}> {
@@ -69,6 +69,9 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 			return "var(--win-color)";
 		return "var(--lose-color)";
 	}
+	handleHistory = () =>{
+		this.props.socket.emit('askHistoryOf', {login: this.props.login})
+	}
 
 	render(){
 		return (
@@ -92,7 +95,7 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 						</div>
 						<div id='buttonSection'>
 							<FontAwesomeIcon className="chooseButton" icon={solid('message')}/>
-							<FontAwesomeIcon className="chooseButton" icon={solid('table-list')}/>
+							<FontAwesomeIcon className="chooseButton" onClick={this.handleHistory} icon={solid('table-list')}/>
 							{
 								this.state.User.isFriend === 1 && this.state.User.status === 1 &&
 								<>
@@ -111,7 +114,7 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 							{
 								this.state.User.isFriend === 2 &&
 								<FontAwesomeIcon className="chooseButton" icon={solid('clock')}/>
-							}						
+							}
 							<FontAwesomeIcon className="chooseButton" onClick={this.blockUser} icon={solid('ban')}/>
 						</div>
 					</div>
