@@ -111,25 +111,29 @@ import { Room } from "src/chat/class/Room.class";
 		this.password = 'password';
 		const cipher = createCipheriv('aes256', this.key, this.iv);
 		const encryptedText = cipher.update(toEncrypt, 'utf8', 'hex') + cipher.final('hex');
+
+		console.log(encryptedText);
 		return encryptedText;
 	}
 
 	async decrypt(toDecrypt:string){
 		const decipher = createDecipheriv('aes256', this.key, this.iv);
+		// decipher.setAutoPadding(false)
 		const decryptedText = decipher.update(toDecrypt, 'hex', 'utf8') + decipher.final('utf8');
+		console.log(decryptedText);
 		return decryptedText;
 	}
 
 	async changePass(msg:string, dest:string){
-		var newPass = await this.encrypt(msg.slice(6))
+		// var newPass = await this.encrypt(msg.slice(6))
 		var room = await this.findRoomByName(dest)
-		if (newPass){
-			room.password = newPass;
+		if (msg){
+			room.password = msg.slice(6);
+			this.ChatRoomsRepository.save(room);
 			return true;
 		}
 		else 
 			return false
-	
 	}
 	
 	async findUser(toFind:string, dest:string){
@@ -150,6 +154,8 @@ import { Room } from "src/chat/class/Room.class";
 
 	async isAdmin(name:string,dest:string){
 		var room = await this.findRoomByName(dest)
+		if (room.owner === name)
+			return true;
 		for(var i = 0; i < room.adminList.length; i++)
 		  if (room.adminList[i] == name)
 			return true
@@ -193,8 +199,6 @@ import { Room } from "src/chat/class/Room.class";
 			room.banUsers.push(toBan); //ajoute dans la liste des personne banni
 			var index = room.users.indexOf(toBan);
 			room.users.splice(index, 1)
-
-
 			this.ChatRoomsRepository.save(room)
 			//toast
 			return 

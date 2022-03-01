@@ -123,6 +123,9 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 			this.togglePopupPass()
 			this.setState({messages: data.msg, activeRoom: data.room})
         });
+		this.props.socket.on('loadRoom',  (data:any) => {
+			this.setState({messages: data.msg, activeRoom: data.room})
+        });
 		this.props.socket.on('ReceiveMessage',  (data:any) => {
 			console.log(data);
 			if (data.dest == this.state.activeRoom){

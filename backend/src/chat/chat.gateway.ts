@@ -47,11 +47,14 @@ export class ChatGateway implements OnGatewayInit {
   @SubscribeMessage('password')
   async password(client:Socket, data:any){
     var tocheck = await this.chatService.findRoomByName(data.room)
-    var decrypted = await this.chatService.decrypt(tocheck.password)
-    if (data.pass === decrypted)
+
+    // var decrypted = await this.chatService.decrypt(tocheck.password)
+	console.log(tocheck.password + " " + data.pass);
+    if (data.pass === tocheck.password)
     {
+		console.log('icciiii')
       var msg = await this.chatService.getMessagesByRoom(data.room);
-      client.emit('LoadRoomPass', {room: data.room, msg:msg })
+      client.emit('LoadRoom', {room: data.room, msg:msg })
       client.leave(this.clients.get(client.id)._room)
       client.join(data.room)
       this.clients.get(client.id)._room = data.room
@@ -61,11 +64,12 @@ export class ChatGateway implements OnGatewayInit {
   @SubscribeMessage('newRoom')
   async addRoom(client:Socket, data:any){
     if (data.password){
-      var passEncrypt = await this.chatService.encrypt(data.password)
-      var update = await this.chatService.create(data.name, data.creator, passEncrypt);
+    //   var passEncrypt = await this.chatService.encrypt(data.password)
+      var update = await this.chatService.create(data.name, data.creator, data.password);
     }
     else
       var update = await this.chatService.create(data.name, data.creator, '');
+	this.loadRoom(client, data.name);
     this.server.emit('updateRooms',{rooms: update})
   }
 
@@ -125,8 +129,7 @@ async command(client: Socket,Message:Msg){
 		if(await this.chatService.isAdmin(Message.sender,Message.dest) == true){
 			await this.chatService.banUser(Message.message.split(' ').at(1), Message.dest)
 			var socket = this.getUserByName(Message.message.split(' ').at(1))._socket
-			this.loadRoom(socket, Message.dest)
-			console.log(ret)
+			this.loadRoom(socket, 'general')
 		}
 	}
 	else if (Message.message.startsWith('/mute')){
