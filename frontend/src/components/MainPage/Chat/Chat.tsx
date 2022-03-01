@@ -6,12 +6,14 @@ done - set admin													//	/admin "pseudo"
 - unban 														//	/unban "pseudo"
 
 
+/delete redirect value chatmenu dans <select/> 
+
+
 -modifier mdp ou retirer
-- mute 														//	/mute "pseudo" time(minutes)
 -message bizare todo{}
 
 
-- help = montre les cmd possible 							//  /help
+- help = montre les cmd possible/  /help
 done - message tu n es pas admin vas te faire encule tu t es tromper encule tu t es tromper tu n es bon qu a boycoter encule tu t es tromper
 bug sysmessae
 
@@ -99,24 +101,23 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 			if (this.mRef)
 				this.mRef.scrollTop = this.mRef.scrollHeight;
         });
-		this.props.socket.on('banned', () => {
-			var date = new Date()//.toTimeString().slice(0,5)
-			var banMsg:Msg = { id: 0, sender:"system", dest:"general", message:"you can t join this room, you are now logged to general", date:date}
-			this.setState({messages: this.state.messages.concat([banMsg])})//todo message dans general
-			if (this.mRef)
-				this.mRef.scrollTop = this.mRef.scrollHeight;
-		});
+		// this.props.socket.on('banned', () => {
+		// 	this.props.socket.emit('joinRoom',{room:'general'})
+		// 	//notify toast
+		// 	if (this.mRef)
+		// 		this.mRef.scrollTop = this.mRef.scrollHeight;
+		// });
 		this.props.socket.on('Muted', () =>{
 			var date = new Date()//.toTimeString().slice(0,5)
-			var banMsg:Msg = { id: 0, sender:"system", dest:"general", message:"please wait you are muted", date:date}
-			this.setState({messages: this.state.messages.concat([banMsg])})//todo message dans general
+			var muteMsg:Msg = { id: 0, sender:"system", dest:"general", message:"please wait you are muted", date:date}
+			this.setState({messages: this.state.messages.concat([muteMsg])})//todo message dans general
 			if (this.mRef)
 				this.mRef.scrollTop = this.mRef.scrollHeight;
 		});
 		this.props.socket.on('deleted',  (data:any) => {
 			this.props.socket.emit("joinRoom",{room:"general"})
-			var banMsg:Msg = { id: 0, sender:"system", dest:"general", message:"delete room, you are now logged to general", date:new Date()}
-			this.setState({messages: this.state.messages.concat([banMsg])})//todo message dans general
+			var delMsg:Msg = { id: 0, sender:"system", dest:"general", message:"delete room, you are now logged to general", date:new Date()}
+			this.setState({messages: this.state.messages.concat([delMsg])})//todo message dans general
         });
 		this.props.socket.on('LoadRoomPass',  (data:any) => {
 			this.togglePopupPass()

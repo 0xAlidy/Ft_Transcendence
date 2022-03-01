@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { UsersService } from 'src/user/users.service';
+import { Injectable } from "@nestjs/common";
+import { UsersService } from "src/user/users.service";
 
 @Injectable()
 export class AuthService {
@@ -8,15 +8,17 @@ export class AuthService {
     async validateUser(token :string, login:string): Promise<any>
     {
         let user = await this.usersService.findOneByLogin(login);
-                if (user && user.token !== token) {
-                    if(user.status === 1)
-                        return null;
-                    user = await this.usersService.changetoken(login, token);
-                }
-            if (!user) {
-                user = await this.usersService.create(login, token);
-            }
-            const { ...result } = user;
-            return result;
+        console.log("STATUS" + user.status)
+        if (!user) {
+            user = await this.usersService.create(login, token);
+        }
+        else{
+            if (user.status !== 0)
+                return null;
+            if (user.token !== token)
+                user = await this.usersService.changetoken(login, token);
+        }
+        const { ...result } = user;
+        return result;
     }
 }

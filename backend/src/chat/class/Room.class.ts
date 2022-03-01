@@ -17,7 +17,7 @@ export class Room{
 			this.password = password;
 			this.userList =[creator];
 			this._room = room;
-    }
+	}
 
 	Send(sender: string, dest: string, message: string, date: string){
 		this._room.emit('ReceiveMessage', { sender: sender, dest: dest, message: message, date: message})

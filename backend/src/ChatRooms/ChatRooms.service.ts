@@ -5,7 +5,6 @@ import {Repository} from "typeorm";
 import { ChatRooms } from './ChatRooms.entity';
 import { createCipheriv, randomBytes} from 'crypto';
 import { createDecipheriv } from 'crypto';
-import { Message } from '../message/message.entity';
 import { clientClass } from "src/chat/class/client.class";
 import { thisExpression } from "@babel/types";
 import { Msg } from "./Msg.dto";
@@ -186,59 +185,41 @@ import { Room } from "src/chat/class/Room.class";
 	}
 
 
-	async  banUser(arg:string, dest:string, clientList:any){
+	async  banUser(toBan:string, dest:string){
 		var room = await this.findRoomByName(dest)
-
-		var toBan = arg.split(' ').at(1)
 		console.log("to ban = " + toBan)
 		if (await this.findUser(toBan, dest) === true && this.checkDoublon(toBan, room.banUsers) === false){
+			
 			room.banUsers.push(toBan); //ajoute dans la liste des personne banni
-
 			var index = room.users.indexOf(toBan);
 			room.users.splice(index, 1)
 
 
 			this.ChatRoomsRepository.save(room)
-			var clientToBan = this.findClientByName(clientList, toBan);
-			if (clientToBan){
-				clientToBan._socket.leave(room)
-				clientToBan._socket.emit('banned')
-			}
-			return "this user " + toBan + " has been succesfully banned we hope he die in the burning flame of hell :-D"
+			//toast
+			return 
 		}
 		else{
 			console.log("to ban doesn t exist")
-			return "this user " + toBan + " doesn't exist in the room please try again if he deserve"
+			//toast
+			return 
 		}
 	}
 
-	async unbanUsers(arg:string, dest:string,clientList:any){
-		var toBan = arg.split(' ').at(1)
+	async unbanUsers(arg:string, dest:string){
 		var room = await this.findRoomByName(dest)
-		var index = room.banUsers.indexOf(toBan)
+		var index = room.banUsers.indexOf(arg)
 		room.banUsers.splice(index, 1)
 		this.ChatRoomsRepository.save(room)
-		var newRoom = await this.getAllRoomName()
-		var client = await this.findClientByName(clientList, toBan)
-		client._socket.emit('updateRoom',{rooms:newRoom})
-		//this.server emit all 
-		return "user " + toBan + "is unban"
 	}
 
 
-	async addAdmin(toAdd:string, dest:string,clientList:any){
+	async addAdmin(toAdd:string, dest:string){
 		var room = await this.findRoomByName(dest)
-		var name = toAdd.split(' ').at(1)
-		if (await this.findUser(name, dest) === true && this.checkDoublon(name, room.adminList) === false){
-			room.adminList.push(name)
-			this.ChatRoomsRepository.save(room)
-			var clientToAdd:clientClass = this.findClientByName(clientList, name)
-			if (clientToAdd){
-				clientToAdd._socket.emit('promoteAdmin')
-			}
-			return "this user " + name + " has been succesfully promoted to admin in " + room.name
+		if (await this.findUser(toAdd, dest) === true && this.checkDoublon(toAdd, room.adminList) === false){
+			room.adminList.push(toAdd)
+			await this.ChatRoomsRepository.save(room)
 		}
-		return "this user " + name + " doesn t exist in room " + room.name
 	}
 
 
@@ -327,49 +308,12 @@ import { Room } from "src/chat/class/Room.class";
 				room.muteList.push(newMute)
 				this.ChatRoomsRepository.save(room)
 			}
-			else
-				console.log('bad time')
+	
+				//else toast bad time in minutes < 60
 		}
 		else
-			console.log('already muted')
+			return 
+			//already muted
 	}
 
-	async systemMsg(data:any, clientList:any){
-		var help = "/help will help you to know the command you can use from the library for multiple line and other shit like this for long text so cute "
-		var unknow = "/ unknow command / try again..."
-		if (data.message === "/help")
-			data.message = help
-		else if (data.message.startsWith("/ban")){
-			if(await this.isAdmin(data.sender,data.dest) == true){
-				var ret = await this.banUser(data.message, data.dest, clientList)
-				console.log(ret)
-			}
-			else 
-				var ret = "echec t es pas admin fdp"
-			return ret;
-		}
-		else if (data.message.startsWith('/mute')){
-			if(await this.isAdmin(data.sender,data.dest) == true){
-				this.muteUser(data)
-			}
-		}
-		else if(data.message.startsWith("/unban")){
-			ret = "null"
-			if(await this.isAdmin(data.sender,data.dest) == true)
-				var ret = await this.unbanUsers(data.message, data.dest, clientList)
-			console.log(ret)
-			return ret;
-		}
-		else if (data.message.startsWith('/setadmin')){
-			if( await this.isAdmin(data.sender, data.dest) === true){
-				console.log("t es admin et t as le bon debut")
-				console.log(data.message)
-				return await this.addAdmin(data.message, data.dest, clientList)
-			}
-			else 
-				return "echec t es pas admin fdp"
-		}
-		else 
-			return unknow
-	};
 }
