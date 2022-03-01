@@ -8,7 +8,7 @@ done - set admin													//	/admin "pseudo"
 
 -modifier mdp ou retirer
 - mute 														//	/mute "pseudo" time(minutes)
--message bizare todo
+-message bizare todo{}
 
 
 - help = montre les cmd possible 							//  /help
@@ -105,7 +105,14 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 			this.setState({messages: this.state.messages.concat([banMsg])})//todo message dans general
 			if (this.mRef)
 				this.mRef.scrollTop = this.mRef.scrollHeight;
-		})
+		});
+		this.props.socket.on('Muted', () =>{
+			var date = new Date()//.toTimeString().slice(0,5)
+			var banMsg:Msg = { id: 0, sender:"system", dest:"general", message:"please wait you are muted", date:date}
+			this.setState({messages: this.state.messages.concat([banMsg])})//todo message dans general
+			if (this.mRef)
+				this.mRef.scrollTop = this.mRef.scrollHeight;
+		});
 		this.props.socket.on('deleted',  (data:any) => {
 			this.props.socket.emit("joinRoom",{room:"general"})
 			var banMsg:Msg = { id: 0, sender:"system", dest:"general", message:"delete room, you are now logged to general", date:new Date()}

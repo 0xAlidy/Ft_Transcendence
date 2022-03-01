@@ -1,10 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Msg } from './Msg.dto';
-
-interface mute{
-	name:string;
-	time:string;
-}
+import {Mute} from './Mute.dto'
 
 @Entity()
 export class ChatRooms {
@@ -27,7 +23,7 @@ export class ChatRooms {
   IsPrivate:boolean;
 
   @Column('jsonb',{default:[]})
-  muteList:mute[];
+  muteList:Mute[];
 
   @Column("text",{ array:true, default: []})
   banUsers: string[];

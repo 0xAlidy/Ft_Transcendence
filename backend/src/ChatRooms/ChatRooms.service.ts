@@ -9,6 +9,8 @@ import { Message } from '../message/message.entity';
 import { clientClass } from "src/chat/class/client.class";
 import { thisExpression } from "@babel/types";
 import { Msg } from "./Msg.dto";
+import {Mute} from "./Mute.dto"
+import { Room } from "src/chat/class/Room.class";
 
  @Injectable()
  export class ChatRoomsService
@@ -280,16 +282,56 @@ import { Msg } from "./Msg.dto";
 	}
 
 
-	muteUser(msg:Msg){
+	isMuted(room:ChatRooms, name:string){
+		var ret = -1;
+		room.muteList.forEach((element,index) => {
+			if (element.name === name)
+				ret = index; 
+		});
+		return ret;
+	}
+
+	async canTalk(name:string, tocheck:string)
+	{
+		var room = await this.findRoomByName(tocheck)
+		var indexMuted = this.isMuted(room,name)
+		if (indexMuted > 0){
+			var date = new Date();
+			//compare time
+			var time = new Date(room.muteList[indexMuted].endTime)
+			console.log(date.getTime() - time.getTime())
+			var compa = date.getTime() - time.getTime()
+			if (compa < 0){ //still muted
+				return false;
+			}
+			else
+				return true;
+		}
+		else
+			return true;
+	}
+
+
+	async muteUser(msg:Msg){
 		var toMute = msg.message.split(' ').at(1);
 		var time = +msg.message.split(' ').at(2);
-		console.log(msg.date.toTimeString().slice(0,5))
-		if (time > 0 && time < 60)
-			var t1 = new  Date(this.addMinutes(msg.date, time))
-		console.log(t1.toTimeString().slice(0,5))
-		// console.log("tomute = " + toMute + " time = " + time + " newdate = " + t1.toString()+ t1.toLocaleString())
-		// var room = await this.findRoomByName(rooms)
-		// user.IsMuted
+		var room = await this.findRoomByName(msg.dest)
+
+		//already muted 
+		if (this.isMuted(room,toMute) < 0){
+			// console.log(new Date(msg.date).toTimeString().slice(0,5))
+			// console.log(t1.toTimeString().slice(0,5))
+			if (time && time > 0 && time < 61){
+				var t1 = new  Date(this.addMinutes(msg.date, time))
+				var newMute:Mute = {name:toMute, endTime:t1}
+				room.muteList.push(newMute)
+				this.ChatRoomsRepository.save(room)
+			}
+			else
+				console.log('bad time')
+		}
+		else
+			console.log('already muted')
 	}
 
 	async systemMsg(data:any, clientList:any){

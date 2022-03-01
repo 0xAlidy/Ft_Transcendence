@@ -128,8 +128,13 @@ export class ChatGateway implements OnGatewayInit {
     	    client.emit('ReceiveMessage', Message)
 		}
     	else{
-    	    this.chatService.addMessage(Message);
-			this.server.to(Message.dest).emit('ReceiveMessage', Message)
+			console.log(await this.chatService.canTalk(Message.sender, Message.dest))
+			if (await this.chatService.canTalk(Message.sender, Message.dest) == true){
+				this.chatService.addMessage(Message)
+				this.server.to(Message.dest).emit('ReceiveMessage', Message)
+			}
+			else 
+				this.server.to(Message.dest).emit('Muted', Message)
 		}
 	}
   }
