@@ -6,25 +6,9 @@ import EditBox from './midPanel/Profile/editBox';
 import TwoAuth from './midPanel/Profile/twoAuth';
 import axios from 'axios';
 import profileIMG from '../../assets/profile.png'
+import { User } from '../../interfaces'
 
-interface user{
-	WSId: string;
-	id: number;
-	imgUrl: string;
-	isActive: false;
-	lvl: number;
-	login: string;
-	nickname: string;
-	numberOfLoose: number;
-	numberOfWin: number;
-	secret: string;
-	secretEnabled: false;
-	firstConnection: boolean;
-	token: string;
-	xp: 0;
-}
-
-export default class PopupStart extends React.Component<{ User:user, onChange:any, invite:boolean},{error:boolean, src:string|null | File,options:number, nickname:string | null, number:number | null, verify:boolean | null}>{
+export default class PopupStart extends React.Component<{ User:User, onChange:any, invite:boolean},{error:boolean, src:string|null | File,options:number, nickname:string | null, number:number | null, verify:boolean | null}>{
 	editor:AvatarEditor | null;
 	constructor(props :any) {
 		super(props);

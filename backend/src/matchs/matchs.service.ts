@@ -12,8 +12,8 @@ export class MatchsService
 	private logger: Logger = new Logger('UsersService');
 	constructor(@InjectRepository(Match) private MatchRepository: Repository<Match>, private usersService: UsersService){
 	}
-	async create(WinnerName :string, WinnerScore:number, LooserName:string, LooserScore:number) {
-		var match = new Match(WinnerName , WinnerScore, LooserName, LooserScore)
+	async create(WinnerName :string, WinnerScore:number, LooserName:string, LooserScore:number, isarcade:boolean) {
+		var match = new Match(WinnerName , WinnerScore, LooserName, LooserScore, isarcade)
 		this.MatchRepository.save(match);
 	}
 
@@ -30,7 +30,7 @@ export class MatchsService
 					askerMatchs.push(element);
 			});
 			askerMatchs.forEach(element => {
-				ret.push(element.WinnerName +'/'+ element.WinnerScore	+'/'+ element.LooserName +'/'+ element.LooserScore);
+				ret.push(element.WinnerName +'/'+ element.WinnerScore	+'/'+ element.LooserName +'/'+ element.LooserScore + '/' + (element.isArcade ? 'true': 'false'));
 			});
 			return ret;
 		}

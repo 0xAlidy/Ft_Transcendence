@@ -14,7 +14,12 @@
     font-size: 25px;
     color: var(--main-color);
     cursor: pointer;
-    transition: all 2s;
+    transition: color 2s, opacity 1s;
+    opacity: 0.5;
+}
+
+.chooseButton:hover{
+    opacity: 1;
 }
 
 .ProfileButton button{

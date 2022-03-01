@@ -1,7 +1,7 @@
 import React from "react";
 import { Socket } from "socket.io-client";
 import '../../../../styles/MainPage/midPanel/MatchMaking/MatchMaking.css'
-import { user } from "../../MainPage";
+import { User } from "../../../../interfaces";
 import ItemSpec from "./itemSpec";
 interface specRoomsData{
 	name:string,
@@ -9,7 +9,7 @@ interface specRoomsData{
 	right:string,
 	token:string
 }
-export default class MatchMaking extends React.Component<{socket:Socket, user:user, open:boolean},{Searching:boolean, rooms:specRoomsData[]}>{
+export default class MatchMaking extends React.Component<{socket:Socket, user:User},{Searching:boolean, rooms:specRoomsData[]}>{
 	constructor(props :any) {
 		super(props);
 		this.state = {Searching:false, rooms:[{name:'roomtest', left:'edepauw', right:'tgrangeo', token:this.props.user.token}]}
@@ -26,9 +26,7 @@ export default class MatchMaking extends React.Component<{socket:Socket, user:us
 		this.props.socket.emit('specRoom', {room: room});
 	}
 	render(){
-		return (
-			<>
-			{this.props.open && <div className="midPanel">
+		return ( <div className="midPanel">
 				<h1>MATCHMAKING</h1>
 				{!this.state.Searching ?<>
 					<button className="buttonSearch" value='SEARCH'  onClick={() => {this.props.socket.emit('searchRoom'); this.setState({Searching:true})}}>SEARCH</button>:
@@ -43,8 +41,7 @@ export default class MatchMaking extends React.Component<{socket:Socket, user:us
 					})
 				}
 				</div>
-			</div>}
-		</>
+			</div>
     	)
 	}
 };

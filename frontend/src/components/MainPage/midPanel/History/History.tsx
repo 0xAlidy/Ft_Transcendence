@@ -3,11 +3,11 @@ import '../../../../styles/MainPage/midPanel/midPanel.css'
 import '../../../../styles/MainPage/midPanel/History/History.css'
 import ItemMatch from './itemMatch/itemMatch'
 import axios from "axios";
-import { user } from '../../MainPage';
+import { User } from '../../../../interfaces';
 import { Socket } from 'socket.io-client';
 
 
-export default class History extends React.Component<{User:user, socket:Socket},{matchs:string[]}>{
+export default class History extends React.Component<{login:string|null, User:User, socket:Socket},{matchs:string[]}>{
 	MatchList: any = [];
 	constructor(props:any) {
 		super(props)
@@ -33,6 +33,13 @@ export default class History extends React.Component<{User:user, socket:Socket},
 					title.style.boxShadow= "0px 16px 13px 0px hsl(0deg 0% 7%)";
 			});
 	}
+	async componentDidUpdate(prevProps:any) {
+		// Utilisation classique (pensez bien à comparer les props) :
+		if (this.props.login !== prevProps.login) {
+			var data = (await axios.get("http://" + window.location.host.split(":").at(0) + ":667/matchs?name="+ this.props.login +"&token="+ this.props.User.token)).data;
+			this.setState({matchs: data});
+		}
+	}
 
 	render(){
 		return (
@@ -42,8 +49,8 @@ export default class History extends React.Component<{User:user, socket:Socket},
 				<span id="shadow"></span>
 				<div id="boxMatchs">
 				{
-					this.state.matchs.map((item, idx) => {
-						return <ItemMatch match={item} socket={this.props.socket} user={this.props.User} name={this.props.User.login} key={idx}/>;
+					this.state.matchs.map((a, i, arr) => {
+						return <ItemMatch match={arr[arr.length - 1 - i]} socket={this.props.socket} user={this.props.User} name={this.props.User.login} key={i}/>;
 					})
 				}
 				</div>

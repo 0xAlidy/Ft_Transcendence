@@ -1,15 +1,15 @@
-import React, { useState } from 'react'
+import React from 'react'
 import axios from 'axios';
 import ProfileShortCut from '../MainPage/ProfileShortcut';
 import '../../styles/MainPage/utility.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// @ts-ignore 
+// @ts-ignore
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { Socket } from 'socket.io-client';
-import { user } from '../MainPage/MainPage';
+import { User } from '../../interfaces';
 
 
-export default class Nickname extends React.Component<{login:string},{nickname:string|null}>{
+export default class Nickname extends React.Component<{login:string},{nickname:string|null}> {
 	constructor(props:any)
 	{
 		super(props)
@@ -25,7 +25,7 @@ export default class Nickname extends React.Component<{login:string},{nickname:s
 	}
 };
 
-export function InviteNotif(props:{login:string, socket:Socket, user:user}){
+export function InviteNotif(props:{login:string, socket:Socket, user:User}){
 	return (
 		<>
 			<div className='titleNotif'>
@@ -33,15 +33,15 @@ export function InviteNotif(props:{login:string, socket:Socket, user:user}){
 				<h2>You received a friend request !</h2>
 			</div>
 			<div className='profileNotif'>
-				<ProfileShortCut pseudo={props.login} user={props.user} socket={props.socket} />
+				<ProfileShortCut login={props.login} User={props.user} socket={props.socket} />
 				<h3>{props.login}</h3>
 			</div>
 		</>
 	);
-  }
-  export function InviteButton(props:any){
+}
 
-	// Vous pouvez utiliser des Hooks ici !
+export function InviteButton(props:any){
+
 	const accept = () =>{
 		props.socket.emit('acceptFriend', {login:props.login})
 		props.closeToast()
@@ -53,10 +53,14 @@ export function InviteNotif(props:{login:string, socket:Socket, user:user}){
 	}
 
 	const block = () =>{
-		// BLOCK USER
+		props.socket.emit('blockUser', {login:props.login})
 		props.closeToast()
 	}
 
+	props.socket.on('closeInviteFriend', (data:any) => {
+		if (data.login === props.login)
+			props.closeToast()
+	})
 
 	return (
 		<div className='buttonNotifWrap'>
@@ -73,30 +77,41 @@ export function InviteNotif(props:{login:string, socket:Socket, user:user}){
 	)
   }
 
-  export function DuelNotif(props:{login:string, user:user, socket:Socket}){
+  export function DuelButton(props:any){
+
 	// Vous pouvez utiliser des Hooks ici !
-	const [resp, setResp] = useState(0);
 	const accept = () =>{
-		//accept invite
-		setResp(1)
+		props.socket.emit('joinPrivateSession', {room:props.room})
+		props.closeToast()
 	}
+
 	const deny = () =>{
-		//accept invite
-		setResp(2)
+		props.socket.emit('denyDuel', {login:props.room})
+		props.closeToast()
 	}
+
+
+	return (
+		<div className='buttonNotifWrap'>
+			<button className='buttonNotif' onClick={() => accept()}>
+				<FontAwesomeIcon className="buttonIcon" icon={solid('check')}/>
+			</button>
+			<button className='buttonNotif' onClick={() => deny()}>
+				<FontAwesomeIcon className="buttonIcon" icon={solid('xmark')}/>
+			</button>
+		</div>
+	)
+  }
+
+  export function DuelNotif(props:{login:string, user:User, socket:Socket}){
+	// Vous pouvez utiliser des Hooks ici !
 
 	return (<>
 			{"⚔️ You receive a duel request!"}
 			<br/>
 			<div style={{display: 'flex',width:'100%'}}>
-				<ProfileShortCut pseudo={props.login} user={props.user} socket={props.socket} />
-				{resp === 0 && <>
-					<div style={{fontWeight:'bolder', fontSize:'20pt',margin:'auto auto', color:"#fee154"}}>{props.login}</div>
-					<button style={{fontSize:'20pt', width:'50px', height:'50px', borderRadius:'50%', backgroundColor:'#fee154'}} onClick={() => accept()}>⚔️</button>
-					<button style={{fontSize:'20pt', width:'50px', height:'50px', borderRadius:'50%', backgroundColor:'#cc0000'}} onClick={() => deny()}>deny!</button>
-				</>}
-				{resp === 1 &&<div style={{margin:'auto auto', color:"#fee154"}}>You now friend with {props.login}!</div>}
-				{resp === 2 && <div style={{margin:'auto auto', color:"#fee154"}}>You deny friend request!</div>}
+				<ProfileShortCut login={props.login} User={props.user} socket={props.socket} />
 			</div>
-			</>);
-  }
+		</>
+	);
+}

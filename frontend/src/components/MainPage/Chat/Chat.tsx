@@ -23,7 +23,7 @@ import "../../../styles/MainPage/Chat/Chat.css";
 import Send from '../../../assets/send.png';
 import { Socket } from "socket.io-client";
 import ChatMenu from "./chatMenu";
-import {user} from '../MainPage';
+import { User } from '../../../interfaces'
 import MessageItem from "./message";
 
 export class Message{
@@ -66,7 +66,7 @@ const Popup = (props:any) => {
     );
   };
 
-export default class Chat extends React.Component <{socket:Socket, User:user}, {openNewPass:boolean,openNewRoom:boolean,RowsStyle:string;activeRoom:string, msgInput:string, rooms:any, loaded:boolean, date:string, loadEmoji:boolean,chosenEmoji:any,chatInput:any, messages:Msg[]}>{
+export default class Chat extends React.Component <{socket:Socket, User:User}, {openNewPass:boolean,openNewRoom:boolean,RowsStyle:string;activeRoom:string, msgInput:string, rooms:any, loaded:boolean, date:string, loadEmoji:boolean,chosenEmoji:any,chatInput:any, messages:Msg[]}>{
 	// roomList:Room[] = [];
 	mRef:HTMLDivElement | null;
 	inputRef:HTMLInputElement | null;

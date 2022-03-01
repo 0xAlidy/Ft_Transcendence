@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as React from "react";
 import { Socket } from "socket.io-client";
-import { user } from "../../MainPage";
+import { User } from "../../../../interfaces";
 import ProfileShortCut from "../../ProfileShortcut";
 
 interface specRoomsData{
@@ -9,12 +9,16 @@ interface specRoomsData{
 	left:string,
 	right:string,
 }
-export default class ItemSpec extends React.Component<{data:specRoomsData, user:user, onSpecCLick:any, socket:Socket},{left:string|null, right:string|null}>{
+export default class ItemSpec extends React.Component<{data:specRoomsData, user:User, onSpecCLick:any, socket:Socket},{left:string|null, right:string|null}>{
 	constructor(props:any)
 	{
 		super(props);
-		this.state = {left:null, right:null}
+		this.state = {
+			left: null,
+			right: null
+		}
 	}
+
 	async componentDidMount(){
 		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/user/getNickname?login=" + this.props.data.right).then(res => {
 			this.setState({right: res.data})
@@ -23,19 +27,21 @@ export default class ItemSpec extends React.Component<{data:specRoomsData, user:
 			this.setState({left: res.data})
 		})
 	}
+
 	specClick = () =>{
 		this.props.onSpecCLick(this.props.data.name);
 	}
+
 	render(){
-		return	(
-				<div className="itemSpec">
-					{this.state.left && this.state.right &&
+		return (
+			<div className="itemSpec">
+				{	this.state.left && this.state.right &&
 					<div className="grid">
 						<div className="imgLeft">
-								<ProfileShortCut  pseudo={this.props.data.left} user={this.props.user} socket={this.props.socket}/>
+							<ProfileShortCut  login={this.props.data.left} User={this.props.user} socket={this.props.socket}/>
 						</div>
 						<div className="imgRight">
-								<ProfileShortCut  pseudo={this.props.data.right} user={this.props.user} socket={this.props.socket} />
+							<ProfileShortCut  login={this.props.data.right} User={this.props.user} socket={this.props.socket} />
 						</div>
 						<div className="text">VS</div>
 						<div className="nameLeft">
@@ -47,7 +53,9 @@ export default class ItemSpec extends React.Component<{data:specRoomsData, user:
 						<div className="specButtongrid">
 							<button className="specButton" onClick={this.specClick}>Spectate</button>
 						</div>
-					</div>}
-				</div>)
+					</div>
+				}
+			</div>
+		)
 	}
 }

@@ -16,7 +16,7 @@ interface user{
 	lvl: number;
 	login: string;
 	nickname: string;
-	numberOfLoose: number;
+	numberOfLose: number;
 	numberOfWin: number;
 	secret: string;
 	secretEnabled: false;
@@ -76,7 +76,7 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 						<div id="statistics">
 							<h2>Statistics</h2>
 							<Gauge percent={this.state.User.xp.toString()} lvl={this.state.User.lvl.toString()}/>
-							<WinRate win={this.state.User.numberOfWin} loose={this.state.User.numberOfLoose}/>
+							<WinRate win={this.state.User.numberOfWin} loose={this.state.User.numberOfLose}/>
 						</div>
 					</div>
 					<div id="security">

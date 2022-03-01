@@ -14,7 +14,7 @@ interface user{
 	lvl: number;
 	login: string;
 	nickname: string;
-	numberOfLoose: number;
+	numberOfLose: number;
 	numberOfWin: number;
 	secret: string;
 	secretEnabled: false;
@@ -50,9 +50,9 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 		}
 		if (this.editor){
 			await fetch("HTTP://" + window.location.host.split(":").at(0) + ":667/user/upload", {
-					method: "post",
-					headers: headers,
-					body: JSON.stringify({url:this.editor.getImageScaledToCanvas().toDataURL(), token:this.props.User.token}),
+				method: "post",
+				headers: headers,
+				body: JSON.stringify({url:this.editor.getImageScaledToCanvas().toDataURL(), token:this.props.User.token}),
 			})
 			this.setState({src: this.editor.getImageScaledToCanvas().toDataURL()});
 			this.setState({url: null, webcamOption: false, displayChoices: false});
