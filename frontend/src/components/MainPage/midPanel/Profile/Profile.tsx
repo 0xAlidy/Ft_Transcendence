@@ -1,6 +1,8 @@
 import React from 'react'
 import '../../../../styles/MainPage/midPanel/midPanel.css'
 import '../../../../styles/MainPage/midPanel/Profile/Profile.css'
+import { Socket } from 'socket.io-client';
+import { User } from '../../../../interfaces'
 import EditBox from './editBox';
 import Gauge from './gauge';
 import WinRate from './winRate';
@@ -8,24 +10,8 @@ import TwoAuth from './twoAuth';
 import ProfileImg from './ProfileImg';
 import axios from 'axios';
 
-interface user{
-	WSId: string;
-	id: number;
-	imgUrl: string;
-	isActive: false;
-	lvl: number;
-	login: string;
-	nickname: string;
-	numberOfLose: number;
-	numberOfWin: number;
-	secret: string;
-	secretEnabled: false;
-	firstConnection: boolean;
-	token: string;
-	xp: 0;
-}
 
-export default class Profile extends React.Component<{token:string, refreshUser:any},{User:user|null, nickname:string}>{
+export default class Profile extends React.Component<{token:string, socket:Socket},{User:User|null, nickname:string}>{
 	constructor(props:any)
 	{
 		super(props)
@@ -70,7 +56,7 @@ export default class Profile extends React.Component<{token:string, refreshUser:
 					<div id="topBox">
 						<div id="player">
 							<h2>Player</h2>
-							<ProfileImg User={this.state.User} refreshUser={this.props.refreshUser}/>
+							<ProfileImg User={this.state.User} socket={this.props.socket}/>
 							<EditBox value={this.state.nickname} onChange={this.setName} User={this.state.User}/>
 						</div>
 						<div id="statistics">

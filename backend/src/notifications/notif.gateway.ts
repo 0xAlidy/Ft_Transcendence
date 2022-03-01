@@ -41,17 +41,30 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 	afterInit(server: any) { }
 
 	async handleConnection(client: Socket, ...args: any[]) {
+		// if (this.getUserClassbyName())
 		var user = await this.userService.findOne(client.handshake.query.token as string);
 		await this.userService.setStatus(user.token, 1);
+		if (this.getUserClassbyName(user.login)){
+            client.emit('caDegage');
+            client.disconnect(true);
+        }
 		this.refreshFrontAll(user.login);
 		this.clients.set(client.id, new clientClass(client, user.login, user.token));
 	}
 
 	async handleDisconnect(client: Socket) {
 		var user = this.clients.get(client.id)
-		await this.userService.setStatus(user._token, 0);
-		this.refreshFrontAll(user._login);
-		this.clients.delete(client.id);
+		if (user)
+		{
+			await this.userService.setStatus(user._token, 0);
+			this.refreshFrontAll(user._login);
+			this.clients.delete(client.id);
+		}
+	}
+
+	@SubscribeMessage('refreshFrontAll')
+	async refreshUser(client: Socket, data:any){
+		this.refreshFrontAll(data.login);
 	}
 
 	@SubscribeMessage('inviteFriend')
@@ -119,5 +132,16 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 		if (this.getUserClassbyName(data.login))
 			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, data.login);
 		this.refreshFrontBySocket(client, data.login);
+	}
+
+	@SubscribeMessage('askHistoryOf')
+	async askHistoryOf(client: Socket, data:any){
+		client.emit('menuChange', {selector:'history'})
+		client.emit('openHistoryOf', data)
+	}
+
+	@SubscribeMessage('askMenuChange')
+	async askMenuChange(client: Socket, data:any){
+		client.emit('menuChange', data)
 	}
 }

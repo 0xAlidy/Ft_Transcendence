@@ -281,7 +281,6 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 					{
 						this.state.messages.map((item, index) => {
 							var classForItem;
-							console.log(item)
 							if (item.sender === this.props.User.login)
 								classForItem = "msgItem"
 							else if (item.sender === "system")

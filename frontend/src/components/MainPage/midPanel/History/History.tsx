@@ -7,7 +7,7 @@ import { User } from '../../../../interfaces';
 import { Socket } from 'socket.io-client';
 
 
-export default class History extends React.Component<{User:User, socket:Socket},{matchs:string[]}>{
+export default class History extends React.Component<{login:string|null, User:User, socket:Socket},{matchs:string[]}>{
 	MatchList: any = [];
 	constructor(props:any) {
 		super(props)
@@ -17,8 +17,10 @@ export default class History extends React.Component<{User:User, socket:Socket},
 	};
 
 	async componentDidMount() {
-		var data = (await axios.get("http://" + window.location.host.split(":").at(0) + ":667/matchs?name="+ this.props.User.login +"&token="+ this.props.User.token)).data;
-		this.setState({matchs: data});
+		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/matchs?login="+ (this.props.login? this.props.login: this.props.User.login) +"&token="+ this.props.User.token).then(res => {
+			this.setState({matchs: res.data});
+		})
+		console.log("LOGIN " + this.props.login? this.props.login: this.props.User.login)
 		const box = document.getElementById("boxMatchs");
 		const shadow = document.getElementById("shadow");
 		const title = document.getElementById("title");
@@ -34,6 +36,17 @@ export default class History extends React.Component<{User:User, socket:Socket},
 			});
 	}
 
+	async componentDidUpdate(prev:any) {
+		if (prev.login !== this.props.login)
+		{
+			this.setState({matchs:[]});
+			await axios.get("http://" + window.location.host.split(":").at(0) + ":667/matchs?login="+ (this.props.login? this.props.login: this.props.User.login) +"&token="+ this.props.User.token).then(res => {
+				this.setState({matchs: res.data});
+			})
+		}
+		console.log("LOGIN " + this.props.login? this.props.login: this.props.User.login)
+	}
+
 	render(){
 		return (
         <div className="midPanel">
@@ -43,7 +56,7 @@ export default class History extends React.Component<{User:User, socket:Socket},
 				<div id="boxMatchs">
 				{
 					this.state.matchs.map((a, i, arr) => {
-						return <ItemMatch match={arr[arr.length - 1 - i]} socket={this.props.socket} user={this.props.User} name={this.props.User.login} key={i}/>;
+						return <ItemMatch match={arr[arr.length - 1 - i]} socket={this.props.socket} user={this.props.User} name={this.props.login? this.props.login: this.props.User.login} key={i}/>;
 					})
 				}
 				</div>

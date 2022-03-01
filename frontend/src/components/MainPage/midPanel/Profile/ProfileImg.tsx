@@ -2,27 +2,13 @@ import React from 'react'
 import AvatarEditor from 'react-avatar-editor'
 import '../../../../styles/MainPage/midPanel/Profile/ProfileImg.css'
 import Camera from './Camera'
+import { User } from '../../../../interfaces'
+import { Socket } from 'socket.io-client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // @ts-ignore 
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
-interface user{
-	WSId: string;
-	id: number;
-	imgUrl: string;
-	isActive: false;
-	lvl: number;
-	login: string;
-	nickname: string;
-	numberOfLose: number;
-	numberOfWin: number;
-	secret: string;
-	secretEnabled: false;
-	firstConnection: boolean;
-	token: string;
-	xp: 0;
-}
-export default class ProfileImg extends React.Component<{ User:user, refreshUser:any},{url:null|string, src:null|string, displayChoices:boolean, webcamOption:boolean, fileOption:boolean, uploadOption:boolean}>{
+export default class ProfileImg extends React.Component<{ User:User, socket:Socket},{url:null|string, src:null|string, displayChoices:boolean, webcamOption:boolean, fileOption:boolean, uploadOption:boolean}>{
 	editor:AvatarEditor | null;
 	constructor(props :any){
 		super(props)
@@ -44,7 +30,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 		this.editor = editor;
 	};
 
-	photo = async () =>{
+	photo = async () => {
 		var headers = {
 			'Content-Type': 'application/json;charset=UTF-8',
 		}
@@ -56,7 +42,7 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 			})
 			this.setState({src: this.editor.getImageScaledToCanvas().toDataURL()});
 			this.setState({url: null, webcamOption: false, displayChoices: false});
-			this.props.refreshUser();
+			this.props.socket.emit("refreshFrontAll", {login: this.props.User.login});
 		}
 	}
 
@@ -70,56 +56,57 @@ export default class ProfileImg extends React.Component<{ User:user, refreshUser
 	};
 
 	open() {
-		if(this.state.displayChoices === false)
+		if (this.state.displayChoices === false)
 			this.setState({displayChoices: true})
 		else
 			this.setState({displayChoices: false, webcamOption: false, url:null});
 	}
 
 	openwebcam() {
-		if(this.state.webcamOption === false)
-			this.setState({webcamOption: true,})
+		if (this.state.webcamOption === false)
+			this.setState({webcamOption: true})
 		else
 			this.setState({webcamOption: false})
 	}
 	
 	render(){
-		const validate = (url:string) =>{
+		const validate = (url:string) => {
 			this.setState({url: url});
 		}
 		return (
-        <div className='ProfileImgdiv'>
-			<div className='ProfileButton'>
-				<button  onClick={this.open}>
-					{this.state.displayChoices === false ? <FontAwesomeIcon className="chooseButton" icon={solid('pen-to-square')}/> : <FontAwesomeIcon  className="chooseButton" icon={solid('circle-xmark')}/>}
-				</button>
+			<div className='ProfileImgdiv'>
+				<div className='ProfileButton'>
+					<button  onClick={this.open}>
+						{this.state.displayChoices === false ? <FontAwesomeIcon className="chooseButton" icon={solid('pen-to-square')}/> : <FontAwesomeIcon  className="chooseButton" icon={solid('circle-xmark')}/>}
+					</button>
+				</div>
+				
+				{this.state.src && <img alt="" src={this.state.src} className="profileImg"/>}
+				<div className='ChooseContainer'>
+				{
+					this.state.displayChoices === true &&
+					<>
+						{
+							this.state.url === null ?
+							<>
+								{this.state.webcamOption  && <Camera validate={validate}/>}
+								{
+									!(this.state.webcamOption || this.state.uploadOption) &&
+									<>
+										<div className='ChooseOption'  onClick={this.openwebcam}>Use Webcam</div>
+										<label className='ChooseOption' htmlFor='file'>Upload Image</label>
+										<input type="file" id="file" name="myImage" accept="image/*" onChange={this.onImageUpload} />
+									</>
+								}
+							</>:<>
+								<AvatarEditor ref={this.setEditorRef} image={this.state.url as string} width={100} height={100} borderRadius={100} color={[31,31,31, 0.6]} scale={1.1} rotate={0}/>
+								<button className='valideButton' onClick={this.photo}>OK</button>
+							</>
+						}
+					</>
+				}
+				</div>
 			</div>
-			
-			{this.state.src && <img alt="" src={this.state.src} className="profileImg"/>}
-			<div className='ChooseContainer'>
-			{
-				this.state.displayChoices === true &&
-				<>
-					{
-						this.state.url === null ?
-						<>
-							{this.state.webcamOption  && <Camera validate={validate}/>}
-							{
-								!(this.state.webcamOption || this.state.uploadOption) &&
-								<>
-									<div className='ChooseOption'  onClick={this.openwebcam}>Use Webcam</div>
-									<label className='ChooseOption' htmlFor='file'>Upload Image</label>
-									<input type="file" id="file" name="myImage" accept="image/*" onChange={this.onImageUpload} />
-								</>
-							}
-						</>:<>
-							<AvatarEditor ref={this.setEditorRef} image={this.state.url as string} width={100} height={100} borderRadius={100} color={[31,31,31, 0.6]} scale={1.1} rotate={0}/>
-							<button className='valideButton' onClick={this.photo}>OK</button>
-						</>
-					}
-				</>
-			}
-			</div>
-		</div>)
+		)
 	}
 };

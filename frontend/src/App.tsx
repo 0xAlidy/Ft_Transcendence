@@ -1,6 +1,7 @@
 import { Route, Switch, Redirect } from "react-router-dom"
 import HomePage from './components/HomePage/HomePage'
 import MainPage from './components/MainPage/MainPage'
+import ErrorPage from "./components/ErrorPage/ErrorPage"
 import React, {useState} from 'react'
 import { useLocation } from 'react-router';
 import Auth from "./components/HomePage/Auth/Auth";
@@ -19,7 +20,10 @@ function App() {
 				<Auth  token={setToken} invite={setInvite} connect={setIsConnect} location={useLocation().search}/>
 			</Route>
 			<Route exact path="/">
-				{ isConnect ? <MainPage token={token} invite={invite} />: <HomePage/> }
+				{ isConnect ? <MainPage token={token} invite={invite} />: <HomePage/>}
+			</Route>
+			<Route path="/error">
+				<ErrorPage location={useLocation().search}/>
 			</Route>
 			<Route render={() => <Redirect to={{pathname: "/"}} />} />
 		</Switch>

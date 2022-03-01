@@ -1,98 +1,97 @@
 import React from "react";
 import '../../../styles/MainPage/menu/menu.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// @ts-ignore 
+// @ts-ignore
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 import ColorMenu from './ColorMenu/ColorMenu';
+import { Socket } from "socket.io-client";
+import { User } from '../../../interfaces';
+//import axios from 'axios';
 
-export default class Menu extends React.Component<{token:string, onChange : any, imgsrc:string}, {isFriendListOpen:boolean, isProfileOpen: boolean, isGameOpen: boolean, isHistoryOpen: boolean, isAdminOpen: boolean, isRulesOpen: boolean}>{
-	constructor(props :any) {
-		super(props);
-		this.state = {
-			isProfileOpen: false,
-			isGameOpen: true,
-			isHistoryOpen: false,
-			isAdminOpen: false,
-			isFriendListOpen:false,
-			isRulesOpen:false,
-		};
-		this.handleAdminClick = this.handleAdminClick.bind(this);
-		this.handleFriendClick = this.handleFriendClick.bind(this);
-		this.handleGameClick = this.handleGameClick.bind(this);
-		this.handleHistoryClick = this.handleHistoryClick.bind(this);
-		this.handleProfileClick = this.handleProfileClick.bind(this);
-		this.handleRulesClick= this.handleRulesClick.bind(this);
-	}
+export default class Menu extends React.Component<{forceHistory:boolean, selector:any, User: User, onChange :(selector:string) => void, socket:Socket}, {img:string|null}>{
+    constructor(props :any) {
+        super(props);
+        this.state = {
+            img: null,
+        }
+    }
 
-	handleFriendClick(){
-		this.setState({isProfileOpen: false, isGameOpen: false, isHistoryOpen: false, isAdminOpen: false , isFriendListOpen:true, isRulesOpen:false}, () => {this.props.onChange(this.state)});
-	}
+    handleFriendClick = () => {
+        this.props.onChange('friends')
+    }
 
-	handleProfileClick(){
-		this.setState({isProfileOpen: true, isGameOpen: false, isHistoryOpen: false, isAdminOpen: false , isFriendListOpen:false, isRulesOpen:false}, () => { this.props.onChange(this.state)});
-	}
+    handleProfileClick = () =>{
+        this.props.onChange('profile')
+    }
 
-	handleGameClick(){
-		this.setState({isProfileOpen: false, isGameOpen: true, isHistoryOpen: false, isAdminOpen: false, isFriendListOpen:false, isRulesOpen:false}, () => {this.props.onChange(this.state)});
-	}
+    handleGameClick = () =>{
+        this.props.onChange('game')
+    }
 
-	handleHistoryClick(){
-		this.setState({isProfileOpen: false, isGameOpen: false, isHistoryOpen: true, isAdminOpen: false, isFriendListOpen:false, isRulesOpen:false}, () => {this.props.onChange(this.state)});
-	}
+    handleHistoryClick = () =>{
+        this.props.onChange('history')
+    }
 
-	handleAdminClick(){
-		this.setState({isProfileOpen: false, isGameOpen: false, isHistoryOpen: false, isAdminOpen: true, isFriendListOpen:false, isRulesOpen:false}, () => {this.props.onChange(this.state)});
-	}
+    handleAdminClick = () =>{
+        this.props.onChange('admin')
+    }
 
-	handleRulesClick(){
-		this.setState({isProfileOpen: false, isGameOpen: false, isHistoryOpen: false, isAdminOpen: false, isFriendListOpen:false, isRulesOpen:true}, () => { this.props.onChange(this.state)});
-	}
+    handleRulesClick = () =>{
+        this.props.onChange('rules')
+    }
 
-	render(){
-		return (
-			<div className="menu">
-				<ColorMenu token={this.props.token}/>
-				<nav id="menuContainer">
-					{
-						!this.state.isProfileOpen &&
-						<div className="menuButton" onClick={this.handleProfileClick}>
-							<img src={this.props.imgsrc}  alt="profileImg" id="iconProfile"/>
-							<h2> PROFILE</h2>
-						</div>
-					}
-					{
-						!this.state.isGameOpen &&
-						<div className="menuButton" onClick={this.handleGameClick}>
-							<FontAwesomeIcon className="icon" icon={solid('hand-fist')}/>
-							<h2> VERSUS</h2>
-						</div>
-					}
-					{
-						!this.state.isHistoryOpen &&
-						<div className="menuButton" onClick={this.handleHistoryClick}>
-							<FontAwesomeIcon className="icon" icon={solid('table-list')}/>
-							<h2> HISTORY</h2>
-						</div>
-					}
-					{
-						!this.state.isAdminOpen &&
-						<div className="menuButton" onClick={this.handleAdminClick}>
-							<FontAwesomeIcon className="icon" icon={solid('wrench')}/>
-							<h2> ADMIN</h2>
-						</div>
-					}
-					{
-						!this.state.isFriendListOpen &&
-						<div className="menuButton" onClick={this.handleFriendClick}>
-							<FontAwesomeIcon className="icon" icon={solid('user-group')}/>
-							<h2> FRIENDS</h2>
-						</div>
-					}
-				</nav>
-				<div id="rules">
-					<h2 onClick={this.handleRulesClick}>Rules</h2>
-				</div>
-			</div>
-		)
-	}
+    render(){
+        return (
+            <div className="menu">
+                <ColorMenu token={this.props.User.token}/>
+                <nav id="menuContainer">
+                    {
+                        this.props.selector !== 'profile' &&
+                        <div className="menuButton" onClick={this.handleProfileClick}>
+                            <img src={this.state.img ? this.state.img : this.props.User.imgUrl}  alt="profileImg" id="iconProfile"/>
+                            <h2> PROFILE</h2>
+                        </div>
+                    }
+                    {
+                        this.props.selector !== 'game' &&
+                        <div className="menuButton" onClick={this.handleGameClick}>
+                            <FontAwesomeIcon className="icon" icon={solid('hand-fist')}/>
+                            <h2> VERSUS</h2>
+                        </div>
+                    }
+                    {
+                        this.props.selector !== 'history' &&
+                        <div className="menuButton" onClick={this.handleHistoryClick}>
+                            <FontAwesomeIcon className="icon" icon={solid('table-list')}/>
+                            <h2> HISTORY</h2>
+                        </div>
+                    }
+                    {
+                        this.props.forceHistory &&
+                        <div className="menuButton" onClick={this.handleHistoryClick}>
+                            <FontAwesomeIcon className="icon" icon={solid('table-list')}/>
+                            <h2> HISTORY</h2>
+                        </div>
+                    }
+                    {
+                        this.props.selector !== 'admin' &&
+                        <div className="menuButton" onClick={this.handleAdminClick}>
+                            <FontAwesomeIcon className="icon" icon={solid('wrench')}/>
+                            <h2> ADMIN</h2>
+                        </div>
+                    }
+                    {
+                        this.props.selector !== 'friends' &&
+                        <div className="menuButton" onClick={this.handleFriendClick}>
+                            <FontAwesomeIcon className="icon" icon={solid('user-group')}/>
+                            <h2> FRIENDS</h2>
+                        </div>
+                    }
+                </nav>
+                <div id="rules">
+                    <h2 onClick={this.handleRulesClick}>Rules</h2>
+                </div>
+            </div>
+        )
+    }
 }

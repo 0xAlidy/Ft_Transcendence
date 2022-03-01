@@ -54,10 +54,6 @@ export default class ColorMenu extends React.Component<{token:string}, {color:Ar
         return style
     }
 
-    async componentDidMount() {
-
-    }
-
     render(){
         return (
             <div id="ColorMenuBox">
