@@ -49,8 +49,15 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			})
 			window.onpopstate = (event:any) => {
 				if(event){
-					if (window.history.state.selector){
-						this.setState({selector: window.history.state.selector})
+					console.log(window.history.state)
+					if (window.history.state)
+					{
+						if (window.history.state.loginHistory)
+							this.setState({loginHistory: window.history.state.loginHistory})
+						else
+							this.setState({loginHistory:null})
+						if (window.history.state.selector)
+							this.setState({selector: window.history.state.selector})
 					}
 					else
 					{
@@ -73,7 +80,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 							window.location.href = "HTTP://" + window.location.host.split(":").at(0) + ":3000";
 						});
 						this.state.socket.on('openHistoryOf', (data:any) => {
-							this.setState({loginHistory: data.login ,selector:'history'},() => window.history.pushState({selector: this.state.selector}, '', "/"))
+							this.setState({loginHistory: data.login, selector:'history'},() => window.history.pushState({selector: this.state.selector, loginHistory:this.state.loginHistory}, '', "/"))
 						});
 						this.state.socket.on('startGame', () => {
 							this.openGame();
@@ -90,9 +97,14 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						this.state.socket.on('inviteDuel', (data:any) => {
 							this.notifyDuel(data.adv, data.room);
 						});
-						this.state.socket.on('refreshUser', async (data:any) => {
-							console.log('refresh')
-							await this.refreshUser()
+						this.state.socket.on('refreshUser', async (data:any) =>
+						{
+							if (this.state.User && this.state.User.login === data.login)
+							{
+								await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUserImage?token="+ this.props.token +'&name='+ this.state.User.login).then(res => {
+									this.setState({ User: res.data })
+								})
+							}
 						});
 					}
 					else
@@ -106,26 +118,22 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 		{
 			var ret: JSX.Element = <InviteNotif user={this.state.User} socket={this.state.socket} login={login}/>
 			var er: JSX.Element = <InviteButton login={login} socket={this.state.socket}/>
-			toast(ret, { className: 'notif', bodyClassName: "bodyNotif", closeButton:er, onClose:this.refreshUser });
+			toast(ret, { className: 'notif', bodyClassName: "bodyNotif", closeButton:er });
+
+			// onCLose refreshUser ?
 			// toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>); PAS TOUCHE JE VAIS OUBLIER SINON
 		}
 	}
+
 	notifyDuel = (login:string, room:string) => {
 		if(this.state.socket && this.state.User)
 		{
 			var ret: JSX.Element = <DuelNotif user={this.state.User} login={login} socket={this.state.socket}/>
 			var er: JSX.Element = <DuelButton room={room} login={login} socket={this.state.socket}/>
-			toast(ret, { className: 'notif', bodyClassName: "bodyNotif", closeButton:er, onClose:this.refreshUser });
+			toast(ret, { className: 'notif', bodyClassName: "bodyNotif", closeButton:er });
+			// onCLose refreshUser ?
 			// toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>); PAS TOUCHE JE VAIS OUBLIER SINON
 		}
-	}
-
-	refreshUser = async () => {
-		await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
-			this.setState({ User: res.data })
-		})
-		if (this.state.socket)
-			this.state.socket.emit("refreshUser")
 	}
 
 	CompleteProfile = (User:User) => {
@@ -148,12 +156,10 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 	}
 
 	menuChange = (selector: string) => {
-		this.setState({selector: selector}, () => {window.history.pushState({selector: this.state.selector}, '', "/")});
+		this.setState({selector: selector, loginHistory:null}, () => {window.history.pushState({selector: this.state.selector}, '', "/")});
 	}
 
 	render(){
-
-
 		return (
 		<>
 			<ToastContainer
@@ -173,10 +179,10 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 					<div className="logo">
 						<Logo className="mainLogo"/>
 					</div>
-					<Menu token={this.props.token} selector={this.state.selector} onChange={this.menuChange} imgsrc={this.state.User.imgUrl}/>
+					<Menu forceHistory={this.state.loginHistory? true: false} User={this.state.User} selector={this.state.selector} onChange={this.menuChange} socket={this.state.socket}/>
 					<Chat socket={this.state.socket} User={this.state.User} />
 					<div className="game" id="game">
-						{this.state.selector === 'profile' && <Profile token={this.props.token} refreshUser={this.refreshUser}/>}
+						{this.state.selector === 'profile' && <Profile token={this.props.token} socket={this.state.socket}/>}
 						{this.state.selector === 'history' && <History login={this.state.loginHistory} User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'admin' && <AdminPanel/>}
 						{this.state.selector === 'game' && <MatchMaking user={this.state.User} socket={this.state.socket}/>}

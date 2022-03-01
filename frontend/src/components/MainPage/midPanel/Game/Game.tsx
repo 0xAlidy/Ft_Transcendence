@@ -24,10 +24,6 @@ export default class IGame extends React.Component<{socket:Socket}, { game:Phase
             autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
             width: 800,
             height: 600,
-            min:{
-                width: 800,
-                height: 600,
-            },
             max:{
               width: 800,
               height: 600,

@@ -30,6 +30,7 @@ export default class FriendPanel extends React.Component<{User:User, socket:Sock
 					title.style.boxShadow= "0px 16px 13px 0px hsl(0deg 0% 7%)";
 			});
 	}
+
 	componentDidUpdate(prevProps:{User:User, socket:Socket}, prevState:any) {
 		if (prevProps.User.friends !== this.props.User.friends) {
 			this.forceUpdate();

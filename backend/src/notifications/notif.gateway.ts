@@ -27,9 +27,15 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 		return ret;
 	}
 
-	refreshFrontBySocket(socket: Socket) {
+	refreshFrontAll(login:string){
+		this.clients.forEach(element => {
+			this.refreshFrontBySocket(element._socket, login);
+		})
+	}
+
+	refreshFrontBySocket(socket:Socket, login:string) {
 		if (socket)
-			socket.emit('refreshUser')
+			socket.emit('refreshUser', {login: login});
 	}
 
 	afterInit(server: any) { }
@@ -38,26 +44,27 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 		// if (this.getUserClassbyName())
 		var user = await this.userService.findOne(client.handshake.query.token as string);
 		await this.userService.setStatus(user.token, 1);
-		if(this.getUserClassbyName(user.login)){
-			// client.emit('caDegage');
-			// client.disconnect(true);
-		}
-		this.clients.forEach(element => {
-			this.refreshFrontBySocket(element._socket);
-		})
+		if (this.getUserClassbyName(user.login)){
+            client.emit('caDegage');
+            client.disconnect(true);
+        }
+		this.refreshFrontAll(user.login);
 		this.clients.set(client.id, new clientClass(client, user.login, user.token));
 	}
 
 	async handleDisconnect(client: Socket) {
 		var user = this.clients.get(client.id)
-		if(user)
+		if (user)
 		{
 			await this.userService.setStatus(user._token, 0);
-			this.clients.forEach(element => {
-				this.refreshFrontBySocket(element._socket);
-			})
+			this.refreshFrontAll(user._login);
 			this.clients.delete(client.id);
 		}
+	}
+
+	@SubscribeMessage('refreshFrontAll')
+	async refreshUser(client: Socket, data:any){
+		this.refreshFrontAll(data.login);
 	}
 
 	@SubscribeMessage('inviteFriend')
@@ -75,8 +82,8 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 				clientToNotify._socket.emit('inviteNotif', {login: user.login});
 		}
 		if (this.getUserClassbyName(other.login))
-			this.refreshFrontBySocket(this.getUserClassbyName(other.login)._socket);
-		this.refreshFrontBySocket(client);
+			this.refreshFrontBySocket(this.getUserClassbyName(other.login)._socket, other.login);
+		this.refreshFrontBySocket(client, other.login);
 	}
 
 	@SubscribeMessage('acceptFriend')
@@ -85,8 +92,8 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 		await this.userService.addFriend(user._token, data.login)
 		user._socket.emit('closeInviteFriend', {login: data.login})
 		if (this.getUserClassbyName(data.login))
-			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
-		this.refreshFrontBySocket(client);
+			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, data.login);
+		this.refreshFrontBySocket(client, data.login);
 	}
 
 	@SubscribeMessage('removeFriend')
@@ -94,8 +101,8 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 		var user = this.clients.get(client.id);
 		await this.userService.removeFriend(user._token, data.login)
 		if (this.getUserClassbyName(data.login))
-			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
-		this.refreshFrontBySocket(client);
+			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, data.login);
+		this.refreshFrontBySocket(client, data.login);
 	}
 
 	@SubscribeMessage('denyFriend')
@@ -103,8 +110,8 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 		var user = this.clients.get(client.id);
 		await this.userService.removeWaitingFriend(user._token, data.login)
 		if (this.getUserClassbyName(data.login))
-			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
-		this.refreshFrontBySocket(client);
+			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, data.login);
+		this.refreshFrontBySocket(client, data.login);
 	}
 
 	@SubscribeMessage('blockUser')
@@ -114,8 +121,8 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 		var user = this.clients.get(client.id);
 		await this.userService.addBlocked(user._token, data.login)
 		if (this.getUserClassbyName(data.login))
-			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
-		this.refreshFrontBySocket(client);
+			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, data.login);
+		this.refreshFrontBySocket(client, data.login);
 	}
 
 	@SubscribeMessage('unblockUser')
@@ -123,17 +130,18 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 		var user = this.clients.get(client.id);
 		await this.userService.removeBlocked(user._token, data.login)
 		if (this.getUserClassbyName(data.login))
-			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket);
-		this.refreshFrontBySocket(client);
+			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, data.login);
+		this.refreshFrontBySocket(client, data.login);
 	}
+
 	@SubscribeMessage('askHistoryOf')
 	async askHistoryOf(client: Socket, data:any){
 		client.emit('menuChange', {selector:'history'})
 		client.emit('openHistoryOf', data)
 	}
+
 	@SubscribeMessage('askMenuChange')
 	async askMenuChange(client: Socket, data:any){
 		client.emit('menuChange', data)
 	}
-
 }

@@ -17,16 +17,16 @@ export class MatchsService
 		this.MatchRepository.save(match);
 	}
 
-	async MatchsByName(token:string)
+	async MatchsByName(token:string, login:string)
 	{
-		var user = await this.usersService.findOne(token);
-		if (user)
+		var me = await this.usersService.findOne(token);
+		if (me)
 		{
 			var array = await this.MatchRepository.find();
 			var askerMatchs:Match[] = [];
 			var ret:string[] = [];
 			array.forEach(element => {
-				if (element.WinnerName === user.login || element.LooserName === user.login)
+				if (element.WinnerName === login || element.LooserName === login)
 					askerMatchs.push(element);
 			});
 			askerMatchs.forEach(element => {

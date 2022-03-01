@@ -4,6 +4,9 @@ import '../../../../../styles/MainPage/midPanel/History/History.css'
 import Nickname from "../../../../utility/utility";
 import { Socket } from "socket.io-client";
 import { User } from "../../../../../interfaces";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// @ts-ignore
+import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
 
 export default class ItemMatch extends React.Component<{match:string, name:any, socket:Socket, user:User},{isArcade:boolean,WinnerName:any, WinnerScore:any, LooserName:any, LooserScore:any}>{
@@ -34,7 +37,14 @@ export default class ItemMatch extends React.Component<{match:string, name:any, 
 							{this.state.WinnerScore}
 						</div>
 					</div>
-					<h2 className="vs">VS</h2>
+					<div className="vs">
+					{
+						this.state.isArcade ?
+						<FontAwesomeIcon className="iconBattle" icon={solid('hat-wizard')}/>
+						:
+						<FontAwesomeIcon className="iconBattle" icon={solid('hand-fist')}/>	
+					}
+					</div>
 					<div className="item-match-section">
 						<div className="score">
 							{this.state.LooserScore}
@@ -56,7 +66,14 @@ export default class ItemMatch extends React.Component<{match:string, name:any, 
 							{this.state.LooserScore}
 						</div>
 					</div>
-					<h2 className="vs">VS</h2>
+					<div className="vs">
+					{
+						this.state.isArcade ?
+						<FontAwesomeIcon className="iconBattle" icon={solid('hat-wizard')}/>
+						:
+						<FontAwesomeIcon className="iconBattle" icon={solid('hand-fist')}/>	
+					}
+					</div>
 					<div className="item-match-section">
 						<div className="score">
 							{this.state.WinnerScore}

@@ -8,8 +8,7 @@ export class AuthService {
     async validateUser(token :string, login:string): Promise<any>
     {
         let user = await this.usersService.findOneByLogin(login);
-        console.log("STATUS" + user.status)
-        if (!user) {
+		if (!user) {
             user = await this.usersService.create(login, token);
         }
         else{
