@@ -71,45 +71,72 @@ export class ChatGateway implements OnGatewayInit {
   @SubscribeMessage('joinRoom')
   async joinRoom(client:Socket, data:any){
     var bool = await this.chatService.isAuthorized(this.clients.get(client.id)._token, data.room)
-    console.log(bool)
     var user = this.clients.get(client.id)._pseudo
     if(bool){
-      var msg = await this.chatService.getMessagesByRoom(data.room);
-      client.emit('LoadRoom', {room: data.room, msg:msg })
-      client.leave(this.clients.get(client.id)._room)
-      client.join(data.room)
-      this.chatService.addUser(user, data.room)
-      this.clients.get(client.id)._room = data.room
+		if (await this.chatService.isBanned(user,data.room) == false){
+      		var msg = await this.chatService.getMessagesByRoom(data.room);
+      		client.emit('LoadRoom', {room: data.room, msg:msg })
+      		client.leave(this.clients.get(client.id)._room)
+      		client.join(data.room)
+     		this.chatService.addUser(user, data.room)
+			  this.clients.get(client.id)._room = data.room
+		}
+		else{
+			var msg = await this.chatService.getMessagesByRoom("general")
+			client.emit('LoadRoom', {room: "general", msg:msg })
+			client.emit("banned");
+		}
     }
-    else
+	else
       client.emit('needPassword', {room:data.room})
   }
+
   @SubscribeMessage('sendMessage')
   async handleMessage(client: Socket, Message: { sender: string, dest: string, message: string, date: string}) {
-	if (Message.message.startsWith('/priv')){
-		Message.message = await this.chatService.addPriv(Message.message, Message.sender, this.clients, Message.dest);
-		if (Message.message.startsWith("new")){
-			console.log("update rooms")
-			var rooms = await this.chatService.getAllRoomName();
-			this.server.emit('updateRooms',{rooms: rooms})
+
+	if(await this.chatService.isBanned(Message.sender,Message.dest) == true)
+		this.server.emit("banned")
+	else{
+		if (Message.message.startsWith('/priv')){
+			Message.message = await this.chatService.addPriv(Message.message, Message.sender, this.clients, Message.dest);
+			if (Message.message.startsWith("new")){
+				console.log("update rooms")
+				var rooms = await this.chatService.getAllRoomName();
+				this.server.emit('updateRooms',{rooms: rooms})
+			}
+			Message.sender = "system";
+			client.emit('ReceiveMessage', Message)
 		}
-		Message.sender = "system";
-		client.emit('ReceiveMessage', Message)
+		else if (Message.message.startsWith('/delete')) {
+			console.log("/delete")
+			if(await this.chatService.isAdmin(Message.sender,Message.dest) == true)
+				var ret = await this.chatService.deleteRoom(Message.dest)
+			var rooms = await this.chatService.getAllRoomName();
+			this.server.to(Message.dest).emit('deleted')
+			this.server.emit('updateRooms', {rooms:rooms});
+			console.log(ret)
+			return ret;
+		}
+    	else if (Message.message.startsWith('/') ){
+    	    this.chatService.systemMsg(Message, this.clients);
+			Message.sender = "system";
+    	    if (Message.message.startsWith('/priv')){
+				var rooms = await this.chatService.getAllRoomName(); //todo /priv undifined
+				if (rooms)
+    	        	this.server.emit('updateRooms',{rooms: rooms})
+    	    }
+    	    client.emit('ReceiveMessage', Message)
+		}
+    	else{
+			console.log(await this.chatService.canTalk(Message.sender, Message.dest))
+			if (await this.chatService.canTalk(Message.sender, Message.dest) == true){
+				this.chatService.addMessage(Message)
+				this.server.to(Message.dest).emit('ReceiveMessage', Message)
+			}
+			else 
+				this.server.to(Message.dest).emit('Muted', Message)
+		}
 	}
-    else if (Message.message.startsWith('/')){
-        this.chatService.systemMsg(Message, this.clients);
-        Message.sender = "system";
-        if (Message.message.startsWith('/priv')){
-          var rooms = await this.chatService.getAllRoomName(); //todo /priv undifined
-          if (rooms)
-            this.server.emit('updateRooms',{rooms: rooms})
-        }
-        client.emit('ReceiveMessage', Message)
-      }
-      else{
-        this.chatService.addMessage(Message);
-        this.server.to(Message.dest).emit('ReceiveMessage', Message)
-      }
   }
 }
 

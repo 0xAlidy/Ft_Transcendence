@@ -8,6 +8,9 @@ import { createDecipheriv } from 'crypto';
 import { Message } from '../message/message.entity';
 import { clientClass } from "src/chat/class/client.class";
 import { thisExpression } from "@babel/types";
+import { Msg } from "./Msg.dto";
+import {Mute} from "./Mute.dto"
+import { Room } from "src/chat/class/Room.class";
 
  @Injectable()
  export class ChatRoomsService
@@ -140,8 +143,8 @@ import { thisExpression } from "@babel/types";
 
 	async isBanned(name:string, dest:string){
 		var room = await this.findRoomByName(dest)
-		for(var i = 0; i < room.blockedUsers.length; i++)
-		  if (room.blockedUsers[i] === name)
+		for(var i = 0; i < room.banUsers.length; i++)
+		  if (room.banUsers[i] == name)
 			return true
 		return false
 	}
@@ -149,7 +152,7 @@ import { thisExpression } from "@babel/types";
 	async isAdmin(name:string,dest:string){
 		var room = await this.findRoomByName(dest)
 		for(var i = 0; i < room.adminList.length; i++)
-		  if (room.adminList[i] === name)
+		  if (room.adminList[i] == name)
 			return true
 		return false
 	}
@@ -158,7 +161,7 @@ import { thisExpression } from "@babel/types";
 		var ret = null;
 		clientList.forEach((item:any) => {
 			if (item._pseudo === name){
-				ret = item;//pk t null
+				ret = item;
 			}
 		});
 		console.log(ret)
@@ -187,9 +190,14 @@ import { thisExpression } from "@babel/types";
 		var room = await this.findRoomByName(dest)
 
 		var toBan = arg.split(' ').at(1)
-		console.log(toBan)
-		if (await this.findUser(toBan, dest) === true && this.checkDoublon(toBan, room.blockedUsers) === false){
-			room.blockedUsers.push(toBan); //ajoute dans la liste des personne banni
+		console.log("to ban = " + toBan)
+		if (await this.findUser(toBan, dest) === true && this.checkDoublon(toBan, room.banUsers) === false){
+			room.banUsers.push(toBan); //ajoute dans la liste des personne banni
+
+			var index = room.users.indexOf(toBan);
+			room.users.splice(index, 1)
+
+
 			this.ChatRoomsRepository.save(room)
 			var clientToBan = this.findClientByName(clientList, toBan);
 			if (clientToBan){
@@ -204,13 +212,27 @@ import { thisExpression } from "@babel/types";
 		}
 	}
 
+	async unbanUsers(arg:string, dest:string,clientList:any){
+		var toBan = arg.split(' ').at(1)
+		var room = await this.findRoomByName(dest)
+		var index = room.banUsers.indexOf(toBan)
+		room.banUsers.splice(index, 1)
+		this.ChatRoomsRepository.save(room)
+		var newRoom = await this.getAllRoomName()
+		var client = await this.findClientByName(clientList, toBan)
+		client._socket.emit('updateRoom',{rooms:newRoom})
+		//this.server emit all 
+		return "user " + toBan + "is unban"
+	}
+
+
 	async addAdmin(toAdd:string, dest:string,clientList:any){
 		var room = await this.findRoomByName(dest)
 		var name = toAdd.split(' ').at(1)
 		if (await this.findUser(name, dest) === true && this.checkDoublon(name, room.adminList) === false){
 			room.adminList.push(name)
 			this.ChatRoomsRepository.save(room)
-			var clientToAdd:clientClass = this.findClientByName(clientList, name);
+			var clientToAdd:clientClass = this.findClientByName(clientList, name)
 			if (clientToAdd){
 				clientToAdd._socket.emit('promoteAdmin')
 			}
@@ -249,6 +271,68 @@ import { thisExpression } from "@babel/types";
 	}
 
 
+	async deleteRoom(toDel:string){
+		var room = await this.findRoomByName(toDel)
+		await this.ChatRoomsRepository.remove(room)
+		return "room " + toDel + " has been deleted"
+	}
+
+	addMinutes(date:Date, minutes) {
+		return new Date(date).getTime() + minutes * 60000;
+	}
+
+
+	isMuted(room:ChatRooms, name:string){
+		var ret = -1;
+		room.muteList.forEach((element,index) => {
+			if (element.name === name)
+				ret = index; 
+		});
+		return ret;
+	}
+
+	async canTalk(name:string, tocheck:string)
+	{
+		var room = await this.findRoomByName(tocheck)
+		var indexMuted = this.isMuted(room,name)
+		if (indexMuted > 0){
+			var date = new Date();
+			//compare time
+			var time = new Date(room.muteList[indexMuted].endTime)
+			console.log(date.getTime() - time.getTime())
+			var compa = date.getTime() - time.getTime()
+			if (compa < 0){ //still muted
+				return false;
+			}
+			else
+				return true;
+		}
+		else
+			return true;
+	}
+
+
+	async muteUser(msg:Msg){
+		var toMute = msg.message.split(' ').at(1);
+		var time = +msg.message.split(' ').at(2);
+		var room = await this.findRoomByName(msg.dest)
+
+		//already muted 
+		if (this.isMuted(room,toMute) < 0){
+			// console.log(new Date(msg.date).toTimeString().slice(0,5))
+			// console.log(t1.toTimeString().slice(0,5))
+			if (time && time > 0 && time < 61){
+				var t1 = new  Date(this.addMinutes(msg.date, time))
+				var newMute:Mute = {name:toMute, endTime:t1}
+				room.muteList.push(newMute)
+				this.ChatRoomsRepository.save(room)
+			}
+			else
+				console.log('bad time')
+		}
+		else
+			console.log('already muted')
+	}
 
 	async systemMsg(data:any, clientList:any){
 		var help = "/help will help you to know the command you can use from the library for multiple line and other shit like this for long text so cute "
@@ -256,10 +340,25 @@ import { thisExpression } from "@babel/types";
 		if (data.message === "/help")
 			data.message = help
 		else if (data.message.startsWith("/ban")){
-			if(await this.isAdmin(data.sender,data.dest) === true)
-				data.message = await this.banUser(data.message, data.dest, clientList)
+			if(await this.isAdmin(data.sender,data.dest) == true){
+				var ret = await this.banUser(data.message, data.dest, clientList)
+				console.log(ret)
+			}
 			else 
-				data.message = "echec t es pas admin fdp"
+				var ret = "echec t es pas admin fdp"
+			return ret;
+		}
+		else if (data.message.startsWith('/mute')){
+			if(await this.isAdmin(data.sender,data.dest) == true){
+				this.muteUser(data)
+			}
+		}
+		else if(data.message.startsWith("/unban")){
+			ret = "null"
+			if(await this.isAdmin(data.sender,data.dest) == true)
+				var ret = await this.unbanUsers(data.message, data.dest, clientList)
+			console.log(ret)
+			return ret;
 		}
 		else if (data.message.startsWith('/setadmin')){
 			if( await this.isAdmin(data.sender, data.dest) === true){
@@ -270,14 +369,7 @@ import { thisExpression } from "@babel/types";
 			else 
 				return "echec t es pas admin fdp"
 		}
-		// else if (data.message.startsWith('/priv')){
-		// 	return await this.addPriv(data.message, data.sender, clientList)
-		// }
-		// else if (data.message.beginWidth("/pass")){
-		// 	// this.changePass(data.message, data.dest)
-		// 	data.message = pass;
-		// }
 		else 
 			return unknow
-	}
+	};
 }

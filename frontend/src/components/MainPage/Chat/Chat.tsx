@@ -4,14 +4,16 @@
 done - set admin													//	/admin "pseudo"
 - ban 														//	/ban "pseudo"
 - unban 														//	/unban "pseudo"
-- mute 														//	/mute "pseudo" time(minutes)
-- private room
 
+
+-modifier mdp ou retirer
+- mute 														//	/mute "pseudo" time(minutes)
+-message bizare todo{}
 
 
 - help = montre les cmd possible 							//  /help
 done - message tu n es pas admin vas te faire encule tu t es tromper encule tu t es tromper tu n es bon qu a boycoter encule tu t es tromper
-bug sysmessage 
+bug sysmessae
 
 */
 
@@ -28,8 +30,8 @@ export class Message{
 	message: string;
 	dest: string;     
 	sender: string;
-	date: string;
-	constructor(Cont:string , dest:string, sender: string, date:string){
+	date: Date;
+	constructor(Cont:string , dest:string, sender: string, date:Date){
 		this.message = Cont;
 		this.sender = sender;
 		this.dest = dest;
@@ -39,7 +41,6 @@ export class Message{
 		this.message = "";
 		this.sender = "";
 		this.dest = "";
-		this.date = "";
 	}
 }
 
@@ -48,7 +49,7 @@ export interface Msg{
 	sender: string;
 	dest:string;
 	message:string;
-	date:string;
+	date:Date;
 }
 export interface opt{
 	value:string;
@@ -95,23 +96,39 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 		this.props.socket.emit('getRoomList')
 		this.props.socket.on('LoadRoom',  (data:any) => {
 			this.setState({messages: data.msg, activeRoom: data.room})
-        });
-		this.props.socket.on('banned', () => {
-			var date = new Date().toTimeString().slice(0,5)
-			var banMsg:Msg = { id: 0, sender:"system", dest:this.state.activeRoom, message:"you have been kicked", date:date}
-			this.setState({messages: this.state.messages.concat([banMsg])})
 			if (this.mRef)
 				this.mRef.scrollTop = this.mRef.scrollHeight;
-		})
+        });
+		this.props.socket.on('banned', () => {
+			var date = new Date()//.toTimeString().slice(0,5)
+			var banMsg:Msg = { id: 0, sender:"system", dest:"general", message:"you can t join this room, you are now logged to general", date:date}
+			this.setState({messages: this.state.messages.concat([banMsg])})//todo message dans general
+			if (this.mRef)
+				this.mRef.scrollTop = this.mRef.scrollHeight;
+		});
+		this.props.socket.on('Muted', () =>{
+			var date = new Date()//.toTimeString().slice(0,5)
+			var banMsg:Msg = { id: 0, sender:"system", dest:"general", message:"please wait you are muted", date:date}
+			this.setState({messages: this.state.messages.concat([banMsg])})//todo message dans general
+			if (this.mRef)
+				this.mRef.scrollTop = this.mRef.scrollHeight;
+		});
+		this.props.socket.on('deleted',  (data:any) => {
+			this.props.socket.emit("joinRoom",{room:"general"})
+			var banMsg:Msg = { id: 0, sender:"system", dest:"general", message:"delete room, you are now logged to general", date:new Date()}
+			this.setState({messages: this.state.messages.concat([banMsg])})//todo message dans general
+        });
 		this.props.socket.on('LoadRoomPass',  (data:any) => {
 			this.togglePopupPass()
 			this.setState({messages: data.msg, activeRoom: data.room})
         });
 		this.props.socket.on('ReceiveMessage',  (data:any) => {
 			console.log(data);
-			this.setState({messages: this.state.messages.concat([data])})
-			if (this.mRef)
-				this.mRef.scrollTop = this.mRef.scrollHeight;
+			if (data.dest == this.state.activeRoom){
+				this.setState({messages: this.state.messages.concat([data])})
+				if (this.mRef)
+					this.mRef.scrollTop = this.mRef.scrollHeight;
+			}
         });
 		this.props.socket.on('updateRooms', (data:any) => {
 			var arr:opt[] = [];
@@ -173,10 +190,11 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 	}
 
 	sendMessage = () => {
-			var date = new Date().toTimeString().slice(0,5)
+			var date = new Date()//.toTimeString().slice(0,5)
 			if (this.inputRef)
 				if (this.state.activeRoom && this.inputRef.value !== "") {
 					var toSend = {sender:this.props.User.login, dest:this.state.activeRoom, message:this.inputRef.value, date:date};
+					console.log(toSend)
 					this.props.socket.emit('sendMessage', toSend);
 					this.inputRef.value = "";
 			}
