@@ -1,7 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Msg } from './Msg.dto';
 
-
+interface mute{
+	name:string;
+	time:string;
+}
 
 @Entity()
 export class ChatRooms {
@@ -23,8 +26,11 @@ export class ChatRooms {
   @Column({default: false})
   IsPrivate:boolean;
 
+  @Column('jsonb',{default:[]})
+  muteList:mute[];
+
   @Column("text",{ array:true, default: []})
-  blockedUsers: string[];
+  banUsers: string[];
 
   @Column("text",{ array:true, default: []})
   users: string[];
@@ -43,7 +49,7 @@ export class ChatRooms {
       this.owner = "";
       this.name = "-" + privUser[0] + " /" + privUser[1];
       this.IsPassword = false;
-      this.password = "";
+	  this.password = "";
       this.users = privUser
       this.adminList = privUser;
     }

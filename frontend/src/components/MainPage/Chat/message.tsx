@@ -16,14 +16,16 @@ export default class MessageItem extends React.Component <{msg:Msg, User:user,ac
         }
 		if (this.props.msg.sender === "system")
 			this.system = true;
-	};
-
-	render(){
-		return (
+		};
+		
+		render(){
+			// var date = this.props.msg.date.toTimeString().slice(0, 5)
+			
+			return (
             <div className={this.state.classItem}>
 				<div className="bubble">
                 	{this.props.msg.message}
-					{ this.system === false && <p>{this.props.msg.date}</p>}
+					{this.system === false && <p>{this.props.msg.date}</p>}
 				</div>
                 { this.system === false && <div className="imgBlock">
                    <ProfileShortCut pseudo={this.props.msg.sender} user={this.props.User} socket={this.props.socket} />
