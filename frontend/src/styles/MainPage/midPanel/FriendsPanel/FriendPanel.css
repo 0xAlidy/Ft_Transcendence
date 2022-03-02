@@ -60,13 +60,12 @@
 .friendBox{
 	display: flex;
 	width: 100%;
-	justify-content: space-around;
+	justify-content: space-between;
 	align-items: center;
 	background-color: var(--black-color);
-	border: solid  2px;
 	margin-top: 20px;
 	box-shadow: inset 0px 0px 17px 0px;
-	padding: 10px 0px;
+	padding: 10px 20px;
 	border-radius: 10px;
 }
 
@@ -80,4 +79,28 @@
 	height: 20px;
 	width: 20px;
 	border-radius: 50%;
+}
+
+/* Block Item */
+
+.blockedBox{
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	padding: 10px 20px;
+	align-items: center;
+	background-color: var(--black-color);
+	margin-top: 20px;
+	box-shadow: inset 0px 0px 17px 0px;
+	border-radius: 10px;
+}
+
+.blockedImg{
+	width: 50px;
+	border-radius: 50%;
+}
+
+.blockedBox h3 {
+	margin: 0;
+	color: var(--white-color);
 }

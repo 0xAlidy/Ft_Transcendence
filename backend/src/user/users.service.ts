@@ -141,9 +141,10 @@ export class UsersService {
     var verif = await this.findOne(token);
     if (verif){
       var user = await this.findOneByLogin(login);
-      let isFriend = user.friends.indexOf(verif.login) !== -1 ? 1 : 0; // 0 = none, 1 = friend, 2 = waiting, 3 = blockMe
+      let isFriend = user.friends.indexOf(verif.login) !== -1 ? 1 : 0; // 0 = none, 1 = friend, 2 = waiting , 3 = blockMe, 4 = blocked
       isFriend = user.waitingFriends.indexOf(verif.login) !== -1 ? 2 : isFriend;
-      //isFriend = user.blockedUsers.indexOf(verif.login) !== -1 ? 3 : isFriend;
+      isFriend = user.blockedUsers.indexOf(verif.login) !== -1 ? 3 : isFriend;
+      isFriend = verif.blockedUsers.indexOf(user.login) !== -1 ? 4 : isFriend;
       if (user)
         return({
           isFriend: isFriend,

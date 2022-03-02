@@ -101,7 +101,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						{
 							if (this.state.User && this.state.User.login === data.login)
 							{
-								await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUserImage?token="+ this.props.token +'&name='+ this.state.User.login).then(res => {
+								await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
 									this.setState({ User: res.data })
 								})
 							}

@@ -43,7 +43,14 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 
 	blockUser = () => {
 		this.props.socket.emit('blockUser', { login:this.props.login })
+		this.close();
 	}
+
+	inviteDuel = (arcade:boolean) =>{
+        this.props.socket.emit('createPrivateSession', {login: this.props.login, arcade:arcade})
+		this.close();
+    }
+
 	//this.props.socket.emit('createPrivateSession', {login: login, arcade:false})
 
 
@@ -53,7 +60,7 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 		{
 			let page = document.getElementById("MainPage");
 			if (page)
-				page.classList.toggle("blur");
+				page.classList.add("blur");
 		}
 	}
 
@@ -61,7 +68,7 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 		this.setState({ opened:false });
 		let page = document.getElementById("MainPage");
 		if (page)
-			page.classList.toggle("blur");
+			page.classList.remove("blur");
 	}
 
 	setColorStatus = (status:number): string => {
@@ -72,9 +79,10 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 		return "var(--lose-color)";
 	}
 	
-	handleHistory = () =>{
+	handleHistory = () => {
 		if (this.state.User)
 			this.props.socket.emit('askHistoryOf', {login: this.state.User.login})
+		this.close();
 	}
 
 	render(){
@@ -87,8 +95,9 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 						<div id='profilSection'>
 							<span>
 								<img alt="UserImage" src={this.state.User.imgUrl} style={{borderRadius:"50%"}}/>
-								{this.state.User.isFriend === 1 &&
-								<div style={{backgroundColor:this.setColorStatus(this.state.User.status)}} className="status"/>
+								{	
+									this.state.User.isFriend === 1 &&
+									<div style={{backgroundColor:this.setColorStatus(this.state.User.status)}} className="status"/>
 								}
 							</span>
 							<h2 className="popupName">{this.state.User.nickname}</h2>
@@ -98,13 +107,16 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 							<WinRate win={this.state.User.numberOfWin} loose={this.state.User.numberOfLose}/>
 						</div>
 						<div id='buttonSection'>
-							<FontAwesomeIcon className="chooseButton" icon={solid('message')}/>
+							{
+								this.state.User.isFriend < 3 &&
+								<FontAwesomeIcon className="chooseButton" icon={solid('message')}/>
+							}
 							<FontAwesomeIcon className="chooseButton" onClick={this.handleHistory} icon={solid('table-list')}/>
 							{
 								this.state.User.isFriend === 1 && this.state.User.status === 1 &&
 								<>
-									<FontAwesomeIcon className="chooseButton" icon={solid('hand-fist')}/>
-									<FontAwesomeIcon className="chooseButton" icon={solid('hat-wizard')}/>
+									<FontAwesomeIcon className="chooseButton" onClick={() => this.inviteDuel(false)} icon={solid('hand-fist')}/>
+									<FontAwesomeIcon className="chooseButton"  onClick={() => this.inviteDuel(true)} icon={solid('hat-wizard')}/>
 								</>
 							}
 							{
@@ -113,13 +125,16 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 							}
 							{
 								this.state.User.isFriend === 1 &&
-								<FontAwesomeIcon className="chooseButton" onClick={this.removeFriend} icon={solid('user-xmark')}/>
+								<FontAwesomeIcon className="chooseButton" onClick={this.removeFriend} icon={solid('user-minus')}/>
 							}
 							{
 								this.state.User.isFriend === 2 &&
-								<FontAwesomeIcon className="chooseButton" icon={solid('clock')}/>
+								<FontAwesomeIcon className="chooseButton" icon={solid('user-clock')}/>
 							}
-							<FontAwesomeIcon className="chooseButton" onClick={this.blockUser} icon={solid('ban')}/>
+							{
+								this.state.User.isFriend !== 4 &&
+								<FontAwesomeIcon className="chooseButton" onClick={this.blockUser} icon={solid('user-lock')}/>
+							}
 						</div>
 					</div>
 				}
