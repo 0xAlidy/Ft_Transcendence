@@ -20,6 +20,13 @@ export default class FriendItem extends React.Component<{login:string, User:User
     async componentDidMount(){
         await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
 		.then(res => this.setState({ UserFriend: res.data }))
+        this.props.socket.on('refreshUser', async (data:any) => {
+			if (this.props.login === data.login)
+			{
+				await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
+				.then(res => this.setState({ UserFriend: res.data }))
+			}
+		});
     }
 
     blockUser = () =>{
@@ -37,20 +44,21 @@ export default class FriendItem extends React.Component<{login:string, User:User
     mp = () =>{
 
     }
+
     history = () =>{
+		this.props.socket.emit('askHistoryOf', {login: this.props.login})
+    }
 
+    inviteDuel = (arcade:boolean) =>{
+        this.props.socket.emit('createPrivateSession', {login: this.props.login, arcade:arcade})
     }
-    inviteDuel = (login:string) =>{
-        this.props.socket.emit('createPrivateSession', {login: login, arcade:false})
-    }
-    inviteDuelArcade = (login:string) =>{
-        this.props.socket.emit('createPrivateSession', {login: login, arcade:true})
-    }
+
     removeFriend = () =>{
-
+        this.props.socket.emit('removeFriend', { login:this.props.login })
     }
-    ban = () =>{
 
+    ban = () =>{
+        this.props.socket.emit('blockUser', { login:this.props.login })
     }
 
     render(){
@@ -60,14 +68,14 @@ export default class FriendItem extends React.Component<{login:string, User:User
                 this.state.UserFriend &&
                 <div className="friendBox">
                     <ProfileShortCut login={this.props.login} socket={this.props.socket} User={this.props.User}/>
-                    <div style={{backgroundColor:this.setColorStatus(this.props.User.status)}} className="statusFriendItem"/>
+                    <div style={{backgroundColor:this.setColorStatus(this.state.UserFriend.status)}} className="statusFriendItem"/>
                     <h3>{this.state.UserFriend.nickname}</h3>
                     <FontAwesomeIcon className="chooseButton" onClick={this.mp} icon={solid('message')}/>
                     <FontAwesomeIcon className="chooseButton" onClick={this.history} icon={solid('table-list')}/>
-                    <FontAwesomeIcon className="chooseButton" onClick={() => this.inviteDuel(this.state.UserFriend.login)} icon={solid('hand-fist')}/>
-                    <FontAwesomeIcon className="chooseButton" onClick={() => this.inviteDuelArcade(this.state.UserFriend.login)} icon={solid('hat-wizard')}/>
-                    <FontAwesomeIcon className="chooseButton" onClick={this.removeFriend} icon={solid('user-xmark')}/>
-                    <FontAwesomeIcon className="chooseButton" onClick={this.ban} icon={solid('ban')}/>
+                    <FontAwesomeIcon className="chooseButton" onClick={() => this.inviteDuel(false)} icon={solid('hand-fist')}/>
+                    <FontAwesomeIcon className="chooseButton" onClick={() => this.inviteDuel(true)} icon={solid('hat-wizard')}/>
+                    <FontAwesomeIcon className="chooseButton" onClick={this.removeFriend} icon={solid('user-minus')}/>
+                    <FontAwesomeIcon className="chooseButton" onClick={this.ban} icon={solid('user-lock')}/>
                 </div>
             }
             </>

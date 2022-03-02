@@ -39,7 +39,7 @@ export default class Menu extends React.Component<{forceHistory:boolean, selecto
     handleRulesClick = () =>{
         this.props.onChange('rules')
     }
-
+     // src ={this.state.img ? this.state.img : this.props.User.imgUrl}
     render(){
         return (
             <div className="menu">
@@ -48,7 +48,7 @@ export default class Menu extends React.Component<{forceHistory:boolean, selecto
                     {
                         this.props.selector !== 'profile' &&
                         <div className="menuButton" onClick={this.handleProfileClick}>
-                            <img src={this.state.img ? this.state.img : this.props.User.imgUrl}  alt="profileImg" id="iconProfile"/>
+                            <img src={this.props.User.imgUrl}  alt="profileImg" id="iconProfile"/>
                             <h2> PROFILE</h2>
                         </div>
                     }

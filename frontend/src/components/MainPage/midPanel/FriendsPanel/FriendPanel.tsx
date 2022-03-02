@@ -3,15 +3,15 @@ import '../../../../styles/MainPage/midPanel/midPanel.css'
 import '../../../../styles/MainPage/midPanel/FriendsPanel/FriendPanel.css'
 import { User } from '../../../../interfaces'
 import FriendItem from './FriendItem'
+import BlockedItem from './BlockedItem'
 import { Socket } from 'socket.io-client'
 
-export default class FriendPanel extends React.Component<{User:User, socket:Socket},{select:number, status:number, User:any}>{
+export default class FriendPanel extends React.Component<{User:User, socket:Socket},{select:number, status:number}>{
 	constructor(props:any){
 		super(props)
 		this.state = {
 			select: 0,
 			status: 0,
-			User:null
 		}
 	}
 
@@ -31,12 +31,7 @@ export default class FriendPanel extends React.Component<{User:User, socket:Sock
 			});
 	}
 
-	componentDidUpdate(prevProps:{User:User, socket:Socket}, prevState:any) {
-		if (prevProps.User.friends !== this.props.User.friends) {
-			this.forceUpdate();
-		}
-	}
-
+	
 	OpenBlocked = () =>{
 		this.setState({ select:1 });
 		let blocked = document.querySelector(".blocked");
@@ -58,24 +53,7 @@ export default class FriendPanel extends React.Component<{User:User, socket:Sock
 			friends.classList.add('active');
 		}
 	}
-	mp = () =>{
 
-	}
-	history = () =>{
-
-	}
-	inviteDuel = (login:string) =>{
-		this.props.socket.emit('createPrivateSession', {login: login, arcade:false})
-	}
-	inviteDuelArcade = (login:string) =>{
-		this.props.socket.emit('createPrivateSession', {login: login, arcade:true})
-	}
-	removeFriend = () =>{
-
-	}
-	ban = () =>{
-
-	}
 	render(){
 		return (
 			<div className="midPanel">
@@ -87,12 +65,12 @@ export default class FriendPanel extends React.Component<{User:User, socket:Sock
 					<span id="shadow"></span>
 					<div className="list">
 						{this.state.select === 0 ?
-							this.props.User.friends.map((login:string, index:number) => {
-								return (<FriendItem key={'friends' + index} login={login} socket={this.props.socket} User={this.props.User}/>)		
+							this.props.User.friends.map((login:string) => {
+								return (<FriendItem key={'friends' + login} login={login} socket={this.props.socket} User={this.props.User}/>)		
 							})
 							:
-							this.props.User.blockedUsers.map((login:string, index:number) => {
-								//return (<blockedItem key={'friends' + index} login={login} socket={this.props.socket} User={this.props.User}/>)		
+							this.props.User.blockedUsers.map((login:string) => {
+								return (<BlockedItem key={'blocked' + login} login={login} socket={this.props.socket} User={this.props.User}/>)		
 							})
 						}
 					</div>
