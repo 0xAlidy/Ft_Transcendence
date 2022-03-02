@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { UsersService } from 'src/user/users.service';
+import { Injectable } from "@nestjs/common";
+import { UsersService } from "src/user/users.service";
 
 @Injectable()
 export class AuthService {
@@ -14,8 +14,8 @@ export class AuthService {
         else{
             if (user.status !== 0)
                 return null;
-			if (user.token !== token)
-            	user = await this.usersService.changetoken(login, token);
+            if (user.token !== token)
+                user = await this.usersService.changetoken(login, token);
         }
         const { ...result } = user;
         return result;

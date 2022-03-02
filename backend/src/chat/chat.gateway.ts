@@ -5,6 +5,7 @@ import { clientClass } from "./class/client.class";
 import { ChatRoomsService } from 'src/ChatRooms/ChatRooms.service';
 import { Client } from 'socket.io/dist/client';
 import { UsersService } from 'src/user/users.service';
+import { Msg } from 'src/ChatRooms/Msg.dto';
 
 @WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit {
@@ -46,11 +47,14 @@ export class ChatGateway implements OnGatewayInit {
   @SubscribeMessage('password')
   async password(client:Socket, data:any){
     var tocheck = await this.chatService.findRoomByName(data.room)
-    var decrypted = await this.chatService.decrypt(tocheck.password)
-    if (data.pass === decrypted)
+
+    // var decrypted = await this.chatService.decrypt(tocheck.password)
+	console.log(tocheck.password + " " + data.pass);
+    if (data.pass === tocheck.password)
     {
+		console.log('icciiii')
       var msg = await this.chatService.getMessagesByRoom(data.room);
-      client.emit('LoadRoomPass', {room: data.room, msg:msg })
+      client.emit('LoadRoom', {room: data.room, msg:msg })
       client.leave(this.clients.get(client.id)._room)
       client.join(data.room)
       this.clients.get(client.id)._room = data.room
@@ -60,11 +64,12 @@ export class ChatGateway implements OnGatewayInit {
   @SubscribeMessage('newRoom')
   async addRoom(client:Socket, data:any){
     if (data.password){
-      var passEncrypt = await this.chatService.encrypt(data.password)
-      var update = await this.chatService.create(data.name, data.creator, passEncrypt);
+    //   var passEncrypt = await this.chatService.encrypt(data.password)
+      var update = await this.chatService.create(data.name, data.creator, data.password);
     }
     else
       var update = await this.chatService.create(data.name, data.creator, '');
+	this.loadRoom(client, data.name);
     this.server.emit('updateRooms',{rooms: update})
   }
 
@@ -82,60 +87,80 @@ export class ChatGateway implements OnGatewayInit {
 			  this.clients.get(client.id)._room = data.room
 		}
 		else{
-			var msg = await this.chatService.getMessagesByRoom("general")
-			client.emit('LoadRoom', {room: "general", msg:msg })
-			client.emit("banned");
+			//toast you ban
 		}
     }
 	else
       client.emit('needPassword', {room:data.room})
   }
 
-  @SubscribeMessage('sendMessage')
-  async handleMessage(client: Socket, Message: { sender: string, dest: string, message: string, date: string}) {
+  async loadRoom(client:Socket, roomName:string)
+  {
+	  var msg = await this.chatService.getMessagesByRoom(roomName);
+	  client.emit('loadRoom', {room:roomName, msg:msg})
+  }
+  getUserByName(str:string):null|clientClass{
+	var ret = null;
+	this.clients.forEach( element => {
+		if(element._pseudo === str)
+			ret = element;
+	})
+	return ret
+  }
+async command(client: Socket,Message:Msg){
+	var help = "/help will help you to know the command you can use from the library for multiple line and other shit like this for long text so cute "
+	var unknow = "/ unknow command / try again..."
+	
+	
+	
+	if (Message.message.startsWith('/help'))
+		client.emit('ReceiveMessage',{sender:'system' , dest:Message.dest, message: help, date: new Date()})
+	else if (Message.message.startsWith('/delete')) {
+		console.log("/delete")
+		if(await this.chatService.isAdmin(Message.sender,Message.dest) == true)
+			var ret = await this.chatService.deleteRoom(Message.dest)
+		var rooms = await this.chatService.getAllRoomName();
+		this.server.to(Message.dest).emit('deleted')
+		this.server.emit('updateRooms', {rooms:rooms});
+		console.log(ret)
+		return ret;
+	}
+	else if (Message.message.startsWith("/ban")){
+		if(await this.chatService.isAdmin(Message.sender,Message.dest) == true){
+			await this.chatService.banUser(Message.message.split(' ').at(1), Message.dest)
+			var socket = this.getUserByName(Message.message.split(' ').at(1))._socket
+			this.loadRoom(socket, 'general')
+		}
+	}
+	else if (Message.message.startsWith('/mute')){
+		if(await this.chatService.isAdmin(Message.sender,Message.dest) == true){
+			this.chatService.muteUser(Message)
+		}
+	}
+	else if(Message.message.startsWith("/unban")){
+		if(await this.chatService.isAdmin(Message.sender,Message.dest) == true)
+			await this.chatService.unbanUsers(Message.message.split(' ').at(1), Message.dest)
+		return;
+	}
+	else if (Message.message.startsWith('/setadmin')){
+		if( await this.chatService.isAdmin(Message.sender, Message.dest) === true){
+			return await this.chatService.addAdmin(Message.message.split(' ').at(1), Message.dest)
+		}
+	};
+}
 
-	if(await this.chatService.isBanned(Message.sender,Message.dest) == true)
-		this.server.emit("banned")
-	else{
-		if (Message.message.startsWith('/priv')){
-			Message.message = await this.chatService.addPriv(Message.message, Message.sender, this.clients, Message.dest);
-			if (Message.message.startsWith("new")){
-				console.log("update rooms")
-				var rooms = await this.chatService.getAllRoomName();
-				this.server.emit('updateRooms',{rooms: rooms})
-			}
-			Message.sender = "system";
-			client.emit('ReceiveMessage', Message)
-		}
-		else if (Message.message.startsWith('/delete')) {
-			console.log("/delete")
-			if(await this.chatService.isAdmin(Message.sender,Message.dest) == true)
-				var ret = await this.chatService.deleteRoom(Message.dest)
-			var rooms = await this.chatService.getAllRoomName();
-			this.server.to(Message.dest).emit('deleted')
-			this.server.emit('updateRooms', {rooms:rooms});
-			console.log(ret)
-			return ret;
-		}
-    	else if (Message.message.startsWith('/') ){
-    	    this.chatService.systemMsg(Message, this.clients);
-			Message.sender = "system";
-    	    if (Message.message.startsWith('/priv')){
-				var rooms = await this.chatService.getAllRoomName(); //todo /priv undifined
-				if (rooms)
-    	        	this.server.emit('updateRooms',{rooms: rooms})
-    	    }
-    	    client.emit('ReceiveMessage', Message)
-		}
-    	else{
-			console.log(await this.chatService.canTalk(Message.sender, Message.dest))
-			if (await this.chatService.canTalk(Message.sender, Message.dest) == true){
-				this.chatService.addMessage(Message)
-				this.server.to(Message.dest).emit('ReceiveMessage', Message)
-			}
-			else 
-				this.server.to(Message.dest).emit('Muted', Message)
-		}
+async normalMessage(client:Socket, Msg:Msg)
+{
+	await this.chatService.addMessage(Msg)
+	this.server.to(Msg.dest).emit('ReceiveMessage', Msg)
+}
+
+  @SubscribeMessage('sendMessage')
+  async handleMessage(client: Socket, Message: {sender: string, dest: string, message: string, date: Date }) {
+	if (Message.message.startsWith('/') )
+		this.command(client, Message);
+	else {
+		this.normalMessage(client, Message);
 	}
   }
 }

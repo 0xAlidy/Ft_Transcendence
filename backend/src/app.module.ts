@@ -11,7 +11,6 @@ import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { MatchsModule } from './matchs/matchs.module';
 import { Match } from './matchs/match.entity';
-import { MessagesModule } from './message/messages.module';
 import { ChatRooms } from './ChatRooms/ChatRooms.entity';
 import { NotifModule } from './notifications/notif.module';
 
