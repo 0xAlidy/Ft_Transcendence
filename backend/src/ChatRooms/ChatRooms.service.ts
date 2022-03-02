@@ -17,11 +17,12 @@ import { Room } from "src/chat/class/Room.class";
 	password = "";
 	iv:Buffer= null;
 	key:string;
+	algorithm:string = 'aes-256-ctr';
 
 	private logger: Logger = new Logger('ChatRoomService');
 	constructor(@InjectRepository(ChatRooms) private ChatRoomsRepository: Repository<ChatRooms>, private userService:UsersService){
-		this.iv = randomBytes(16);
-		this.key = "ceci est une phrase de 32 charac"
+		this.iv = Buffer.from('yen a 16 ou paas');
+		this.key = "ft transcendance c'est bien mais"
 	}
 
 	async create(name :string, owner:string, password:string) {
@@ -35,12 +36,24 @@ import { Room } from "src/chat/class/Room.class";
 		return null;
 	}
 
+	async checkBlock(name:string, name1:string){
+		console.log(name+ "                       1 " + name1)
+		var tocheck = await this.userService.findOneByLogin(name1)
+		tocheck.blockedUsers.forEach( element => {
+			if (element === name)
+				return true
+		})
+		return false
+	}
+
+
 	async createPriv(user:string[]) {
-		var newroom = new ChatRooms(null, user[1], "", true,user)
-		console.log(newroom)
-		await this.ChatRoomsRepository.save(newroom);
-		// return ;
-		return  await this.getAllRoomName();
+
+		if (await this.checkBlock(user[0], user[1]) === false){	
+			var newroom = new ChatRooms(null, user[1], "", true,user)
+			await this.ChatRoomsRepository.save(newroom);
+			return  await this.getAllRoomName();
+		}
 	}
 
 	async addMessage(data:any)
@@ -96,45 +109,63 @@ import { Room } from "src/chat/class/Room.class";
 	async isAuthorized(token:string, name:string){
 		var room = await this.findRoomByName(name)
 		var user = await this.userService.findOne(token)
-		if(room.IsPassword === false)
-			return true
+		var ret = false;
+		 if(room.IsPassword === false)
+			ret =  true ;
 		room.users.forEach(element => {
-			if(user.nickname == element)
-				return true
+			if(user.login == element)
+				ret = true
 		});
-		return false
+		return ret
 	}
 
-
+	encrypt(text:string){
+		const cipher = createCipheriv(this.algorithm, this.key, this.iv);
+		const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
+		return encrypted.toString('hex')
+	};
 	
-	async encrypt(toEncrypt:string) {
-		this.password = 'password';
-		const cipher = createCipheriv('aes256', this.key, this.iv);
-		const encryptedText = cipher.update(toEncrypt, 'utf8', 'hex') + cipher.final('hex');
+	decrypt(text:string){
+		const decipher = createDecipheriv(this.algorithm, this.key, Buffer.from(this.iv.toString('hex'), 'hex'));
+		const decrpyted = Buffer.concat([decipher.update(Buffer.from(text, 'hex')), decipher.final()]);
+		return decrpyted.toString();
+	};
+	
+	// encrypt(str:string) {
+	// 	const cipher = createCipheriv('aes256', this.key, this.iv);
+	// 	const encryptedText = cipher.update(str, 'utf8', 'hex') + cipher.final('hex');
+	// 	return encryptedText;
+	// }
 
-		console.log(encryptedText);
-		return encryptedText;
-	}
-
-	async decrypt(toDecrypt:string){
-		const decipher = createDecipheriv('aes256', this.key, this.iv);
-		// decipher.setAutoPadding(false)
-		const decryptedText = decipher.update(toDecrypt, 'hex', 'utf8') + decipher.final('utf8');
-		console.log(decryptedText);
-		return decryptedText;
-	}
+	// decrypt(toDecrypt:string){
+	// 	const decipher = createDecipheriv('aes256', this.key, this.iv);
+	// 	// decipher.setAutoPadding(false)
+	// 	const decryptedText = decipher.update(toDecrypt, 'hex', 'utf8') + decipher.final('utf8');
+	// 	return decryptedText;
+	// }
 
 	async changePass(msg:string, dest:string){
-		// var newPass = await this.encrypt(msg.slice(6))
 		var room = await this.findRoomByName(dest)
-		if (msg){
-			room.password = msg.slice(6);
-			this.ChatRoomsRepository.save(room);
-			return true;
+		if(room)
+		{
+			room.password = this.encrypt(msg);
+			await this.ChatRoomsRepository.save(room);
+			return 0;
 		}
-		else 
-			return false
+		return 1
 	}
+
+	async removePass(dest:string){
+		var room = await this.findRoomByName(dest)
+		if (room)
+		{	room.password = ""
+			room.IsPassword = false
+			this.ChatRoomsRepository.save(room)
+			return 1;
+		}
+		return 0;
+	}
+
 	
 	async findUser(toFind:string, dest:string){
 		var room = await this.findRoomByName(dest)
@@ -150,6 +181,15 @@ import { Room } from "src/chat/class/Room.class";
 		  if (room.banUsers[i] == name)
 			return true
 		return false
+	}
+
+	async isOwner(name:string,dest:string)
+	{
+		var room = await this.findRoomByName(dest)
+		if (room.owner === name)
+			return true
+		else
+			return false
 	}
 
 	async isAdmin(name:string,dest:string){
@@ -193,37 +233,49 @@ import { Room } from "src/chat/class/Room.class";
 
 	async  banUser(toBan:string, dest:string){
 		var room = await this.findRoomByName(dest)
-		console.log("to ban = " + toBan)
-		if (await this.findUser(toBan, dest) === true && this.checkDoublon(toBan, room.banUsers) === false){
-			
-			room.banUsers.push(toBan); //ajoute dans la liste des personne banni
-			var index = room.users.indexOf(toBan);
-			room.users.splice(index, 1)
-			this.ChatRoomsRepository.save(room)
-			//toast
-			return 
+		if(room){
+			console.log("to ban = " + toBan)
+			if ( await this.userService.findOneByLogin(toBan)){
+				if(this.checkDoublon(toBan, room.banUsers) === false){
+					room.banUsers.push(toBan);
+					this.ChatRoomsRepository.save(room);
+					return 0;
+				}
+				return 1;
+			}
+			return 2;
 		}
-		else{
-			console.log("to ban doesn t exist")
-			//toast
-			return 
-		}
+		return 3;
 	}
 
 	async unbanUsers(arg:string, dest:string){
 		var room = await this.findRoomByName(dest)
-		var index = room.banUsers.indexOf(arg)
-		room.banUsers.splice(index, 1)
-		this.ChatRoomsRepository.save(room)
+		if(room){
+			var index = room.banUsers.indexOf(arg)
+			if(index !== -1){
+				room.banUsers.splice(index, 1)
+				this.ChatRoomsRepository.save(room)
+				return 0;
+			}
+			return 1;
+		}
+		return 2;
 	}
 
 
 	async addAdmin(toAdd:string, dest:string){
 		var room = await this.findRoomByName(dest)
-		if (await this.findUser(toAdd, dest) === true && this.checkDoublon(toAdd, room.adminList) === false){
-			room.adminList.push(toAdd)
-			await this.ChatRoomsRepository.save(room)
+		if (await this.findUser(toAdd, dest) === true)
+		{
+			if (this.checkDoublon(toAdd, room.adminList) === false)
+			{
+				room.adminList.push(toAdd)
+				await this.ChatRoomsRepository.save(room)
+				return 0;
+			}
+			return 1;
 		}
+		return 2;
 	}
 
 
@@ -258,8 +310,11 @@ import { Room } from "src/chat/class/Room.class";
 
 	async deleteRoom(toDel:string){
 		var room = await this.findRoomByName(toDel)
-		await this.ChatRoomsRepository.remove(room)
-		return "room " + toDel + " has been deleted"
+		if(room){
+			await this.ChatRoomsRepository.remove(room)
+			return 0
+		}
+		return 1
 	}
 
 	addMinutes(date:Date, minutes) {
@@ -276,48 +331,47 @@ import { Room } from "src/chat/class/Room.class";
 		return ret;
 	}
 
-	async canTalk(name:string, tocheck:string)
+	async canTalk(name:string, roomName:string)
 	{
-		var room = await this.findRoomByName(tocheck)
+		var room = await this.findRoomByName(roomName)
 		var indexMuted = this.isMuted(room,name)
-		if (indexMuted > 0){
+		if (indexMuted >= 0){
 			var date = new Date();
-			//compare time
 			var time = new Date(room.muteList[indexMuted].endTime)
-			console.log(date.getTime() - time.getTime())
-			var compa = date.getTime() - time.getTime()
-			if (compa < 0){ //still muted
+			console.log(date , time)
+			if (date.getTime() - time.getTime() < 0){ //still muted
 				return false;
 			}
-			else
+			else{
+				await this.unMute(name, roomName);
 				return true;
+			}
 		}
 		else
 			return true;
 	}
 
+	async unMute(login:string, roomName:string){
+		var room = await this.findRoomByName(roomName)
+		var index = this.isMuted(room, login)
+		room.muteList.splice(index, 1);
+		await this.ChatRoomsRepository.save(room)
+	}
 
 	async muteUser(msg:Msg){
 		var toMute = msg.message.split(' ').at(1);
 		var time = +msg.message.split(' ').at(2);
 		var room = await this.findRoomByName(msg.dest)
-
-		//already muted 
 		if (this.isMuted(room,toMute) < 0){
-			// console.log(new Date(msg.date).toTimeString().slice(0,5))
-			// console.log(t1.toTimeString().slice(0,5))
 			if (time && time > 0 && time < 61){
 				var t1 = new  Date(this.addMinutes(msg.date, time))
 				var newMute:Mute = {name:toMute, endTime:t1}
 				room.muteList.push(newMute)
-				this.ChatRoomsRepository.save(room)
+				await this.ChatRoomsRepository.save(room)
+				return 0;
 			}
-	
-				//else toast bad time in minutes < 60
+			return 1;
 		}
-		else
-			return 
-			//already muted
+		return 2;
 	}
-
 }

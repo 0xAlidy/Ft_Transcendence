@@ -5,38 +5,27 @@ import MenuPng from '../../../assets/menu.png'
 import { Socket } from "socket.io-client";
 
 
-export default class ChatMenu extends React.Component <{socket:Socket , roomList:any, newRoom: any, actRoom:any, onMenuOpen:any}, {activeRoom:string | null, inputRoomName:string, options:{value:string,label:string}[]}>{
+export default class ChatMenu extends React.Component <{socket:Socket , roomList:any, newRoom: any, actRoom:any, onMenuOpen:any}, {test:string, activeRoom:string | null, inputRoomName:string, options:{value:string,label:string}[]}>{
 	chatMenu:HTMLDivElement|null;
-	//general: Room = {name:"general", id:0, password:"", userList:[]};
 	default = {value:"general", label:"general"}
 	flipflap:boolean;
     constructor(props:any) {
 		super(props)
         this.state = {
+			test: "",
 			options: [],
 			activeRoom: null,
             inputRoomName: '',
-			// roomList: this.props.roomList,
-        }
+		}
+		this.props.socket.on('LoadRoom', (data:any) =>{
+			// this.setState({test:data.activeRoom})
+		})
 		this.chatMenu= null;
 		this.flipflap = true;
 	};
 	setChatMenu = (r:HTMLDivElement) =>{
 		this.chatMenu =  r;
 	}
-
-	// componentDidUpdate(prevprops:any){
-	// 	if (prevprops.roomList !== this.props.roomList){
-	// 		this.setState({roomList:this.props.roomList})
-	// 		// this.convert();
-	// 	}
-
-	// }
-
-	// componentDidMount(){
-	// 	console.log(this.props.roomList)
-	// 	this.convert();
-	// }
 
 	convert = (arr:string[]) => {
 		var temp:any = [];
@@ -70,12 +59,9 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
     };
 
 	render(){
-		// console.log(this.props.roomList)
 		var opt:any = [];
-		// console.log(opt)
 		for (var key in this.props.roomList){
 			opt.push({value:this.props.roomList[key], label:this.props.roomList[key]})
-			// console.log(this.props.roomList[key])
 		}
 		return (
 			<div className="chatinfo" id ="chatinfo" style={{}} ref={this.setChatMenu}>
@@ -88,8 +74,9 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
 						        options={this.props.roomList}
 						        id="selectRoom"
 						        onChange={this.handleChange}
-						        placeholder="join a room"
-								defaultValue={{value:this.props.actRoom, label:this.props.actRoom}}
+								placeholder="join a room"
+								// label={this.state.test}
+								defaultValue={{value:this.state.activeRoom, label:this.state.activeRoom}}
 								/>
 						<button className="buttonAdd" onClick={this.handleButtonAdd} >+</button>
 					</div>

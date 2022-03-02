@@ -91,6 +91,12 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						this.state.socket.on('popupScore', (data:any) => {
 							this.setState({popupInfo:{open:true, win:data.win, adv:data.adv}})
 						});
+						this.state.socket.on('chatNotif', (data:any) => {
+							this.chatNotify(data.msg);
+						});
+						this.state.socket.on('chatNotifError', (data:any) => {
+							this.chatNotifyError(data.msg);
+						});
 						this.state.socket.on('inviteNotif', (data:any) => {
 							this.notify(data.login);
 						});
@@ -112,7 +118,28 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			}
 		}
 	}
-
+	chatNotifyError = (msg:string) => {
+		toast.error(msg, {
+			position: "top-left",
+			autoClose: 10000,
+			hideProgressBar: false,
+			closeOnClick: true,
+			pauseOnHover: false,
+			draggable: true,
+			progress: undefined,
+			});
+	}
+	chatNotify = (msg:string) =>{
+		toast(msg, {
+			position: "top-left",
+			autoClose: 5000,
+			hideProgressBar: false,
+			closeOnClick: true,
+			pauseOnHover: false,
+			draggable: true,
+			progress: undefined,
+			});
+	}
 	notify = (login:string) => {
 		if (this.state.socket && this.state.User)
 		{

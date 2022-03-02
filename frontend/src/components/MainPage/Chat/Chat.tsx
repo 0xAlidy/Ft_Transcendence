@@ -1,18 +1,34 @@
 /*
-- pas afficher les message des gens bloquer / refuser les privs conv 
+
+-message bizare todo{}
+-message systeme
+
+														
+
+														
+a tester
+-modifier mdp ou retirer
+-block refuser les privs conv
+
+
+
+
+
+
+
+
+
+
+
+
+done
+
+//	/unban "pseudo"
+- pas afficher les message des gens bloquer 
 - admin cmd =	- change pass define it or remove it 		//	/pass "new"     /pass rm
 done - set admin													//	/admin "pseudo"
 - ban 														//	/ban "pseudo"
-- unban 														//	/unban "pseudo"
-
-
-/delete redirect value chatmenu dans <select/> 
-
-
--modifier mdp ou retirer
--message bizare todo{}
-
-
+- unban 
 - help = montre les cmd possible/  /help
 done - message tu n es pas admin vas te faire encule tu t es tromper encule tu t es tromper tu n es bon qu a boycoter encule tu t es tromper
 bug sysmessae
@@ -24,9 +40,10 @@ import * as React from "react";
 import "../../../styles/MainPage/Chat/Chat.css";
 import Send from '../../../assets/send.png';
 import { Socket } from "socket.io-client";
-import ChatMenu from "./chatMenu";
+// import ChatMenu from "./chatMenu";
 import { User } from '../../../interfaces'
 import MessageItem from "./message";
+import Select from 'react-select';
 
 export class Message{
 	message: string;
@@ -101,30 +118,20 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 			if (this.mRef)
 				this.mRef.scrollTop = this.mRef.scrollHeight;
         });
-		// this.props.socket.on('banned', () => {
-		// 	this.props.socket.emit('joinRoom',{room:'general'})
-		// 	//notify toast
-		// 	if (this.mRef)
-		// 		this.mRef.scrollTop = this.mRef.scrollHeight;
-		// });
-		this.props.socket.on('Muted', () =>{
-			var date = new Date()//.toTimeString().slice(0,5)
-			var muteMsg:Msg = { id: 0, sender:"system", dest:"general", message:"please wait you are muted", date:date}
-			this.setState({messages: this.state.messages.concat([muteMsg])})//todo message dans general
-			if (this.mRef)
-				this.mRef.scrollTop = this.mRef.scrollHeight;
-		});
 		this.props.socket.on('deleted',  (data:any) => {
 			this.props.socket.emit("joinRoom",{room:"general"})
-			var delMsg:Msg = { id: 0, sender:"system", dest:"general", message:"delete room, you are now logged to general", date:new Date()}
-			this.setState({messages: this.state.messages.concat([delMsg])})//todo message dans general
+			// var delMsg:Msg = { id: 0, sender:"system", dest:"general", message:"delete room, you are now logged to general", date:new Date()}
+			// this.setState({messages: this.state.messages.concat([delMsg])})//todo message dans general
         });
 		this.props.socket.on('LoadRoomPass',  (data:any) => {
 			this.togglePopupPass()
 			this.setState({messages: data.msg, activeRoom: data.room})
         });
 		this.props.socket.on('loadRoom',  (data:any) => {
+			this.setState({openNewPass: false, openNewRoom:false})
 			this.setState({messages: data.msg, activeRoom: data.room})
+			if (this.mRef)
+				this.mRef.scrollTop = this.mRef.scrollHeight;
         });
 		this.props.socket.on('ReceiveMessage',  (data:any) => {
 			console.log(data);
@@ -214,7 +221,7 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 		else{
 			this.props.socket.emit('newRoom', {name:name, id:0,creator:this.props.User.login,password:null})
 		}
-        this.togglePopupRoom();
+        this.setState({openNewRoom:false})
 	}
 
 	updateRoom = (newOne:string) => {
@@ -244,14 +251,12 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 
 
 	handlePopUpRoom = () => {
-		this.setState({messages: []})
-        this.setState({openNewRoom:true})
+		if (this.state.openNewPass === false){
+			this.setState({messages: []})
+			this.setState({openNewRoom:true})
+		}
     };
 
-	togglePopupRoom = () => {
-        this.setState({openNewRoom:false});
-		this.props.socket.emit('joinRoom', {room:this.state.activeRoom})
-    };
 
 	sendPass = () => {
 		var pass = document.getElementById("passRequest") as HTMLInputElement;
@@ -260,6 +265,12 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 
 	togglePopupPass = () => {
 		this.setState({openNewPass:false});
+	}
+
+	handleChange = (selectedOption:any) => {
+		// console.log(this.state.activeRoom)
+        // this.setState({activeRoom:selectedOption.value})
+		this.props.socket.emit('joinRoom',{room:selectedOption.value})
 	}
 
 	render(){
@@ -279,7 +290,28 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 					<img src={Send} alt="" className="send" defaultValue='NULL' width='25px' height='25px' onClick={this.sendMessage} />
 				</div>
 				<div className="back"></div>
-				<ChatMenu newRoom={this.handlePopUpRoom}  actRoom={this.state.activeRoom} socket={this.props.socket} roomList={this.state.rooms} onMenuOpen={this.menuOpen}/>
+
+
+				<div className="chatinfo" id ="chatinfo" style={{}}>
+					<div className="topbar">
+			        	<Select className="SelectRoom"
+						        options={this.state.rooms}
+								id="selectRoom"
+								
+						        onChange={this.handleChange}
+								placeholder={this.state.activeRoom}
+								value={this.state.activeRoom}
+								// label={this.state.activeRoom}
+								defaultValue={this.state.activeRoom}
+								/>
+						<button className="buttonAdd" onClick={this.handlePopUpRoom} >+</button>
+						</div>
+					
+				</div>
+
+
+
+				{/* <ChatMenu newRoom={this.handlePopUpRoom}  actRoom={this.state.activeRoom} socket={this.props.socket} roomList={this.state.rooms} onMenuOpen={this.menuOpen}/> */}
 				<div id="chatmessage" ref={this.messagesRef} className="chatmessage">
 					{this.state.openNewRoom === true && <Popup
                     content={<>
@@ -287,7 +319,7 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
                         <input type="text" placeholder="name" id="nameNewRoom" className="inputPopUp"/>
                         <input type="password" placeholder="password (optionnal)" id="passNewRoom" className="inputPopUp"/>
                         <button onClick={this.sendNewRoom} className="buttonPopUp1">Send</button>
-                        <button onClick={this.togglePopupRoom} className="buttonPopUp">Cancel</button>
+                        <button onClick={()=> this.setState({openNewRoom:false})} className="buttonPopUp">Cancel</button>
                       </>}
                 	/>}
 
@@ -302,15 +334,8 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 
 					{
 						this.state.messages.map((item, index) => {
-							var classForItem;
-							if (item.sender === this.props.User.login)
-								classForItem = "msgItem"
-							else if (item.sender === "system")
-								classForItem = "systemMsg"
-							else
-								classForItem = "msgOtherItem"
 							return (
-								<MessageItem key={"key"+ index} msg={item} User={this.props.User} activeRoom={this.state.activeRoom} socket={this.props.socket} class={classForItem}/>
+								<MessageItem key={"key"+ index} msg={item} User={this.props.User} activeRoom={this.state.activeRoom} socket={this.props.socket} class={(item.sender === this.props.User.login) ? true :false}/>
 							)
 						})
 					}

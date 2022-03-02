@@ -4,6 +4,7 @@ export class clientClass{
 	_socket: Socket;
 	_login: string;
 	_token: string;
+	_isInvitable:boolean;
 	_nbOfGames: number;
 	_id: string;
 	_room: string;
@@ -14,6 +15,7 @@ export class clientClass{
 		this._login = login;
 		this._token = token;
 		this._socket = socket;
+		this._isInvitable = true;
 		this._room = '';
 	}
 	setRoom(room : string){
