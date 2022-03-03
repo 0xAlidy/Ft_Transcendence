@@ -42,6 +42,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     handleDisconnect(client: Socket) {
         this.logger.log("Disconnect:    "+ client.id.slice(0, 4));
         var user = this.clients.get(client.id)
+        this.deletePrivRoomByLogin(user._login)
         if (user)
         {
             var cs = this.clientsSearching.indexOf(user)
@@ -69,10 +70,23 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         })
         return ret
     }
+    deletePrivRoomByLogin(login:string)
+    {
+        this.rooms.forEach((room) =>{
+            console.log("guest:"+ room._guest._login +"  sender:" +room._player._login+ "    login:"+ login)
+            if(room._guest._login === login || room._player._login === login)
+            {
+                room._player._socket.emit('closeInviteNotif'+ room._guest._login );
+                room._guest._socket.emit('closeInviteNotif'+ room._player._login );
+                room._player._socket.emit('closePendingNotif');
+                room._guest._socket.emit('closePendingNotif');
+                this.rooms.delete(room._name)
+            }
+        })
+    }
     @SubscribeMessage('cancelPrivate')
     cancelPrivate(client: Socket, data: any){
         var cli = this.clients.get(client.id);
-        var room = this.rooms.get("Privroom"+cli._login);
         this.rooms.delete("Privroom"+cli._login)
         var guest = this.getUserClassbyName(data.login);
         if(guest){
@@ -155,6 +169,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @SubscribeMessage('searchArcade')
     async searchArcade(client: Socket){
         this.clientsSearchingArcade.push(this.clients.get(client.id))
+        this.deletePrivRoomByLogin(this.clients.get(client.id)._login);
         console.log(this.clients.get(client.id)._login + 'join waiting match')
         client.emit('SearchStatus', {bool: true})
         client.emit('pendingSearch');
@@ -189,6 +204,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @SubscribeMessage('searchRoom')
     async search(client: Socket){
         this.clientsSearching.push(this.clients.get(client.id))
+        this.deletePrivRoomByLogin(this.clients.get(client.id)._login);
         console.log(this.clients.get(client.id)._login + 'join waiting match')
         client.emit('SearchStatus', {bool: true})
         client.emit('pendingSearch');
@@ -210,8 +226,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             room._room.emit('SearchStatus', {bool: false})
             await this.userService.setInGameBylogin(room._player._login, 1);
             await this.userService.setInGameBylogin(room._guest._login, 1);
-            room._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true})
-            room._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true});
+            room._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:false})
+            room._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:false});
             userOne._isInvitable = false;
             userTwo._isInvitable = false;
             room._isJoinable = false;
