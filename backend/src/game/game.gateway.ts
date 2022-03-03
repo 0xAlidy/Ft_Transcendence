@@ -41,8 +41,15 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
     handleDisconnect(client: Socket) {
         this.logger.log("Disconnect:    "+ client.id.slice(0, 4));
-        if (this.clients.get(client.id))
+        var user = this.clients.get(client.id)
+        if (user)
         {
+            var cs = this.clientsSearching.indexOf(user)
+            var csa = this.clientsSearchingArcade.indexOf(user)
+            if(cs !== -1)
+                this.clientsSearching.splice(cs, 1);
+            if(csa !== -1)
+                this.clientsSearchingArcade.splice(csa, 1);
             this.userService.changeWSId(this.clients.get(client.id)._login, 'null');
             var roomtoleave : string = this.clients.get(client.id)._room;
             if(roomtoleave !== 'lobby')
@@ -68,29 +75,43 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         var cli = this.clients.get(client.id);
         console.log(data.login)
         var guest = this.getUserClassbyName(data.login);
-        if(!guest)
+        if(!guest){
+            cli._socket.emit('chatNotifError',{msg: 'your friend is not connected!'})
             return
+        }
         this.rooms.set('Privroom' +this.index, new roomClass('Privroom' +this.index, cli , guest, this.server.to('Privroom' +this.index), data.arcade));
-        guest._socket.emit('inviteDuel', {adv:cli._login, room:'Privroom' +this.index})
+        if(guest._isInvitable){
+            guest._socket.emit('inviteDuel', {adv:cli._login, room:'Privroom' +this.index})
+        }
+        else
+            cli._socket.emit('chatNotifError',{msg: 'your friend is already in a game!'})
         this.index++;
     }
 
     @SubscribeMessage('joinPrivateSession')
     joinPrivateSession(client: Socket, data: any){
         var room = this.rooms.get(data.room)
+        var cli = this.getUserClassbyName(room._player._login)
+        var guest = this.getUserClassbyName(room._guest._login)
+        if(!cli || !guest)
+            return;
         room._player._room = data.room;
         room._guest._room = data.room;
         room._player._socket.leave('lobby');
         room._player._socket.join(data.room);
         room._guest._socket.leave('lobby');
         room._guest._socket.join(data.room);
+        this.userService.setInGameBylogin(room._player._login, 1);
+        this.userService.setInGameBylogin(room._guest._login, 1);
         room._player._socket.emit('startGame', {id: 1, room: data.room, nameA: room._player._login, nameB: room._guest._login, arcade:room._isArcade})
         room._guest._socket.emit('startGame', {id: 2, room: data.room, nameA: room._player._login, nameB: room._guest._login, arcade:room._isArcade});
+        cli._isInvitable = false;
+        guest._isInvitable = false;
         room._isJoinable = false;
     }
 
     @SubscribeMessage('searchArcade')
-    searchArcade(client: Socket): void {
+    async searchArcade(client: Socket){
         this.clientsSearchingArcade.push(this.clients.get(client.id))
         console.log(this.clients.get(client.id)._login + 'join waiting match')
         if (this.clientsSearchingArcade.length == 2)
@@ -109,8 +130,12 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             userTwo._socket.leave('lobby');
             userTwo._socket.join(roomName);
             room._room.emit('SearchStatus', {bool: false})
+            await this.userService.setInGameBylogin(room._player._login, 1);
+            await this.userService.setInGameBylogin(room._guest._login, 1);
             room._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true})
             room._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true});
+            userOne._isInvitable = false;
+            userTwo._isInvitable = false;
             room._isJoinable = false;
             this.index++;
             this.updateRoom();
@@ -118,7 +143,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     @SubscribeMessage('searchRoom')
-    search(client: Socket): void {
+    async search(client: Socket){
         this.clientsSearching.push(this.clients.get(client.id))
         console.log(this.clients.get(client.id)._login + 'join waiting match')
         if (this.clientsSearching.length == 2)
@@ -137,8 +162,12 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             userTwo._socket.leave('lobby');
             userTwo._socket.join(roomName);
             room._room.emit('SearchStatus', {bool: false})
+            await this.userService.setInGameBylogin(room._player._login, 1);
+            await this.userService.setInGameBylogin(room._guest._login, 1);
             room._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true})
             room._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true});
+            userOne._isInvitable = false;
+            userTwo._isInvitable = false;
             room._isJoinable = false;
             this.index++;
             this.updateRoom();
@@ -155,6 +184,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     //     else{
     //     }
     // }
+
     @SubscribeMessage('getUserName')
     userName(client: Socket): void {
         var formated : string = this.clients.get(client.id)._login + "'s_room";
@@ -162,6 +192,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         client.emit('username', {username: ret})
         this.updateRoom();
     }
+
     @SubscribeMessage('specRoom')
     specRoom(client: Socket, data: any ): void {
         var room = this.rooms.get(data.room)
@@ -220,7 +251,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         }
     }
     @SubscribeMessage('end')
-    abandon(client: Socket): void {
+    async abandon(client: Socket){
         var user = this.clients.get(client.id);
         var room = this.rooms.get(this.clients.get(client.id)._room)
 
@@ -238,12 +269,16 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 this.userService.xp(room._guest._token, 50);
                 this.userService.loose(room._player._token);
                 this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA, room._isArcade);
+                await this.userService.setInGameBylogin(room._player._login, 0);
+                await this.userService.setInGameBylogin(room._guest._login, 0);
             }
             if (ret == 2){
                 this.userService.win(room._player._token);
                 this.userService.xp(room._player._token, 50);
                 this.userService.loose(room._guest._token);
                 this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB, room._isArcade);
+                await this.userService.setInGameBylogin(room._player._login, 0);
+                await this.userService.setInGameBylogin(room._guest._login, 0);
         }
         this.rooms.delete(room._name);
         this.updateRoom();}
@@ -309,12 +344,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 }
     }
 
+    @SubscribeMessage("getRooms")
     updateRoom(){
         var spec : specRooms[] = [];
 
         this.rooms.forEach(element => {
             if (element._isJoinable === false)
-                spec.push({name:element._name, left:element._player._login, right:element._guest._login});
+                spec.push({name:element._name, left:element._player._login, right:element._guest._login, arcade:element._isArcade});
         });
         this.server.to('lobby').emit('SpecRooms', {spec: spec});
     }
@@ -326,4 +362,5 @@ interface specRooms{
     name:string,
     left:string,
     right:string,
+    arcade:boolean
 }

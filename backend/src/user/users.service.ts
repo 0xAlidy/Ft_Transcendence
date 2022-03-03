@@ -40,6 +40,18 @@ export class UsersService {
       user.waitingFriends.splice(index, 1);
     await this.usersRepository.save(user);
   }
+  async setInGameBylogin(login: string, status:number){
+      var user = await this.findOneByLogin(login)
+      if(status === 0)
+      {
+        if(user.status === 1)
+          user.status = 2;
+      }
+      else{
+        if(user.status === 2)
+          user.status = 1;
+      }
+  }
 
   async addWaitingFriend(login:string, loginFriend:string)
   {

@@ -47,7 +47,7 @@ export default class PopupStart extends React.Component<{ User:User, onChange:an
 				await axios.post("http://" + window.location.host.split(":").at(0) + ":667/user/completeProfile",{	url:this.editor.getImageScaledToCanvas().toDataURL(),
 				token:this.props.User.token,
 				nickname:this.state.nickname}).then((res) => {this.props.onChange(res.data)})
-				this.setState({options:3})
+				this.setState({options:2})
 			}
 			else
 			{
@@ -72,6 +72,12 @@ export default class PopupStart extends React.Component<{ User:User, onChange:an
 			.then(r => r.blob()).then(blobFile => new File([blobFile], "fileNameGoesHere", { type: "image/png" }))
 			this.setState({src: file});
 		}
+		if (this.state.options < 2)
+		{
+			let page = document.getElementById("MainPage");
+			if (page)
+				page.classList.add("blurStart");
+		}
 		const box = document.getElementById("contentStart");
 		const shadow = document.getElementById("shadow");
 		const title = document.getElementById("title");
@@ -87,9 +93,15 @@ export default class PopupStart extends React.Component<{ User:User, onChange:an
 			});
 	}
 
+	close(){
+		let page = document.getElementById("MainPage");
+		if (page)
+			page.classList.remove("blurStart");
+	}
+
 	render(){
 		return (
-			<Popup open={this.state.options < 2} closeOnDocumentClick={false} >
+			<Popup open={this.state.options < 2} closeOnDocumentClick={false} onClose={this.close}>
 				<div id="popUpStart">
 				{
 					this.state.options === 0 && // PREMIERE CONNECTION

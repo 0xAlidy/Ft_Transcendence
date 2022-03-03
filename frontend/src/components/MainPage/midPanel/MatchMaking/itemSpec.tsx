@@ -3,13 +3,12 @@ import * as React from "react";
 import { Socket } from "socket.io-client";
 import { User } from "../../../../interfaces";
 import ProfileShortCut from "../../ProfileShortcut";
+import { specRooms } from "../../../../interfaces";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// @ts-ignore 
+import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
-interface specRoomsData{
-	name:string,
-	left:string,
-	right:string,
-}
-export default class ItemSpec extends React.Component<{data:specRoomsData, user:User, onSpecCLick:any, socket:Socket},{left:string|null, right:string|null}>{
+export default class ItemSpec extends React.Component<{data:specRooms, user:User, onSpecCLick:any, socket:Socket},{left:string|null, right:string|null}>{
 	constructor(props:any)
 	{
 		super(props);
@@ -34,27 +33,29 @@ export default class ItemSpec extends React.Component<{data:specRoomsData, user:
 
 	render(){
 		return (
+			this.state.left && this.state.right &&
 			<div className="itemSpec">
-				{	this.state.left && this.state.right &&
-					<div className="grid">
-						<div className="imgLeft">
-							<ProfileShortCut  login={this.props.data.left} User={this.props.user} socket={this.props.socket}/>
-						</div>
-						<div className="imgRight">
-							<ProfileShortCut  login={this.props.data.right} User={this.props.user} socket={this.props.socket} />
-						</div>
-						<div className="text">VS</div>
-						<div className="nameLeft">
-							{this.state.left}
-						</div>
-						<div className="nameRight">
-							{this.state.right}
-						</div>
-						<div className="specButtongrid">
-							<button className="specButton" onClick={this.specClick}>Spectate</button>
-						</div>
+				<div className="matchBox">
+					<div className="playerLeft">
+						<ProfileShortCut login={this.props.data.left} User={this.props.user} socket={this.props.socket}/>
+						<h3>{this.state.left}</h3>
 					</div>
-				}
+					<div className="versusBox">
+						{
+							this.props.data.arcade ?
+							<FontAwesomeIcon className="versusLogo" icon={solid('hat-wizard')}/>
+							:
+							<FontAwesomeIcon className="versusLogo" icon={solid('hand-fist')}/>
+						}					
+					</div>
+					<div className="playerRight">
+						<ProfileShortCut  login={this.props.data.right} User={this.props.user} socket={this.props.socket}/>
+						<h3>{this.state.right}</h3>
+					</div>
+				</div>
+				<div className="specButtonBox">
+						<button className="specButton" onClick={this.specClick}>Spectate</button>
+				</div>
 			</div>
 		)
 	}

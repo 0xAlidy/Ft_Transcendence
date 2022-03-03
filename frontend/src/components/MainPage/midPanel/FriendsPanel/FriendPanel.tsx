@@ -16,9 +16,9 @@ export default class FriendPanel extends React.Component<{User:User, socket:Sock
 	}
 
 	async componentDidMount(){
-		const box = document.getElementById("contentStart");
+		const box = document.getElementById("list");
 		const shadow = document.getElementById("shadow");
-		const title = document.getElementById("title");
+		const title = document.getElementById("friendPanelMenu");
 		if (box !== null && shadow !== null && title !== null)
 			box.addEventListener("scroll", function() {
 				if (this.scrollTop > 5)
@@ -57,13 +57,13 @@ export default class FriendPanel extends React.Component<{User:User, socket:Sock
 	render(){
 		return (
 			<div className="midPanel">
-				<div className="friendPanel">
-					<div className='friendPanelMenu'>
+				<div id="friendPanel">
+					<div id='friendPanelMenu'>
 						<div className="title friends active" onClick={this.OpenFriends}>Friends</div>
 						<div className="title blocked" onClick={this.OpenBlocked}>Blocked</div>
 					</div>
 					<span id="shadow"></span>
-					<div className="list">
+					<div id="list">
 						{this.state.select === 0 ?
 							this.props.User.friends.map((login:string) => {
 								return (<FriendItem key={'friends' + login} login={login} socket={this.props.socket} User={this.props.User}/>)		

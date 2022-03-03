@@ -47,7 +47,6 @@
 {
   padding-top: 100px;
 }
-/* .chat { grid-area: chat; background-color: #333333; border-radius: 35px 35px 0px 35px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px;} */
 
 .logo { 
   grid-area: logo;
@@ -64,11 +63,3 @@
   color: var(--main-color);
   transition: color 1s;
 }
-
-/*              */
-/*  Responsive  */
-/*              */
-
-/*              */
-/*  Animations  */
-/*              */

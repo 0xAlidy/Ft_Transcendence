@@ -1,4 +1,4 @@
-.friendPanel {
+#friendPanel {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -10,7 +10,7 @@
 	background-color: var(--grey-color);
 }
 
-.friendPanelMenu{
+#friendPanelMenu{
 	display: flex;
 	align-items: center;
 	color: var(--main-color);
@@ -43,7 +43,7 @@
 	opacity: 0.5;
 }
 
-.list {
+#list {
 	padding: 10px;
 	display: flex;
 	flex-direction: column;

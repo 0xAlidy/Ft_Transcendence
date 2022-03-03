@@ -131,7 +131,7 @@ export default class TwoAuth extends React.Component<{token:string},{secretEnabl
 		return (
 			
 			<div id="twoAuth">
-				<h3>Two-factor Authentication (2FA):</h3>
+				<h3>Two-factor Authentication (2FA)</h3>
 				{
 					this.state.secretEnabled ?
 					<>
