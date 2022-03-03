@@ -60,7 +60,6 @@ z-index: 0;
 }
 
 .chatinfo {
-  overflow:hidden;
   grid-area: chatTOP;
   font-weight: bold;
   background-color: var(--main-color);
@@ -108,7 +107,11 @@ z-index: 0;
 }
 
 .css-1s2u09g-control {
-border-color: #2c2c2c !important;
+border: none!important;
+background-color: transparent!important;
+}
+.css-1okebmr-indicatorSeparator {
+	 background-color:none!important;
 }
 
 .css-tlfecz-indicatorContainer {
@@ -118,11 +121,11 @@ border-color: #2c2c2c !important;
 
 .buttonAdd{
   margin-left: 5px;
-  margin-right: 5px;
-  background: white;
+  margin-right: 8px;
+  background: transparent;
   font-size: 33px;
   color: #2c2c2c;
-  border: 1px solid #2c2c2c;
+  border: none;
   width: 40px;
   height: 38px;
   border-radius: 10px;
