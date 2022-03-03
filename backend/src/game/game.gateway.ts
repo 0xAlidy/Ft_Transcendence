@@ -155,6 +155,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     //     else{
     //     }
     // }
+
     @SubscribeMessage('getUserName')
     userName(client: Socket): void {
         var formated : string = this.clients.get(client.id)._login + "'s_room";
@@ -162,6 +163,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         client.emit('username', {username: ret})
         this.updateRoom();
     }
+
     @SubscribeMessage('specRoom')
     specRoom(client: Socket, data: any ): void {
         var room = this.rooms.get(data.room)
@@ -309,12 +311,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 }
     }
 
+    @SubscribeMessage("getRooms")
     updateRoom(){
         var spec : specRooms[] = [];
 
         this.rooms.forEach(element => {
             if (element._isJoinable === false)
-                spec.push({name:element._name, left:element._player._login, right:element._guest._login});
+                spec.push({name:element._name, left:element._player._login, right:element._guest._login, arcade:element._isArcade});
         });
         this.server.to('lobby').emit('SpecRooms', {spec: spec});
     }
@@ -326,4 +329,5 @@ interface specRooms{
     name:string,
     left:string,
     right:string,
+    arcade:boolean
 }

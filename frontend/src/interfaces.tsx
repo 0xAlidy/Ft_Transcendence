@@ -29,3 +29,10 @@ export interface User{
 	firstConnection: boolean;
 	color:string;
 }
+
+export interface specRooms{
+	name:string,
+	left:string,
+	right:string,
+	arcade:boolean
+}
