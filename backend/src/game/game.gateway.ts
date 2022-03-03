@@ -84,6 +84,18 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             }
         })
     }
+
+    refreshFrontAll(login:string){
+		this.clients.forEach(element => {
+			this.refreshFrontBySocket(element._socket, login);
+		})
+	}
+
+	refreshFrontBySocket(socket:Socket, login:string) {
+		if (socket)
+			socket.emit('refreshUser', {login: login});
+	}
+
     @SubscribeMessage('cancelPrivate')
     cancelPrivate(client: Socket, data: any){
         var cli = this.clients.get(client.id);
@@ -157,9 +169,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         room._player._socket.join(data.room);
         room._guest._socket.leave('lobby');
         room._guest._socket.join(data.room);
-        this.userService.setInGameBylogin(room._player._login, 1);
-        this.userService.setInGameBylogin(room._guest._login, 1);
-        room._player._socket.emit('startGame', {id: 1, room: data.room, nameA: room._player._login, nameB: room._guest._login, arcade:room._isArcade})
+        this.userService.setInGameBylogin(room._player._login, 2);
+        this.userService.setInGameBylogin(room._guest._login, 2);
+        this.refreshFrontAll(room._player._login);
+        this.refreshFrontAll(room._guest._login);
+        room._player._socket.emit('startGame', {id: 1, room: data.room, nameA: room._player._login, nameB: room._guest._login, arcade:room._isArcade});
         room._guest._socket.emit('startGame', {id: 2, room: data.room, nameA: room._player._login, nameB: room._guest._login, arcade:room._isArcade});
         cli._isInvitable = false;
         guest._isInvitable = false;
@@ -188,8 +202,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             userTwo._socket.leave('lobby');
             userTwo._socket.join(roomName);
             room._room.emit('SearchStatus', {bool: false})
-            await this.userService.setInGameBylogin(room._player._login, 1);
-            await this.userService.setInGameBylogin(room._guest._login, 1);
+            await this.userService.setInGameBylogin(room._player._login, 2);
+            await this.userService.setInGameBylogin(room._guest._login, 2);
+            this.refreshFrontAll(room._player._login);
+            this.refreshFrontAll(room._guest._login);
             room._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true})
             room._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true});
             userOne._isInvitable = false;
@@ -224,8 +240,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             userTwo._socket.leave('lobby');
             userTwo._socket.join(roomName);
             room._room.emit('SearchStatus', {bool: false})
-            await this.userService.setInGameBylogin(room._player._login, 1);
-            await this.userService.setInGameBylogin(room._guest._login, 1);
+            await this.userService.setInGameBylogin(room._player._login, 2);
+            await this.userService.setInGameBylogin(room._guest._login, 2);
+            this.refreshFrontAll(room._player._login);
+            this.refreshFrontAll(room._guest._login);
             room._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:false})
             room._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:false});
             userOne._isInvitable = false;
@@ -304,16 +322,20 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 this.userService.xp(room._guest._token, 50);
                 this.userService.loose(room._player._token);
                 this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA, room._isArcade);
-                await this.userService.setInGameBylogin(room._player._login, 0);
-                await this.userService.setInGameBylogin(room._guest._login, 0);
+                await this.userService.setInGameBylogin(room._player._login, 1);
+                await this.userService.setInGameBylogin(room._guest._login, 1);
+                this.refreshFrontAll(room._player._login);
+                this.refreshFrontAll(room._guest._login);
             }
             if (ret == 2){
                 this.userService.win(room._player._token);
                 this.userService.xp(room._player._token, 50);
                 this.userService.loose(room._guest._token);
                 this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB, room._isArcade);
-                await this.userService.setInGameBylogin(room._player._login, 0);
-                await this.userService.setInGameBylogin(room._guest._login, 0);
+                await this.userService.setInGameBylogin(room._player._login, 1);
+                await this.userService.setInGameBylogin(room._guest._login, 1);
+                this.refreshFrontAll(room._player._login);
+                this.refreshFrontAll(room._guest._login);
         }
         this.rooms.delete(room._name);
         this.updateRoom();}
