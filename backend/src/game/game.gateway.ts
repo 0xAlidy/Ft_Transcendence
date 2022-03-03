@@ -172,7 +172,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.deletePrivRoomByLogin(this.clients.get(client.id)._login);
         console.log(this.clients.get(client.id)._login + 'join waiting match')
         client.emit('SearchStatus', {bool: true})
-        client.emit('pendingSearch');
         if (this.clientsSearchingArcade.length == 2)
         {
             var userOne = this.clientsSearchingArcade.at(1)
@@ -199,6 +198,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             this.index++;
             this.updateRoom();
         }
+        else
+            client.emit('pendingSearch');
     }
 
     @SubscribeMessage('searchRoom')
@@ -207,7 +208,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.deletePrivRoomByLogin(this.clients.get(client.id)._login);
         console.log(this.clients.get(client.id)._login + 'join waiting match')
         client.emit('SearchStatus', {bool: true})
-        client.emit('pendingSearch');
         if (this.clientsSearching.length == 2)
         {
             var userOne = this.clientsSearching.at(1)
@@ -234,6 +234,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             this.index++;
             this.updateRoom();
         }
+        else
+            client.emit('pendingSearch');
     }
     // @SubscribeMessage('createRoom')
     // createRoom(client: Socket): void {
