@@ -21,7 +21,7 @@ import {DuelButton, DuelNotif, InviteButton, InviteNotif } from '../utility/util
 
 interface popupScore{open:boolean, win:boolean, adv:string}
 
-export default class MainPage extends React.Component<{ token: string, invite:boolean },{loginHistory:string|null, lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:User|null, popupOpen:boolean, popupInfo:popupScore | null}>{
+export default class MainPage extends React.Component<{ token: string, invite:boolean },{inGame:boolean, loginHistory:string|null, lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:User|null, popupOpen:boolean, popupInfo:popupScore | null}>{
 
 	menuState: any
 	selector : any;
@@ -37,6 +37,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			socket: null,
 			User: null,
 			popupOpen: false,
+			inGame:false,
 			token: this.props.token
 		};
 		this.ref = React.createRef();
@@ -153,7 +154,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 	}
 
 	notifyDuel = (login:string, room:string) => {
-		if(this.state.socket && this.state.User)
+		if(this.state.socket && this.state.User && this.state.inGame === false)
 		{
 			var ret: JSX.Element = <DuelNotif user={this.state.User} login={login} socket={this.state.socket}/>
 			var er: JSX.Element = <DuelButton room={room} login={login} socket={this.state.socket}/>
@@ -169,13 +170,13 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 
 	openGame(){
 		this.ref.current.openGame();
-		this.setState({lastSelect: this.state.selector})
+		this.setState({lastSelect: this.state.selector, inGame:true})
 		this.setState({selector:'none'})
 	}
 
 	closeGame(){
 		this.ref.current.closeGame();
-		this.setState({selector:this.state.lastSelect})
+		this.setState({selector:this.state.lastSelect, inGame:false})
 	}
 
 	closePopup(){
@@ -206,7 +207,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 					<div className="logo">
 						<Logo className="mainLogo"/>
 					</div>
-					<Menu forceHistory={this.state.loginHistory? true: false} User={this.state.User} selector={this.state.selector} onChange={this.menuChange} socket={this.state.socket}/>
+					<Menu blocked={this.state.inGame} forceHistory={this.state.loginHistory? true: false} User={this.state.User} selector={this.state.selector} onChange={this.menuChange} socket={this.state.socket}/>
 					<Chat socket={this.state.socket} User={this.state.User} />
 					<div className="game" id="game">
 						{this.state.selector === 'profile' && <Profile token={this.props.token} socket={this.state.socket}/>}

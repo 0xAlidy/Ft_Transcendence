@@ -8,7 +8,7 @@ import { Socket } from "socket.io-client";
 import { User } from '../../../interfaces';
 //import axios from 'axios';
 
-export default class Menu extends React.Component<{forceHistory:boolean, selector:any, User: User, onChange :(selector:string) => void, socket:Socket}, {img:string|null}>{
+export default class Menu extends React.Component<{blocked:boolean, forceHistory:boolean, selector:any, User: User, onChange :(selector:string) => void, socket:Socket}, {img:string|null}>{
     constructor(props :any) {
         super(props);
         this.state = {
@@ -17,29 +17,40 @@ export default class Menu extends React.Component<{forceHistory:boolean, selecto
     }
 
     handleFriendClick = () => {
+        if(this.props.blocked)
+            return;
         this.props.onChange('friends')
     }
 
     handleProfileClick = () =>{
+        if(this.props.blocked)
+            return;
         this.props.onChange('profile')
     }
 
     handleGameClick = () =>{
+        if(this.props.blocked)
+            return;
         this.props.onChange('game')
     }
 
     handleHistoryClick = () =>{
+        if(this.props.blocked)
+            return;
         this.props.onChange('history')
     }
 
     handleAdminClick = () =>{
+        if(this.props.blocked)
+            return;
         this.props.onChange('admin')
     }
 
     handleRulesClick = () =>{
+        if(this.props.blocked)
+            return;
         this.props.onChange('rules')
     }
-     // src ={this.state.img ? this.state.img : this.props.User.imgUrl}
     render(){
         return (
             <div className="menu">
