@@ -358,8 +358,8 @@ import { Room } from "src/chat/class/Room.class";
 		await this.ChatRoomsRepository.save(room)
 	}
 
-	async muteUser(msg:Msg){
-		var toMute = msg.message.split(' ').at(1);
+	async muteUser(msg:Msg, login:string){
+		var toMute = login;
 		var time = +msg.message.split(' ').at(2);
 		var room = await this.findRoomByName(msg.dest)
 		if (this.isMuted(room,toMute) < 0){

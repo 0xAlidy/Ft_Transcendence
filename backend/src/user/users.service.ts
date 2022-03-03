@@ -169,6 +169,14 @@ export class UsersService {
     return null;
   }
 
+  async getLoginByNickname(nick:string)
+  {
+    var user = await this.findOneByNickname(nick);
+    if(user)
+      return(user.login)
+    return null;
+  }
+
   async changeImgUrl(data:any)
   {
     var user = await this.findOne(data.token);
