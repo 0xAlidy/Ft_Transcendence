@@ -124,7 +124,10 @@ export function InviteButton(props:any){
 			props.socket.emit('cancel')
 			props.closeToast()
 		}
-
+		props.socket.on('SearchStatus', (data:any) => {
+			if(data.bool === false)
+				props.closeToast()
+		})
 		return (
 			<div className='buttonNotifWrap'>
 				<button className='buttonNotif' onClick={() => deny()}>
