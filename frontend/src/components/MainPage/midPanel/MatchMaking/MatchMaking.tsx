@@ -6,7 +6,7 @@ import { User } from "../../../../interfaces";
 import ItemSpec from "./itemSpec";
 import { specRooms } from "../../../../interfaces";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// @ts-ignore 
+// @ts-ignore
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
 
@@ -19,7 +19,7 @@ export default class MatchMaking extends React.Component<{socket:Socket, user:Us
 			rooms:[]
 		}
 	}
-	
+
 	componentDidMount(){
 		this.props.socket.emit("getRooms")
 		this.props.socket.on('SpecRooms', (data:any) => {
@@ -31,19 +31,7 @@ export default class MatchMaking extends React.Component<{socket:Socket, user:Us
 		})
 		/* CHANGE SEARCH BY BACK NOT BY STATE */
 
-		const box = document.getElementById("spectatePanel");
-		const shadow = document.getElementById("shadow");
-		const title = document.getElementById("vsPanelMenu");
-		if (box !== null && shadow !== null && title !== null)
-			box.addEventListener("scroll", function() {
-				if (this.scrollTop > 5)
-				{
-					shadow.style.boxShadow= "0px -11px 20px 13px var(--main-color)";
-					title.style.boxShadow= "none";
-				}
-				else
-					title.style.boxShadow= "0px 16px 13px 0px hsl(0deg 0% 7%)";
-			});
+	
 	}
 
 	OpenSpectate = () =>{
@@ -88,11 +76,11 @@ export default class MatchMaking extends React.Component<{socket:Socket, user:Us
 								<>
 									<h2>Select your game mode</h2>
 									<div className="gameButtonBox">
-										<button className="gameButton" value='SEARCH'  onClick={() => {this.props.socket.emit('searchRoom'); this.setState({Searching:true})}}>
+										<button className="gameButton" value='SEARCH'  onClick={() => {this.props.socket.emit('searchRoom')}}>
 											<FontAwesomeIcon icon={solid('hand-fist')}/>
 											<h3>Normal</h3>
 										</button>
-										<button className="gameButton" value='SEARCH'  onClick={() => {this.props.socket.emit('searchArcade'); this.setState({Searching:true})}}>
+										<button className="gameButton" value='SEARCH'  onClick={() => {this.props.socket.emit('searchArcade')}}>
 											<FontAwesomeIcon icon={solid('hat-wizard')}/>
 											<h3>Arcade</h3>
 										</button>
@@ -101,7 +89,7 @@ export default class MatchMaking extends React.Component<{socket:Socket, user:Us
 								:
 								<>
 									<h2>Looking for a game . . .</h2>
-									<button className="gameButton cancelButton" value='CANCEL' onClick={() => {this.props.socket.emit('cancel'); this.setState({Searching:false})}}>
+									<button className="gameButton cancelButton" value='CANCEL' onClick={() => {this.props.socket.emit('cancel')}}>
 										<h4>Cancel</h4>
 									</button>
 								</>
@@ -110,12 +98,12 @@ export default class MatchMaking extends React.Component<{socket:Socket, user:Us
 						:
 						<div id="spectatePanel">
 							{	this.state.rooms.map((item :specRooms) => {
-									return <ItemSpec data={item} onSpecCLick={this.onSpecClick} user={this.props.user} socket={this.props.socket} key={item.name}/>;		
+									return <ItemSpec data={item} onSpecCLick={this.onSpecClick} user={this.props.user} socket={this.props.socket} key={item.name}/>;
 								})
 							}
 						</div>
 					}
-				</div>	
+				</div>
 			</div>
     	)
 	}

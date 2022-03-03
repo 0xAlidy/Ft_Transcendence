@@ -42,6 +42,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     handleDisconnect(client: Socket) {
         this.logger.log("Disconnect:    "+ client.id.slice(0, 4));
         var user = this.clients.get(client.id)
+        this.deletePrivRoomByLogin(user._login)
         if (user)
         {
             var cs = this.clientsSearching.indexOf(user)
@@ -56,6 +57,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             {
                 this.abandon(client);
             }
+            this.deletePrivRoomByLogin(user._login)
         }
         this.clients.delete(client.id);
     }
@@ -69,23 +71,120 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         })
         return ret
     }
+    deletePrivRoomByLogin(login:string)
+    {
+        this.rooms.forEach((room) =>{
+            console.log("guest:"+ room._guest._login +"  sender:" +room._player._login+ "    login:"+ login)
+            if(room._name.startsWith('Privroom'))
+            {
+                if(room._guest._login === login || room._player._login === login)
+                {
+                    room._player._socket.emit('closeInviteNotif'+ room._guest._login );
+                    room._guest._socket.emit('closeInviteNotif'+ room._player._login );
+                    room._player._socket.emit('closePendingNotif');
+                    room._guest._socket.emit('closePendingNotif');
+                    this.rooms.delete(room._name)
+                }
+            }
+        })
+    }
+
+    refreshFrontAll(login:string){
+		this.clients.forEach(element => {
+			this.refreshFrontBySocket(element._socket, login);
+		})
+	}
+
+	refreshFrontBySocket(socket:Socket, login:string) {
+		if (socket)
+			socket.emit('refreshUser', {login: login});
+	}
+
+    @SubscribeMessage('cancelPrivate')
+    cancelPrivate(client: Socket, data: any){
+        var cli = this.clients.get(client.id);
+        this.rooms.delete("Privroom"+cli._login)
+        var guest = this.getUserClassbyName(data.login);
+        if(guest){
+            guest._socket.emit('closeInviteNotif'+cli._login);
+        }
+    }
+
+    isInPrivateRoom(login:string){
+        var ret = false;
+        this.rooms.forEach(room => {
+            if(room._name.startsWith('Privroom'))
+            {
+                if(room._guest._login === login || room._player._login === login)
+                {
+                    ret = true;
+                }
+            }
+        });
+        return ret;
+    }
 
     @SubscribeMessage('createPrivateSession')
     createPrivateSession(client: Socket, data: any){
         var cli = this.clients.get(client.id);
+        if(this.rooms.get("Privroom"+cli._login))
+        {
+            cli._socket.emit('chatNotifError',{msg: 'you are already pending for a match!'})
+            return;
+        }
+        if(this.isInPrivateRoom(cli._login))
+        {
+            cli._socket.emit('chatNotifError',{msg: 'You have to accept/refuse the request!'})
+            return;
+        }
         console.log(data.login)
         var guest = this.getUserClassbyName(data.login);
         if(!guest){
             cli._socket.emit('chatNotifError',{msg: 'your friend is not connected!'})
             return
         }
-        this.rooms.set('Privroom' +this.index, new roomClass('Privroom' +this.index, cli , guest, this.server.to('Privroom' +this.index), data.arcade));
         if(guest._isInvitable){
-            guest._socket.emit('inviteDuel', {adv:cli._login, room:'Privroom' +this.index})
+            cli._socket.emit('pendingInvite', {login:guest._login})
+            guest._socket.emit('inviteDuel', {adv:cli._login, room:'Privroom' +cli._login})
+            this.rooms.set('Privroom' +cli._login, new roomClass('Privroom' +cli._login, cli , guest, this.server.to('Privroom' +cli._login), data.arcade));
         }
         else
             cli._socket.emit('chatNotifError',{msg: 'your friend is already in a game!'})
-        this.index++;
+    }
+
+    @SubscribeMessage('denyDuel')
+    denyDuel(client: Socket, data: any){
+        if(this.rooms.get(data.room))
+        {
+            this.rooms.delete(data.room)
+            var sender = this.getUserClassbyName(data.login);
+            if(sender){
+                sender._socket.emit('closePendingNotif');
+            }
+        }
+        // var cli = this.clients.get(client.id);
+        // console.log(data.login)
+        // var guest = this.getUserClassbyName(data.login);
+        // if(!guest){
+        //     cli._socket.emit('chatNotifError',{msg: 'your friend is not connected!'})
+        //     return
+        // }
+        // if(guest._isInvitable){
+        //     cli._socket.emit('pendingInvite', {login:guest._login})
+        //     guest._socket.emit('inviteDuel', {adv:cli._login, room:'Privroom' +this.index})
+        //     this.rooms.set('Privroom' +this.index, new roomClass('Privroom' +this.index, cli , guest, this.server.to('Privroom' +this.index), data.arcade));
+        // }
+        // else
+        //     cli._socket.emit('chatNotifError',{msg: 'your friend is already in a game!'})
+        // this.index++;
+    }
+    deleteFromWaitingList(cli:clientClass){
+        var idx = this.clientsSearching.indexOf(cli)
+        var idxa = this.clientsSearchingArcade.indexOf(cli)
+        if(idx !== -1)
+            this.clientsSearching.splice(idx, 1)
+        if(idxa !== -1)
+            this.clientsSearchingArcade.splice(idx, 1)
     }
 
     @SubscribeMessage('joinPrivateSession')
@@ -93,6 +192,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         var room = this.rooms.get(data.room)
         var cli = this.getUserClassbyName(room._player._login)
         var guest = this.getUserClassbyName(room._guest._login)
+        this.deleteFromWaitingList(cli)
+        this.deleteFromWaitingList(guest)
         if(!cli || !guest)
             return;
         room._player._room = data.room;
@@ -101,9 +202,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         room._player._socket.join(data.room);
         room._guest._socket.leave('lobby');
         room._guest._socket.join(data.room);
-        this.userService.setInGameBylogin(room._player._login, 1);
-        this.userService.setInGameBylogin(room._guest._login, 1);
-        room._player._socket.emit('startGame', {id: 1, room: data.room, nameA: room._player._login, nameB: room._guest._login, arcade:room._isArcade})
+        this.userService.setInGameBylogin(room._player._login, 2);
+        this.userService.setInGameBylogin(room._guest._login, 2);
+        this.refreshFrontAll(room._player._login);
+        this.refreshFrontAll(room._guest._login);
+        room._player._socket.emit('startGame', {id: 1, room: data.room, nameA: room._player._login, nameB: room._guest._login, arcade:room._isArcade});
         room._guest._socket.emit('startGame', {id: 2, room: data.room, nameA: room._player._login, nameB: room._guest._login, arcade:room._isArcade});
         cli._isInvitable = false;
         guest._isInvitable = false;
@@ -113,7 +216,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @SubscribeMessage('searchArcade')
     async searchArcade(client: Socket){
         this.clientsSearchingArcade.push(this.clients.get(client.id))
+        this.deletePrivRoomByLogin(this.clients.get(client.id)._login);
         console.log(this.clients.get(client.id)._login + 'join waiting match')
+        client.emit('SearchStatus', {bool: true})
         if (this.clientsSearchingArcade.length == 2)
         {
             var userOne = this.clientsSearchingArcade.at(1)
@@ -130,8 +235,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             userTwo._socket.leave('lobby');
             userTwo._socket.join(roomName);
             room._room.emit('SearchStatus', {bool: false})
-            await this.userService.setInGameBylogin(room._player._login, 1);
-            await this.userService.setInGameBylogin(room._guest._login, 1);
+            await this.userService.setInGameBylogin(room._player._login, 2);
+            await this.userService.setInGameBylogin(room._guest._login, 2);
+            this.refreshFrontAll(room._player._login);
+            this.refreshFrontAll(room._guest._login);
             room._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true})
             room._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true});
             userOne._isInvitable = false;
@@ -140,12 +247,16 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             this.index++;
             this.updateRoom();
         }
+        else
+            client.emit('pendingSearch');
     }
 
     @SubscribeMessage('searchRoom')
     async search(client: Socket){
         this.clientsSearching.push(this.clients.get(client.id))
+        this.deletePrivRoomByLogin(this.clients.get(client.id)._login);
         console.log(this.clients.get(client.id)._login + 'join waiting match')
+        client.emit('SearchStatus', {bool: true})
         if (this.clientsSearching.length == 2)
         {
             var userOne = this.clientsSearching.at(1)
@@ -162,16 +273,20 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             userTwo._socket.leave('lobby');
             userTwo._socket.join(roomName);
             room._room.emit('SearchStatus', {bool: false})
-            await this.userService.setInGameBylogin(room._player._login, 1);
-            await this.userService.setInGameBylogin(room._guest._login, 1);
-            room._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true})
-            room._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:true});
+            await this.userService.setInGameBylogin(room._player._login, 2);
+            await this.userService.setInGameBylogin(room._guest._login, 2);
+            this.refreshFrontAll(room._player._login);
+            this.refreshFrontAll(room._guest._login);
+            room._player._socket.emit('startGame', {id: 1, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:false})
+            room._guest._socket.emit('startGame', {id: 2, room: roomName, nameA: room._player._login, nameB: room._guest._login, arcade:false});
             userOne._isInvitable = false;
             userTwo._isInvitable = false;
             room._isJoinable = false;
             this.index++;
             this.updateRoom();
         }
+        else
+            client.emit('pendingSearch');
     }
     // @SubscribeMessage('createRoom')
     // createRoom(client: Socket): void {
@@ -185,13 +300,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     //     }
     // }
 
-    @SubscribeMessage('getUserName')
-    userName(client: Socket): void {
-        var formated : string = this.clients.get(client.id)._login + "'s_room";
-        var ret = this.clients.get(client.id)._login;
-        client.emit('username', {username: ret})
-        this.updateRoom();
-    }
 
     @SubscribeMessage('specRoom')
     specRoom(client: Socket, data: any ): void {
@@ -207,36 +315,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         }
     }
 
-    @SubscribeMessage('joinRoom')
-    joinRoom(client: Socket, room: string ): void {
-        this.rooms.forEach(element => {
-            if (element._name == room && !element._isJoinable)
-            {
-                element._player._socket.leave('lobby');
-                element._player._socket.join(element._name);
-                client.leave('lobby');
-                client.join(element._name);
-                element.addSpec(this.clients.get(client.id));
-                this.clients.get(client.id).setRoom(room);
-                client.emit('startGame', {id: 3, room: room, nameA: element._player._login, nameB: element._guest._login});
-                this.updateRoom();
-            }
-            if(element._name == room && element._isJoinable)
-            {
-                element._player._socket.leave('lobby');
-                element._player._socket.join(element._name);
-                client.leave('lobby');
-                client.join(element._name);
-                element.addGuest(this.clients.get(client.id));
-                this.clients.get(client.id).setRoom(room);
-                element._player._socket.emit('startGame', {id: 1, room: room, nameA: element._player._login, nameB: element._guest._login, arcade:true})
-                client.emit('startGame', {id: 2, room: room, nameA: element._player._login, nameB: element._guest._login, arcade:true});
-                element._isJoinable = false;
-                this.updateRoom();
-            }
-        });
-    }
-
     @SubscribeMessage('cancel')
     cancelSearch(client: Socket): void {
         var index = this.clientsSearching.indexOf(this.clients.get(client.id))
@@ -249,6 +327,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         if (index > -1) {
             this.clientsSearchingArcade.splice(index, 1); // 2nd parameter means remove one item only
         }
+        client.emit('SearchStatus', {bool: false})
     }
     @SubscribeMessage('end')
     async abandon(client: Socket){
@@ -269,16 +348,20 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 this.userService.xp(room._guest._token, 50);
                 this.userService.loose(room._player._token);
                 this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA, room._isArcade);
-                await this.userService.setInGameBylogin(room._player._login, 0);
-                await this.userService.setInGameBylogin(room._guest._login, 0);
+                await this.userService.setInGameBylogin(room._player._login, 1);
+                await this.userService.setInGameBylogin(room._guest._login, 1);
+                this.refreshFrontAll(room._player._login);
+                this.refreshFrontAll(room._guest._login);
             }
             if (ret == 2){
                 this.userService.win(room._player._token);
                 this.userService.xp(room._player._token, 50);
                 this.userService.loose(room._guest._token);
                 this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB, room._isArcade);
-                await this.userService.setInGameBylogin(room._player._login, 0);
-                await this.userService.setInGameBylogin(room._guest._login, 0);
+                await this.userService.setInGameBylogin(room._player._login, 1);
+                await this.userService.setInGameBylogin(room._guest._login, 1);
+                this.refreshFrontAll(room._player._login);
+                this.refreshFrontAll(room._guest._login);
         }
         this.rooms.delete(room._name);
         this.updateRoom();}

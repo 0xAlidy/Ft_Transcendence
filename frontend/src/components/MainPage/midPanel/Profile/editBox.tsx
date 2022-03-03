@@ -37,8 +37,8 @@ export default class EditBox extends React.Component<{ value:any, User:any, onCh
 				this.setState({nicknameError: "The nickname must contain only letters and numbers"});
 			else if (this.input.value.length < 4)
 				this.setState({nicknameError: "The nickname must contain at least 4 characters"});
-			else if (this.input.value.length > 15)
-				this.setState({nicknameError: "The nickname must contain a maximum of 15 characters"});
+			else if (this.input.value.length > 10)
+				this.setState({nicknameError: "The nickname must contain a maximum of 10 characters"});
 			else
 			{
 				let res = await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/user/nicknameAvailable?nickname=" + this.input.value)

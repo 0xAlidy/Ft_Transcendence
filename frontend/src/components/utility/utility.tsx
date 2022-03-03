@@ -86,10 +86,13 @@ export function InviteButton(props:any){
 	}
 
 	const deny = () =>{
-		props.socket.emit('denyDuel', {login:props.room})
+		props.socket.emit('denyDuel', {login:props.login, room:props.room})
 		props.closeToast()
 	}
 
+	props.socket.on('closeInviteNotif'+props.login, (data:any) => {
+				props.closeToast()
+	})
 
 	return (
 		<div className='buttonNotifWrap'>
@@ -115,3 +118,64 @@ export function InviteButton(props:any){
 		</>
 	);
 }
+	export function PendingSearchButton(props:any){
+
+		const deny = () =>{
+			props.socket.emit('cancel')
+			props.closeToast()
+		}
+		props.socket.on('SearchStatus', (data:any) => {
+			if(data.bool === false)
+				props.closeToast()
+		})
+		return (
+			<div className='buttonNotifWrap'>
+				<button className='buttonNotif' onClick={() => deny()}>
+					<FontAwesomeIcon className="buttonIcon" icon={solid('xmark')}/>
+				</button>
+			</div>
+		)
+	  }
+
+	  export function PendingSearchNotif(){
+		// Vous pouvez utiliser des Hooks ici !
+
+		return (<>
+				{"⚔️ Waiting for oponent..."}
+			</>
+		);
+	}
+	export function PendingInviteButton(props:any){
+
+		const deny = () =>{
+			props.socket.emit('cancelPrivate', {login:props.login});
+			props.closeToast()
+		}
+		props.socket.on('closePendingNotif', () => {
+			props.closeToast()
+		})
+		props.socket.on('startGame', () => {
+			props.closeToast()
+		})
+
+		return (
+			<div className='buttonNotifWrap'>
+				<button className='buttonNotif' onClick={() => deny()}>
+					<FontAwesomeIcon className="buttonIcon" icon={solid('xmark')}/>
+				</button>
+			</div>
+		)
+	  }
+
+	  export function PendingInviteNotif(props:{login:string, user:User, socket:Socket}){
+		// Vous pouvez utiliser des Hooks ici !
+
+		return (<>
+				{"⚔️ Waiting for " + props.login}
+				<br/>
+				<div style={{display: 'flex',width:'100%'}}>
+					<ProfileShortCut login={props.login} User={props.user} socket={props.socket} />
+				</div>
+			</>
+		);
+	}
