@@ -154,6 +154,10 @@ export function InviteButton(props:any){
 		props.socket.on('closePendingNotif', () => {
 			props.closeToast()
 		})
+		props.socket.on('startGame', () => {
+			props.closeToast()
+		})
+
 		return (
 			<div className='buttonNotifWrap'>
 				<button className='buttonNotif' onClick={() => deny()}>

@@ -86,6 +86,9 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						this.state.socket.on('startGame', () => {
 							this.openGame();
 						});
+						this.state.socket.on('closeGame', () => {
+							this.closeGame();
+						});
 						this.state.socket.on('pendingSearch', () => {
 							this.pendingSearch();
 						});
