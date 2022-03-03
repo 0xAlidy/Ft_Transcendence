@@ -37,6 +37,11 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 		this.props.socket.emit('inviteFriend', { login:this.props.login })
 	}
 
+	joinPriv = () => {
+		this.props.socket.emit('chatPrivate', {name:this.props.login, other:this.props.User.login })
+		this.close();
+	}
+
 	removeFriend = () => {
 		this.props.socket.emit('removeFriend', { login:this.props.login })
 	}
@@ -109,7 +114,7 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 						<div id='buttonSection'>
 							{
 								this.state.User.isFriend < 3 &&
-								<FontAwesomeIcon className="chooseButton" icon={solid('message')}/>
+								<FontAwesomeIcon className="chooseButton" onClick={this.joinPriv} icon={solid('message')}/>
 							}
 							<FontAwesomeIcon className="chooseButton" onClick={this.handleHistory} icon={solid('table-list')}/>
 							{

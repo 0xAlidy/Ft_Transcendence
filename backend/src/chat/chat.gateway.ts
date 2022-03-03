@@ -7,6 +7,13 @@ import { Client } from 'socket.io/dist/client';
 import { UsersService } from 'src/user/users.service';
 import { Msg } from 'src/ChatRooms/Msg.dto';
 
+
+
+interface opt {
+	value:string,
+	label:string
+}
+
 @WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit {
 
@@ -29,9 +36,10 @@ export class ChatGateway implements OnGatewayInit {
     client.join("general");
     console.log(client.handshake.query.token as string)
     var user = await this.userService.findOne(client.handshake.query.token as string)
-    this.clients.set(client.id,new clientClass(client, user.token, user.login));
-    client.emit('updateRooms',{rooms: this.rooms});
+	this.clients.set(client.id,new clientClass(client, user.token, user.login));
+	await this.updateRoom();
 	this.loadRoom(client, 'general')
+	this.setPlaceHolder(client, 'general')
   }
 
   handleDisconnect(client: Socket) {
@@ -42,8 +50,8 @@ export class ChatGateway implements OnGatewayInit {
   }
 
   @SubscribeMessage('getRoomList')
-  roomList(client:Socket, data:any){
-    client.emit('updateRooms',{rooms: this.rooms});
+  async roomList(client:Socket, data:any){
+	await this.updateRoom();
   }
 
   @SubscribeMessage('password')
@@ -53,6 +61,7 @@ export class ChatGateway implements OnGatewayInit {
     if (data.pass === decrypted)
     {
 	  await this.loadRoom(client, data.room)
+	  this.setPlaceHolder(client, data.name)
       client.leave(this.clients.get(client.id)._room)
       client.join(data.room)
       this.clients.get(client.id)._room = data.room
@@ -62,14 +71,40 @@ export class ChatGateway implements OnGatewayInit {
   @SubscribeMessage('newRoom')
   async addRoom(client:Socket, data:any){
     if (data.password){
-      var passEncrypt = this.chatService.encrypt(data.password)
-      var update = await this.chatService.create(data.name, data.creator, passEncrypt);
+    	var passEncrypt = this.chatService.encrypt(data.password)
+    	await this.chatService.create(data.name, data.creator, passEncrypt);
     }
     else
-      var update = await this.chatService.create(data.name, data.creator, '');
-    this.server.emit('updateRooms',{rooms: update})
+		await this.chatService.create(data.name, data.creator, '');
+	await this.updateRoom();
 	this.loadRoom(client, data.name);
+	this.setPlaceHolder(client, data.name)
 }
+
+
+	async setPlaceHolder (client:Socket, room:string){
+		var ret:string = "";
+		if(room.startsWith('-'))
+		{
+			var parse = room.split('-').at(1)
+				if (parse)
+					var nick = await this.userService.findOneByLogin(parse.split(' ').at(0))
+				var nickOther = await this.userService.findOneByLogin(room.split('/').at(1))
+				if (nick && nickOther){
+					var user = await this.userService.findOneByLogin(this.clients.get(client.id)._pseudo)
+					if (user){
+						if (user.nickname === nick.nickname)
+							ret = nickOther.nickname
+						else
+							ret = nick.nickname
+					}
+					client.emit('placeHolder', {name:ret})
+				}
+		}
+		else
+			client.emit('placeHolder', {name:room})
+
+	}
 
   @SubscribeMessage('joinRoom')
   async joinRoom(client:Socket, data:any){
@@ -77,8 +112,9 @@ export class ChatGateway implements OnGatewayInit {
     var user = this.clients.get(client.id)._pseudo
     if(bool){
 		if (await this.chatService.isBanned(user,data.room) == false){
-      		var msg = await this.chatService.getMessagesByRoom(data.room);
+			  var msg = await this.chatService.getMessagesByRoom(data.room);
 			this.loadRoom(client, data.room)
+			this.setPlaceHolder(client, data.room)
      		this.chatService.addUser(user, data.room)
 			  this.clients.get(client.id)._room = data.room
 		}
@@ -107,7 +143,7 @@ export class ChatGateway implements OnGatewayInit {
   {
 	  var user = this.clients.get(client.id);
 	  if (user._room !== "")
-	  	user._socket.leave(user._room);
+	  user._socket.leave(user._room);
 	  user._socket.join(roomName)
 	  var msg = await this.chatService.getMessagesByRoom(roomName);
 	  client.emit('loadRoom', {room:roomName, msg:msg})
@@ -154,9 +190,8 @@ async command(client: Socket,Message:Msg){
 			if(await this.chatService.isOwner(Message.sender,Message.dest) == true){
 				await this.loadRoomAll(Message.sender,'general')
 				if(await this.chatService.deleteRoom(Message.dest) === 0){
-					var rooms = await this.chatService.getAllRoomName();
 					this.server.to(Message.dest).emit('chatNotif',{msg:'the room' + Message.dest + 'has been deleted, you are now logged to general'})
-					this.server.emit('updateRooms', {rooms:rooms});
+					await this.updateRoom();
 				}
 				else
 					client.emit('chatNotifError', {msg:'Canno\'t find ' + Message.dest})
@@ -176,6 +211,7 @@ async command(client: Socket,Message:Msg){
 				if (resp === 0){
 					client.emit('chatNotif', {msg:Message.message.split(' ').at(1) + 'is now banned'})
 					this.loadRoom(this.getUserByName(login)._socket, 'general')
+					this.setPlaceHolder(client,'general')
 					this.messageToOtherClient(login, 'chatNotifError', {msg:'You are now banned for the channel '+ Message.dest})
 				}
 				if (resp === 1)
@@ -295,7 +331,72 @@ async normalMessage(client:Socket, Msg:Msg)
 	//else banned or muted
 }
 
-  @SubscribeMessage('sendMessage')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async updateRoom(){
+	var rooms = await this.chatService.getAllRoomName();
+	var pub:opt[] = [];
+	var priv:opt[] = [];
+	var grouped = [];
+	for (const element of rooms) {
+		var room = await this.chatService.findRoomByName(element)
+		if (room.IsPrivate == false)
+			pub.push({value:element,label:element})
+		else{
+			var parse = room.name.split('-').at(1)
+			var login1 = await this.userService.getNickame(parse.split(' ').at(0))
+			var loginOther = await this.userService.getNickame(room.name.split('/').at(1))
+			var label = "-" + login1 + " /" + loginOther
+			priv.push({value:element,label:label})
+		}
+	}
+	grouped = [{label: "Room", options:pub}, {label:"priv", options:priv}];
+	
+	this.server.emit('updateRooms',{rooms: grouped})
+}
+
+@SubscribeMessage('chatPrivate')
+async chatPriv(client:Socket, data:any){
+		var ret = await this.chatService.addPriv(data.name,data.other);
+		if (ret === 0){
+			var room = await this.chatService.findPriv(data.name,data.other)
+			await this.updateRoom();
+			await this.loadRoom(client,room.name)
+			this.setPlaceHolder(client, room.name)
+			client.emit('chatNotif', {msg:'You start a new private conversation with ' + data.name})
+			this.messageToOtherClient(data.other, 'chatNotif', {msg:data.name + " has start a new private conversation with you"})
+		}
+		if (ret === 1)
+			client.emit('chatNotifError', {msg:data.other + ' doesn\'t exist'})
+	if (ret === 2)
+	{
+		var room = await this.chatService.findPriv(data.name,data.other)
+		await this.loadRoom(client,room.name)
+		this.setPlaceHolder(client, room.name)
+	}
+}
+
+
+
+@SubscribeMessage('sendMessage')
   async handleMessage(client: Socket, Message: {sender: string, dest: string, message: string, date: Date }) {
 	if (Message.message.startsWith('/') )
 		this.command(client, Message);

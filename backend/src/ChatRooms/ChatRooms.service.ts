@@ -1,4 +1,4 @@
-import { Injectable, Logger} from "@nestjs/common";
+import { Injectable, Logger, ConsoleLogger} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UsersService } from "src/user/users.service";
 import {Repository} from "typeorm";
@@ -37,7 +37,6 @@ import { Room } from "src/chat/class/Room.class";
 	}
 
 	async checkBlock(name:string, name1:string){
-		console.log(name+ "                       1 " + name1)
 		var tocheck = await this.userService.findOneByLogin(name1)
 		tocheck.blockedUsers.forEach( element => {
 			if (element === name)
@@ -130,19 +129,6 @@ import { Room } from "src/chat/class/Room.class";
 		const decrpyted = Buffer.concat([decipher.update(Buffer.from(text, 'hex')), decipher.final()]);
 		return decrpyted.toString();
 	};
-	
-	// encrypt(str:string) {
-	// 	const cipher = createCipheriv('aes256', this.key, this.iv);
-	// 	const encryptedText = cipher.update(str, 'utf8', 'hex') + cipher.final('hex');
-	// 	return encryptedText;
-	// }
-
-	// decrypt(toDecrypt:string){
-	// 	const decipher = createDecipheriv('aes256', this.key, this.iv);
-	// 	// decipher.setAutoPadding(false)
-	// 	const decryptedText = decipher.update(toDecrypt, 'hex', 'utf8') + decipher.final('utf8');
-	// 	return decryptedText;
-	// }
 
 	async changePass(msg:string, dest:string){
 		var room = await this.findRoomByName(dest)
@@ -168,11 +154,12 @@ import { Room } from "src/chat/class/Room.class";
 
 	
 	async findUser(toFind:string, dest:string){
+		var ret = false
 		var room = await this.findRoomByName(dest)
 		for(var i = 0; i < room.users.length; i++)
 		  if (room.users[i] === toFind)
-			return true
-		return false
+			ret = true
+		return ret
 	  }
 
 	async isBanned(name:string, dest:string){
@@ -209,7 +196,6 @@ import { Room } from "src/chat/class/Room.class";
 				ret = item;
 			}
 		});
-		console.log(ret)
 		return ret;
 	}
 
@@ -220,21 +206,34 @@ import { Room } from "src/chat/class/Room.class";
 		return false
 	}
 
-	async checkDoublonPriv(name1:string,name2:string){
+	async checkDoublonPriv(name:string,other:string){
+		var ret = false
 		var roomlist = await this.getAllRoomName();
-		roomlist.forEach(async element => {
+
+		for (const element of roomlist) {
+			var room = await this.findRoomByName(element)
+			if (room.IsPrivate === true  && await this.findUser(name, element) && await this.findUser(other, element))
+				ret = true
+		}
+		return ret
+	}
+
+	async findPriv(name1:string,name2:string){
+		var ret:ChatRooms | null = null;
+		var roomlist = await this.getAllRoomName();
+
+		for (const element of roomlist) {
 			var room = await this.findRoomByName(element)
 			if (room.IsPrivate === true  && await this.findUser(name1, element) && await this.findUser(name2, element))
-				return true
-		});
-		return false
+				ret = room
+		}
+		return ret
 	}
 
 
 	async  banUser(toBan:string, dest:string){
 		var room = await this.findRoomByName(dest)
 		if(room){
-			console.log("to ban = " + toBan)
 			if ( await this.userService.findOneByLogin(toBan)){
 				if(this.checkDoublon(toBan, room.banUsers) === false){
 					room.banUsers.push(toBan);
@@ -281,29 +280,17 @@ import { Room } from "src/chat/class/Room.class";
 
 
 
-	async addPriv(toPriv:string, sender:string,clientList:any, dest:string){
-		var name = toPriv.split(' ').at(1);
+	async addPriv(sender:string, name:string){
+
 		if (await this.userService.findOneByLogin(name)){
-			if (await this.checkDoublonPriv(name,sender) || name === sender)
-				return "t as deja une room avec lui fdp"
+			if (await this.checkDoublonPriv(name,sender))
+				return 2
 			var user = [sender, name]
 			await this.createPriv(user)
-
-			//send other
-			var client = this.findClientByName(clientList, name);
-			if (client){
-				var roomlist = await this.getAllRoomName()
-
-				var newmsg = {sender: 'system', dest:dest, message: sender + " has started a new private room with you", date: ''}
-				client._socket.emit('updateRooms',{rooms: roomlist})
-				client._socket.emit('ReceiveMessage', {sender: 'system', dest:dest, message: sender + " has started a new private room with you", date: ''})
-			}
-			else
-				return "canno t find user"
-			return "new priv room width " + name
+			return 0
 		}
 		else {
-			return "this user doesn t exist try again ou t as deja une room avec lui"
+			return 1
 		}
 	}
 
@@ -338,7 +325,6 @@ import { Room } from "src/chat/class/Room.class";
 		if (indexMuted >= 0){
 			var date = new Date();
 			var time = new Date(room.muteList[indexMuted].endTime)
-			console.log(date , time)
 			if (date.getTime() - time.getTime() < 0){ //still muted
 				return false;
 			}
