@@ -63,3 +63,18 @@
   color: var(--main-color);
   transition: color 1s;
 }
+
+
+@keyframes slidein {
+  0%{
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  20% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}

@@ -31,19 +31,7 @@ export default class MatchMaking extends React.Component<{socket:Socket, user:Us
 		})
 		/* CHANGE SEARCH BY BACK NOT BY STATE */
 
-		const box = document.getElementById("spectatePanel");
-		const shadow = document.getElementById("shadow");
-		const title = document.getElementById("vsPanelMenu");
-		if (box !== null && shadow !== null && title !== null)
-			box.addEventListener("scroll", function() {
-				if (this.scrollTop > 5)
-				{
-					shadow.style.boxShadow= "0px -11px 20px 13px var(--main-color)";
-					title.style.boxShadow= "none";
-				}
-				else
-					title.style.boxShadow= "0px 16px 13px 0px hsl(0deg 0% 7%)";
-			});
+	
 	}
 
 	OpenSpectate = () =>{
@@ -109,13 +97,17 @@ export default class MatchMaking extends React.Component<{socket:Socket, user:Us
 						</div>
 						:
 						<div id="spectatePanel">
-							{	this.state.rooms.map((item :specRooms) => {
-									return <ItemSpec data={item} onSpecCLick={this.onSpecClick} user={this.props.user} socket={this.props.socket} key={item.name}/>;		
+							{	
+								this.state.rooms.map((item :specRooms) => {				
+									console.log("SET")
+									return <ItemSpec data={item} onSpecCLick={this.onSpecClick} user={this.props.user} socket={this.props.socket} key={item.name}/>;	
 								})
+							
 							}
+							
 						</div>
 					}
-				</div>	
+				</div>
 			</div>
     	)
 	}
