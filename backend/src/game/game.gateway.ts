@@ -403,9 +403,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 {
                     if(res == 1)
                     {
-
-                        room._player._socket.emit('popupScore', {win: true, adv:room._guest._login})
-                        room._guest._socket.emit('popupScore', {win: false, adv:room._player._login})
+                        room._player._socket.emit('popupScore', {win: true, adv:room._guest._login, arcade: room._isArcade, scoreLose: room._scoreB})
+                        room._guest._socket.emit('popupScore', {win: false, adv:room._player._login, arcade: room._isArcade, scoreLose: room._scoreB})
                         this.userService.win(room._player._token);
                         this.userService.xp(room._player._token, 50);
                         this.userService.xp(room._guest._token, 10);
@@ -415,8 +414,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                     }
                     if(res == 2)
                     {
-                        room._player._socket.emit('popupScore', {win: false, adv:room._player._login})
-                        room._guest._socket.emit('popupScore', {win: true, adv:room._guest._login})
+                        room._player._socket.emit('popupScore', {win: false, adv:room._player._login, arcade: room._isArcade, scoreLose: room._scoreA})
+                        room._guest._socket.emit('popupScore', {win: true, adv:room._guest._login, arcade: room._isArcade, scoreLose: room._scoreA})
                         this.userService.win(room._guest._token);
                         this.userService.xp(room._player._token, 10);
                         this.userService.xp(room._guest._token, 50);

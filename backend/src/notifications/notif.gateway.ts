@@ -44,7 +44,7 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 		// if (this.getUserClassbyName())
 		var user = await this.userService.findOne(client.handshake.query.token as string);
 		if (this.clients.get(client.id)){
-            client.emit('caDegage');
+            client.emit('kickConnect');
             client.disconnect(true);
         }
 		await this.userService.setStatus(user.token, 1);

@@ -78,8 +78,8 @@ export class roomClass{
 			this._player._socket.join('lobby')
 			this._guest._socket.leave(this._name)
 			this._guest._socket.join('lobby')
-			this._player._socket.emit('popupScore', {win: false, adv:this._guest._login})
-			this._guest._socket.emit('popupScore', {win: true, adv:this._player._login})
+			this._player._socket.emit('popupScore', {win: false, adv:this._guest._login, arcade: this._isArcade, scoreLose: this._scoreA})
+			this._guest._socket.emit('popupScore', {win: true, adv:this._player._login, arcade: this._isArcade, scoreLose: this._scoreA})
 			return 1;
 		}
 		else if(client === this._guest._login){
@@ -87,8 +87,8 @@ export class roomClass{
 			this._player._socket.join('lobby')
 			this._guest._socket.leave(this._name)
 			this._guest._socket.join('lobby')
-			this._player._socket.emit('popupScore', {win: true, adv:this._guest._login})
-			this._guest._socket.emit('popupScore', {win: false, adv:this._player._login})
+			this._player._socket.emit('popupScore', {win: true, adv:this._guest._login, arcade: this._isArcade, scoreLose: this._scoreB})
+			this._guest._socket.emit('popupScore', {win: false, adv:this._player._login, arcade: this._isArcade, scoreLose: this._scoreB})
 			return 2;
 		}
 	}

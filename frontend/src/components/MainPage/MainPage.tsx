@@ -13,11 +13,11 @@ import axios from 'axios';
 import PopupStart from './PopupStart';
 import FriendPanel from './midPanel/FriendsPanel/FriendPanel';
 import MatchMaking from './midPanel/MatchMaking/MatchMaking';
-import Popup from 'reactjs-popup';
 import { User } from '../../interfaces'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {DuelButton, DuelNotif, InviteButton, InviteNotif, PendingInviteButton, PendingInviteNotif, PendingSearchButton, PendingSearchNotif} from '../utility/utility';
+import PopupNotif from './popupNotif';
 
 interface popupScore{open:boolean, win:boolean, adv:string}
 
@@ -77,7 +77,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						this.state.User.waitingFriends.forEach(element => {
 							this.notify(element);
 						});
-						this.state.socket.on('caDegage', () => {
+						this.state.socket.on('kickConnect', () => {
 							window.location.href = "HTTP://" + window.location.host.split(":").at(0) + ":3000";
 						});
 						this.state.socket.on('openHistoryOf', (data:any) => {
@@ -94,9 +94,6 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						});
 						this.state.socket.on('pendingInvite', (data:any) => {
 							this.pendingInvite(data.login);
-						});
-						this.state.socket.on('popupScore', (data:any) => {
-							this.setState({popupInfo:{open:true, win:data.win, adv:data.adv}})
 						});
 						this.state.socket.on('chatNotif', (data:any) => {
 							this.chatNotify(data.msg);
@@ -246,7 +243,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						<IGame ref={this.ref} socket={this.state.socket}/>
 					{/* <button onClick={this.notify}>oui</button> */}
 					</div>
-					{this.state.popupInfo && <Popup open={this.state.popupInfo.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>}
+					<PopupNotif User={this.state.User} socket={this.state.socket}/>
 					{/*this.state.popupInvite && <Popup open={this.state.popupInvite.open} closeOnEscape={false}  onClose={() => this.setState({popupInfo:{open:false, win:true, adv:''}})} closeOnDocumentClick={true}>{this.state.popupInfo.win ? 'You win against ': 'You loose against'}{this.state.popupInfo.adv}<br/>{this.state.popupInfo.win && 'xp + 50'}</Popup>*/}
 					<PopupStart User={this.state.User} onChange={this.CompleteProfile} invite={this.props.invite}/>
 				</>
