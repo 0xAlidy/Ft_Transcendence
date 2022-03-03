@@ -57,6 +57,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             {
                 this.abandon(client);
             }
+            this.deletePrivRoomByLogin(user._login)
         }
         this.clients.delete(client.id);
     }
@@ -74,13 +75,16 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     {
         this.rooms.forEach((room) =>{
             console.log("guest:"+ room._guest._login +"  sender:" +room._player._login+ "    login:"+ login)
-            if(room._guest._login === login || room._player._login === login)
+            if(room._name.startsWith('Privroom'))
             {
-                room._player._socket.emit('closeInviteNotif'+ room._guest._login );
-                room._guest._socket.emit('closeInviteNotif'+ room._player._login );
-                room._player._socket.emit('closePendingNotif');
-                room._guest._socket.emit('closePendingNotif');
-                this.rooms.delete(room._name)
+                if(room._guest._login === login || room._player._login === login)
+                {
+                    room._player._socket.emit('closeInviteNotif'+ room._guest._login );
+                    room._guest._socket.emit('closeInviteNotif'+ room._player._login );
+                    room._player._socket.emit('closePendingNotif');
+                    room._guest._socket.emit('closePendingNotif');
+                    this.rooms.delete(room._name)
+                }
             }
         })
     }
@@ -94,12 +98,31 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         }
     }
 
+    isInPrivateRoom(login:string){
+        var ret = false;
+        this.rooms.forEach(room => {
+            if(room._name.startsWith('Privroom'))
+            {
+                if(room._guest._login === login || room._player._login === login)
+                {
+                    ret = true;
+                }
+            }
+        });
+        return ret;
+    }
+
     @SubscribeMessage('createPrivateSession')
     createPrivateSession(client: Socket, data: any){
         var cli = this.clients.get(client.id);
         if(this.rooms.get("Privroom"+cli._login))
         {
-            cli._socket.emit('chatNotifError',{msg: 'you are already pending for a match'})
+            cli._socket.emit('chatNotifError',{msg: 'you are already pending for a match!'})
+            return;
+        }
+        if(this.isInPrivateRoom(cli._login))
+        {
+            cli._socket.emit('chatNotifError',{msg: 'You have to accept/refuse the request!'})
             return;
         }
         console.log(data.login)
@@ -143,12 +166,22 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         //     cli._socket.emit('chatNotifError',{msg: 'your friend is already in a game!'})
         // this.index++;
     }
+    deleteFromWaitingList(cli:clientClass){
+        var idx = this.clientsSearching.indexOf(cli)
+        var idxa = this.clientsSearchingArcade.indexOf(cli)
+        if(idx !== -1)
+            this.clientsSearching.splice(idx, 1)
+        if(idxa !== -1)
+            this.clientsSearchingArcade.splice(idx, 1)
+    }
 
     @SubscribeMessage('joinPrivateSession')
     joinPrivateSession(client: Socket, data: any){
         var room = this.rooms.get(data.room)
         var cli = this.getUserClassbyName(room._player._login)
         var guest = this.getUserClassbyName(room._guest._login)
+        this.deleteFromWaitingList(cli)
+        this.deleteFromWaitingList(guest)
         if(!cli || !guest)
             return;
         room._player._room = data.room;
@@ -249,13 +282,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     //     }
     // }
 
-    @SubscribeMessage('getUserName')
-    userName(client: Socket): void {
-        var formated : string = this.clients.get(client.id)._login + "'s_room";
-        var ret = this.clients.get(client.id)._login;
-        client.emit('username', {username: ret})
-        this.updateRoom();
-    }
 
     @SubscribeMessage('specRoom')
     specRoom(client: Socket, data: any ): void {
