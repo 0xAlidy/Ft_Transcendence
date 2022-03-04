@@ -4,6 +4,7 @@ import { Server, Socket } from "socket.io";
 import { MatchsService } from "src/matchs/matchs.service";
 import { User } from "src/user/user.entity";
 import { UsersService } from "src/user/users.service";
+import { threadId } from "worker_threads";
 import { clientClass } from "./class/client.class";
 import { roomClass } from "./class/room.class";
 
@@ -56,7 +57,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             if(roomtoleave !== 'lobby')
             {
                 this.abandon(client);
+                this.userService.setStatus(this.clients.get(client.id)._token, 0)
             }
+
             this.deletePrivRoomByLogin(user._login)
         }
         this.clients.delete(client.id);
@@ -76,6 +79,23 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.rooms.forEach((room) =>{
             console.log("guest:"+ room._guest._login +"  sender:" +room._player._login+ "    login:"+ login)
             if(room._name.startsWith('Privroom'))
+            {
+                if(room._guest._login === login || room._player._login === login)
+                {
+                    room._player._socket.emit('closeInviteNotif'+ room._guest._login );
+                    room._guest._socket.emit('closeInviteNotif'+ room._player._login );
+                    room._player._socket.emit('closePendingNotif');
+                    room._guest._socket.emit('closePendingNotif');
+                    this.rooms.delete(room._name)
+                }
+            }
+        })
+    }
+    deletePrivRoomByLoginWithExeption(login:string,exept:string)
+    {
+        this.rooms.forEach((room) =>{
+            console.log("guest:"+ room._guest._login +"  sender:" +room._player._login+ "    login:"+ login)
+            if(room._name.startsWith('Privroom') && exept !== room._name)
             {
                 if(room._guest._login === login || room._player._login === login)
                 {
@@ -194,6 +214,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         var guest = this.getUserClassbyName(room._guest._login)
         this.deleteFromWaitingList(cli)
         this.deleteFromWaitingList(guest)
+        this.deletePrivRoomByLoginWithExeption(cli._login, data.room)
         if(!cli || !guest)
             return;
         room._player._room = data.room;
@@ -350,6 +371,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA, room._isArcade);
                 await this.userService.setInGameBylogin(room._player._login, 1);
                 await this.userService.setInGameBylogin(room._guest._login, 1);
+                room._player._isInvitable = true;
+                room._guest._isInvitable = true;
                 this.refreshFrontAll(room._player._login);
                 this.refreshFrontAll(room._guest._login);
             }
@@ -360,6 +383,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB, room._isArcade);
                 await this.userService.setInGameBylogin(room._player._login, 1);
                 await this.userService.setInGameBylogin(room._guest._login, 1);
+                room._player._isInvitable = true;
+                room._guest._isInvitable = true;
                 this.refreshFrontAll(room._player._login);
                 this.refreshFrontAll(room._guest._login);
         }
@@ -409,7 +434,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         this.userService.xp(room._player._token, 50);
                         this.userService.xp(room._guest._token, 10);
                         this.userService.loose(room._guest._token);
-                        room._isArcade
+                        this.userService.setInGameBylogin(room._player._login, 1)
+                        this.userService.setInGameBylogin(room._guest._login, 1)
+                        room._player._isInvitable = true;
+                        room._guest._isInvitable = true;
                         this.matchsService.create(room._player._login, 5, room._guest._login, room._scoreB, room._isArcade);
                     }
                     if(res == 2)
@@ -417,9 +445,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         room._player._socket.emit('popupScore', {win: false, adv:room._player._login, arcade: room._isArcade, scoreLose: room._scoreA})
                         room._guest._socket.emit('popupScore', {win: true, adv:room._guest._login, arcade: room._isArcade, scoreLose: room._scoreA})
                         this.userService.win(room._guest._token);
+                        this.userService.setInGameBylogin(room._player._login, 1)
+                        this.userService.setInGameBylogin(room._guest._login, 1)
                         this.userService.xp(room._player._token, 10);
                         this.userService.xp(room._guest._token, 50);
                         this.userService.loose(room._player._token);
+                        room._player._isInvitable = true;
+                        room._guest._isInvitable = true;
                         this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA, room._isArcade);
                     }
                     room.clean();
