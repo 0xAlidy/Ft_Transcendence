@@ -112,10 +112,13 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 	}
 
 	@SubscribeMessage('denyFriend')
-	async denyFriend(client: Socket, data:any){
-		var user = this.clients.get(client.id);
-		await this.userService.removeWaitingFriend(user._token, data.login)
-		user._socket.emit('closeInviteFriend', {login: data.login})
+	async denyFriend(client: Socket|undefined, data:any){
+		if(client){
+			var user = this.clients.get(client.id);
+			user._socket.emit('closeInviteFriend', {login: data.login})
+		}
+		var userdb = await this.userService.findOneByLogin(data.other)
+		await this.userService.removeWaitingFriend(userdb.token, data.login)
 		if (this.getUserClassbyName(data.login))
 			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, user._login);
 		//this.refreshFrontBySocket(client, data.login);
@@ -129,14 +132,15 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
 		await this.removeFriend(client, data);
 		await this.denyFriend(client, data);
-		await this.denyFriend(other._socket, {login: user._login});
+		await this.denyFriend(other._socket, {login: user._login, other:data.login});
 		await this.userService.addBlocked(user._token, data.login);
 		if (other)
 			this.refreshFrontBySocket(other._socket, user._login);
 		this.refreshFrontBySocket(client, data.login);
 		this.refreshFrontBySocket(client, user._login);
-		other._socket.emit('reloadChatBlock', data)
-		user._socket.emit('reloadChatBlock',data)
+		if (other)
+			other._socket.emit('reloadChatBlock', data)
+			user._socket.emit('reloadChatBlock',data)
 	}
 
 	@SubscribeMessage('unblockUser')

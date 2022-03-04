@@ -32,19 +32,6 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 			}
 		});
 	}
-	async componentDidUpdate(prevProps:any) {
-		if(prevProps.login !== this.props.login){
-			await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
-			.then(res => this.setState({ User: res.data }))
-			this.props.socket.on('refreshUser', async (data:any) => {
-				if (this.props.login === data.login)
-				{
-					await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
-					.then(res => this.setState({ User: res.data }))
-				}
-			});
-		}
-	}
 
 	addFriend = () => {
 		this.props.socket.emit('inviteFriend', { login:this.props.login })

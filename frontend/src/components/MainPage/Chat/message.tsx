@@ -17,7 +17,8 @@ export default class MessageItem extends React.Component <{msg:Msg, User:User,ac
 	}
 		render(){
 			// var date = this.props.msg.date.toTimeString().slice(0, 5)
-			var date = new Date(this.props.msg.date).toLocaleTimeString().slice(0,5)
+			var date = new Date(this.props.msg.date).toLocaleTimeString().slice(0,5);
+			var key = new Date(this.props.msg.date).getMilliseconds().toString();
 			return (<>
 			{
 			this.props.class ? <div className={'msgItem'}>
@@ -26,7 +27,7 @@ export default class MessageItem extends React.Component <{msg:Msg, User:User,ac
 			<p>{date}</p>
 			</div>
 				{ this.system === false && <div className="imgBlock">
-					<ProfileShortCut login={this.props.msg.sender} User={this.props.User} socket={this.props.socket}/>
+					<ProfileShortCut key={key} login={this.props.msg.sender} User={this.props.User} socket={this.props.socket}/>
 				</div>
 				}
 			</div> :
@@ -36,7 +37,7 @@ export default class MessageItem extends React.Component <{msg:Msg, User:User,ac
 				<p>{date}</p>
 				</div>
                 { this.system === false && <div className="imgBlock">
-                   <ProfileShortCut login={this.props.msg.sender} User={this.props.User} socket={this.props.socket}/>
+                   <ProfileShortCut key={key} login={this.props.msg.sender} User={this.props.User} socket={this.props.socket}/>
                 </div>
 				}
             </div>
