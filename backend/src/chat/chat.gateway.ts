@@ -180,7 +180,7 @@ export class ChatGateway implements OnGatewayInit {
 	  user._socket.join(roomName)
 	  user._room = roomName;
 	  var msg = await this.chatService.getMessagesByRoom(roomName);
-	  
+
 	  client.emit('loadRoom', {room:roomName, msg:msg})
   }
   getUserByName(str:string):null|clientClass{
@@ -217,6 +217,11 @@ async command(client: Socket,Message:Msg){
 	console.log(login);
 
 
+	//desactiver command dans les privRoom
+	var room = await this.chatService.findRoomByName(Message.dest)
+    var isPriv = room.IsPrivate
+
+
 	if (Message.message.startsWith('/help'))
 		client.emit('ReceiveMessage',{sender:'system' , dest:Message.dest, message: help, date: new Date()})
 	else if (Message.message.startsWith("/delete password")){
@@ -233,7 +238,7 @@ async command(client: Socket,Message:Msg){
 	else if (Message.message.startsWith('/delete')) {
 		console.log("/delete")
 		if (numArg === 1){
-			if(await this.chatService.isOwner(Message.sender,Message.dest) == true){
+			if(await this.chatService.isOwner(Message.sender,Message.dest) == true || isPriv === true){
 				var user = this.getUserByName(Message.sender)
 				await this.loadRoomAll(user._room,'general')
 				if(await this.chatService.deleteRoom(Message.dest) === 0){
@@ -251,104 +256,108 @@ async command(client: Socket,Message:Msg){
 			client.emit('chatNotifError', {msg:'Wrong number of arguments'})
 
 	}
-	else if (Message.message.startsWith("/ban")){
-		if (numArg === 2){
-			if(await this.chatService.isAdmin(Message.sender,Message.dest) == true){
-				resp = await this.chatService.banUser(login, Message.dest)
-				if (resp === 0){
-					client.emit('chatNotif', {msg:Message.message.split(' ').at(1) + 'is now banned'})
-					this.loadRoom(this.getUserByName(login)._socket, 'general')
-					this.setPlaceHolder(client,'general')
-					this.messageToOtherClient(login, 'chatNotifError', {msg:'You are now banned for the channel '+ Message.dest})
+	else if (isPriv === false){
+		 if (Message.message.startsWith("/ban")){
+			if (numArg === 2){
+				if(await this.chatService.isAdmin(Message.sender,Message.dest) == true){
+					resp = await this.chatService.banUser(login, Message.dest)
+					if (resp === 0){
+						client.emit('chatNotif', {msg:Message.message.split(' ').at(1) + 'is now banned'})
+						this.loadRoom(this.getUserByName(login)._socket, 'general')
+						this.setPlaceHolder(client,'general')
+						this.messageToOtherClient(login, 'chatNotifError', {msg:'You are now banned for the channel '+ Message.dest})
+					}
+					if (resp === 1)
+						client.emit('chatNotifError', {msg:Message.message.split(' ').at(1) + ' is already banned'})
+					if (resp === 2)
+						client.emit('chatNotifError', {msg:Message.message.split(' ').at(1) + ' doesn\'t exist'})
+					if (resp === 3)
+						client.emit('chatNotifError', {msg:Message.message.split(' ').at(1) + ' doesn\'t exist'})
 				}
-				if (resp === 1)
-					client.emit('chatNotifError', {msg:Message.message.split(' ').at(1) + ' is already banned'})
-				if (resp === 2)
-					client.emit('chatNotifError', {msg:Message.message.split(' ').at(1) + ' doesn\'t exist'})
-				if (resp === 3)
-					client.emit('chatNotifError', {msg:Message.message.split(' ').at(1) + ' doesn\'t exist'})
+				else
+					client.emit('chatNotifError', {msg:'You need to be admin to do that'})
 			}
 			else
-				client.emit('chatNotifError', {msg:'You need to be admin to do that'})
+				client.emit('chatNotifError', {msg:'Wrong number of arguments'})
 		}
-		else
-			client.emit('chatNotifError', {msg:'Wrong number of arguments'})
-	}
-	else if (Message.message.startsWith('/mute')){
-		if (numArg === 3){
-			if(await this.chatService.isAdmin(Message.sender,Message.dest) == true){
-				resp = await this.chatService.muteUser(Message, login)
-				if (resp === 0){
-					client.emit('chatNotif', {msg:Message.message.split(' ').at(1) + 'is now muted'})
-					this.messageToOtherClient(login, 'chatnote', {msg:'You are now muted for '+ Message.message.split(' ').at(2) + 'min'})
+		else if (Message.message.startsWith('/mute')){
+			if (numArg === 3){
+				if(await this.chatService.isAdmin(Message.sender,Message.dest) == true){
+					resp = await this.chatService.muteUser(Message, login)
+					if (resp === 0){
+						client.emit('chatNotif', {msg:Message.message.split(' ').at(1) + 'is now muted'})
+						this.messageToOtherClient(login, 'chatnote', {msg:'You are now muted for '+ Message.message.split(' ').at(2) + 'min'})
+					}
+					if (resp === 1)
+						client.emit('chatNotifError', {msg:'Please enter a number between 1 and 60'})
+					if (resp === 2)
+						client.emit('chatNotifError', {msg:Message.message.split(' ').at(1) + ' is already muted'})
 				}
-				if (resp === 1)
-					client.emit('chatNotifError', {msg:'Please enter a number between 1 and 60'})
-				if (resp === 2)
-					client.emit('chatNotifError', {msg:Message.message.split(' ').at(1) + ' is already muted'})
-			}
-			else{
-				client.emit('chatNotifError', {msg:'You need to be admin to do that'})
-			}
-		}
-		else
-			client.emit('chatNotifError', {msg:'Wrong number of arguments'})
-	}
-	else if(Message.message.startsWith("/unban")){
-		if (numArg === 2){
-			if(await this.chatService.isAdmin(Message.sender,Message.dest) == true){
-				resp = await this.chatService.unbanUsers(login, Message.dest)
-				if (resp === 0){
-					client.emit('chatNotif', {msg:Message.message.split(' ').at(1) + 'is not unban'})
-					this.messageToOtherClient(login, 'chatnote', {msg:'You are now unban in the channel '+ Message.dest})
+				else{
+					client.emit('chatNotifError', {msg:'You need to be admin to do that'})
 				}
-				if (resp === 1)
-					client.emit('chatNotifError', {msg:Message.message.split(' ').at(1) + 'is not ban'})
-				if (resp === 2)
-					client.emit('chatNotifError', {msg:'error'})
 			}
 			else
-				client.emit('chatNotifError', {msg:'You need to be admin to do that'})
+				client.emit('chatNotifError', {msg:'Wrong number of arguments'})
 		}
-		else
-			client.emit('chatNotifError', {msg:'Wrong number of arguments'})
-	}
-	else if(Message.message.startsWith("/password")){
-		if (numArg === 2){
-			if(await this.chatService.isOwner(Message.sender,Message.dest) == true){
-				//argument
-				 resp = await  this.chatService.changePass(Message.message.split(' ').at(1), Message.dest)
-				if (resp === 0)
-					 client.emit('chatNotif', {msg:'the password has been changed'})
-				if (resp === 1)
-					client.emit('chatNotifError', {msg:'error'})
+		else if(Message.message.startsWith("/unban")){
+			if (numArg === 2){
+				if(await this.chatService.isAdmin(Message.sender,Message.dest) == true){
+					resp = await this.chatService.unbanUsers(login, Message.dest)
+					if (resp === 0){
+						client.emit('chatNotif', {msg:Message.message.split(' ').at(1) + 'is not unban'})
+						this.messageToOtherClient(login, 'chatnote', {msg:'You are now unban in the channel '+ Message.dest})
+					}
+					if (resp === 1)
+						client.emit('chatNotifError', {msg:Message.message.split(' ').at(1) + 'is not ban'})
+					if (resp === 2)
+						client.emit('chatNotifError', {msg:'error'})
+				}
+				else
+					client.emit('chatNotifError', {msg:'You need to be admin to do that'})
 			}
 			else
-			client.emit('chatNotifError', {msg:'Only owner can do that'})
+				client.emit('chatNotifError', {msg:'Wrong number of arguments'})
 		}
-		else
-			client.emit('chatNotifError', {msg:'Wrong number of arguments'})
-	}
-	else if (Message.message.startsWith('/setadmin')){
-		if (numArg == 2){
-			if( await this.chatService.isAdmin(Message.sender, Message.dest) === true){
-				resp = await this.chatService.addAdmin(login, Message.dest)
-				if (resp === 0){
-					client.emit('chatNotif', {msg: Message.message.split(' ').at(1) + ' is now admin in the channel'})
-					this.messageToOtherClient(login, 'chatNotif', {msg:'You are now admin for the channel '+ Message.dest})
+		else if(Message.message.startsWith("/password")){
+			if (numArg === 2){
+				if(await this.chatService.isOwner(Message.sender,Message.dest) == true){
+					//argument
+					 resp = await  this.chatService.changePass(Message.message.split(' ').at(1), Message.dest)
+					if (resp === 0)
+						 client.emit('chatNotif', {msg:'the password has been changed'})
+					if (resp === 1)
+						client.emit('chatNotifError', {msg:'error'})
 				}
-				if (resp === 1)
-					client.emit('chatNotifError', {msg:Message.message.split(' ').at(1) + ' is already admin'})
-				if (resp === 2)
-					client.emit('chatNotifError', {msg:'Canno\'t find ' + Message.message.split(' ').at(1)})
+				else
+				client.emit('chatNotifError', {msg:'Only owner can do that'})
 			}
+			else
+				client.emit('chatNotifError', {msg:'Wrong number of arguments'})
 		}
-		else
-			client.emit('chatNotifError', {msg:'Wrong number of arguments'})
+		else if (Message.message.startsWith('/setadmin')){
+			if (numArg == 2){
+				if( await this.chatService.isAdmin(Message.sender, Message.dest) === true){
+					resp = await this.chatService.addAdmin(login, Message.dest)
+					if (resp === 0){
+						client.emit('chatNotif', {msg: Message.message.split(' ').at(1) + ' is now admin in the channel'})
+						this.messageToOtherClient(login, 'chatNotif', {msg:'You are now admin for the channel '+ Message.dest})
+					}
+					if (resp === 1)
+						client.emit('chatNotifError', {msg:Message.message.split(' ').at(1) + ' is already admin'})
+					if (resp === 2)
+						client.emit('chatNotifError', {msg:'Canno\'t find ' + Message.message.split(' ').at(1)})
+				}
+			}
+			else
+				client.emit('chatNotifError', {msg:'Wrong number of arguments'})
+		}
+		else{
+			client.emit('chatNotifError', {msg:"Unknow command: '"+Message.message+"'"})
+		}
 	}
-	else{
-		client.emit('chatNotifError', {msg:"Unknow command: '"+Message.message+"'"})
-	}
+	else
+		client.emit('chatNotifError', {msg:"you can't do this in private room"})
 }
 
 async normalMessage(client:Socket, Msg:Msg)

@@ -284,8 +284,14 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 	}
 
 	togglePopupPass = () => {
-		this.setState({openNewPass:false});
-	}
+        this.setState({openNewPass:false});
+        this.props.socket.emit('cancelPass');
+    }
+
+    togglePopupRoom = () => {
+        this.setState({openNewRoom:false});
+        this.props.socket.emit('cancelPass');
+    }
 
 	handleChange = (selectedOption:any) => {
 		this.props.socket.emit('joinRoom',{room:selectedOption.value})
@@ -326,7 +332,7 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
                         <input type="text" placeholder="name" id="nameNewRoom" className="inputPopUp"/>
                         <input type="password" placeholder="password (optionnal)" id="passNewRoom" className="inputPopUp"/>
                         <button onClick={this.sendNewRoom} className="buttonPopUp1">Send</button>
-                        <button onClick={()=> this.setState({openNewRoom:false})} className="buttonPopUp">Cancel</button>
+                        <button onClick={this.togglePopupRoom} className="buttonPopUp">Cancel</button>
                       </>}
                 	/>}
 
@@ -335,7 +341,7 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 							<b>This room require a password :</b>
                         	<input type="password" placeholder="password" id="passRequest" className="inputPopUp"/>
                         	<button onClick={this.sendPass} className="buttonPopUp1">Send</button>
-                        	<button onClick={() => {this.togglePopupPass(); this.props.socket.emit('cancelPass')}} className="buttonPopUp">Cancel</button>
+                        	<button onClick={this.togglePopupPass} className="buttonPopUp">Cancel</button>
 						</>}
 					/>}
 

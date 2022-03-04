@@ -74,7 +74,7 @@ import { Room } from "src/chat/class/Room.class";
 	{
 		var room = await this.findRoomByName(data.dest)
 		room.messages.push(data)
-		this.ChatRoomsRepository.save(room)
+		await this.ChatRoomsRepository.save(room)
 	}
 
 	async addUser(userName:string, roomName:string)
