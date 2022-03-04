@@ -30,10 +30,19 @@ import { Room } from "src/chat/class/Room.class";
 			if( await this.findRoomByName(name) === undefined){
 				var newroom = new ChatRooms(name, owner, password, false, null)
 				await this.ChatRoomsRepository.save(newroom);
+				await this.addUser(owner ,name)
 			}
 			return await this.getAllRoomName();
 		}
 		return null;
+	}
+	async deletePrivFromLogins(loginOne:string, loginTwo:string)
+	{
+		var room;
+		if(room = this.privExist(loginOne,loginTwo))
+		{
+			this.ChatRoomsRepository.delete(room)
+		}
 	}
 
 	async checkBlock(name:string, name1:string){
@@ -44,15 +53,21 @@ import { Room } from "src/chat/class/Room.class";
 		})
 		return false
 	}
-
+	async privExist(loginOne:string, loginTwo:string){
+		var all = await this.getAllPrivRoom()
+		var ret = null;
+		all.forEach((value:ChatRooms) => {
+			console.log(value.name + " "+ loginOne + loginTwo)
+			if(value.name.includes(loginOne) && value.name.includes(loginTwo))
+				ret = value
+		});
+		console.log(ret);
+		return ret;
+	}
 
 	async createPriv(user:string[]) {
-
-		if (await this.checkBlock(user[0], user[1]) === false){	
 			var newroom = new ChatRooms(null, user[1], "", true,user)
-			await this.ChatRoomsRepository.save(newroom);
-			return  await this.getAllRoomName();
-		}
+			return await this.ChatRoomsRepository.save(newroom);
 	}
 
 	async addMessage(data:any)
@@ -65,9 +80,12 @@ import { Room } from "src/chat/class/Room.class";
 	async addUser(userName:string, roomName:string)
 	{
 		var room = await this.findRoomByName(roomName)
+		if(room)
+		{
 		if (await this.findUser(userName, roomName) === false ){
 			room.users.push(userName)
-			this.ChatRoomsRepository.save(room)
+			await this.ChatRoomsRepository.save(room)
+		}
 		}
 	}
 
@@ -95,12 +113,13 @@ import { Room } from "src/chat/class/Room.class";
 		return ret;
 	}
 
+
 	async getAllPrivRoom(){
 		var all = await this.ChatRoomsRepository.find()
-		var ret:string[]= [];
+		var ret:ChatRooms[]= [];
 		all.forEach(element => {
 			if (element.IsPrivate === true)
-				ret.push(element.name)
+				ret.push(element)
 		});
 		return ret;
 	}
@@ -112,7 +131,8 @@ import { Room } from "src/chat/class/Room.class";
 		 if(room.IsPassword === false)
 			ret =  true ;
 		room.users.forEach(element => {
-			if(user.login == element)
+			console.log(user.login + " === " + element)
+			if(user.login === element)
 				ret = true
 		});
 		return ret
@@ -123,7 +143,7 @@ import { Room } from "src/chat/class/Room.class";
 		const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
 		return encrypted.toString('hex')
 	};
-	
+
 	decrypt(text:string){
 		const decipher = createDecipheriv(this.algorithm, this.key, Buffer.from(this.iv.toString('hex'), 'hex'));
 		const decrpyted = Buffer.concat([decipher.update(Buffer.from(text, 'hex')), decipher.final()]);
@@ -134,7 +154,7 @@ import { Room } from "src/chat/class/Room.class";
 		var room = await this.findRoomByName(dest)
 		if(room)
 		{
-			room.password = this.encrypt(msg);
+			room.password = msg;
 			await this.ChatRoomsRepository.save(room);
 			return 0;
 		}
@@ -152,13 +172,15 @@ import { Room } from "src/chat/class/Room.class";
 		return 0;
 	}
 
-	
+
 	async findUser(toFind:string, dest:string){
 		var ret = false
 		var room = await this.findRoomByName(dest)
+		if(room){
 		for(var i = 0; i < room.users.length; i++)
 		  if (room.users[i] === toFind)
 			ret = true
+		}
 		return ret
 	  }
 
@@ -220,12 +242,11 @@ import { Room } from "src/chat/class/Room.class";
 
 	async findPriv(name1:string,name2:string){
 		var ret:ChatRooms | null = null;
-		var roomlist = await this.getAllRoomName();
+		var roomlist = await this.getAllPrivRoom();
 
 		for (const element of roomlist) {
-			var room = await this.findRoomByName(element)
-			if (room.IsPrivate === true  && await this.findUser(name1, element) && await this.findUser(name2, element))
-				ret = room
+			if (element.users.indexOf(name1) && element.users.indexOf(name2))
+				ret = element;
 		}
 		return ret
 	}
@@ -282,16 +303,8 @@ import { Room } from "src/chat/class/Room.class";
 
 	async addPriv(sender:string, name:string){
 
-		if (await this.userService.findOneByLogin(name)){
-			if (await this.checkDoublonPriv(name,sender))
-				return 2
 			var user = [sender, name]
-			await this.createPriv(user)
-			return 0
-		}
-		else {
-			return 1
-		}
+			return await this.createPriv(user)
 	}
 
 
@@ -313,7 +326,7 @@ import { Room } from "src/chat/class/Room.class";
 		var ret = -1;
 		room.muteList.forEach((element,index) => {
 			if (element.name === name)
-				ret = index; 
+				ret = index;
 		});
 		return ret;
 	}

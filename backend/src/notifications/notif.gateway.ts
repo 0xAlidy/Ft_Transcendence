@@ -5,10 +5,11 @@ import { clientClass } from "src/game/class/client.class";
 import { MatchsService } from "src/matchs/matchs.service";
 import { User } from "src/user/user.entity";
 import { UsersService } from "src/user/users.service";
+import { ChatRoomsService } from "src/ChatRooms/ChatRooms.service";
 
 @WebSocketGateway({cors: true})
 export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-	constructor(private userService: UsersService){}
+	constructor(private userService: UsersService, private chatService: ChatRoomsService){}
 	index: number = 0;
 	private logger: Logger = new Logger('WS-notifications');
 	clients = new Map<string, clientClass>();
@@ -124,6 +125,8 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 	async blockUser(client: Socket, data:any){
 		var other = this.getUserClassbyName(data.login);
 		var user = this.clients.get(client.id);
+		// await this.chatService.deletePrivFromLogins(data.login, user._login)
+
 		await this.removeFriend(client, data);
 		await this.denyFriend(client, data);
 		await this.denyFriend(other._socket, {login: user._login});
@@ -132,16 +135,21 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 			this.refreshFrontBySocket(other._socket, user._login);
 		this.refreshFrontBySocket(client, data.login);
 		this.refreshFrontBySocket(client, user._login);
+		other._socket.emit('reloadChatBlock', data)
+		user._socket.emit('reloadChatBlock',data)
 	}
 
 	@SubscribeMessage('unblockUser')
 	async unblockUser(client: Socket, data:any){
+		var other = this.getUserClassbyName(data.login);
 		var user = this.clients.get(client.id);
 		await this.userService.removeBlocked(user._token, data.login);
 		if (this.getUserClassbyName(data.login))
 			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, user._login);
 		this.refreshFrontBySocket(client, data.login);
 		this.refreshFrontBySocket(client, user._login);
+		other._socket.emit('reloadChatUnblock',data)
+		user._socket.emit('reloadChatUnblock',data)
 	}
 
 	@SubscribeMessage('askHistoryOf')

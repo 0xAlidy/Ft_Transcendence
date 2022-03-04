@@ -32,6 +32,19 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 			}
 		});
 	}
+	async componentDidUpdate(prevProps:any) {
+		if(prevProps.login !== this.props.login){
+			await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
+			.then(res => this.setState({ User: res.data }))
+			this.props.socket.on('refreshUser', async (data:any) => {
+				if (this.props.login === data.login)
+				{
+					await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
+					.then(res => this.setState({ User: res.data }))
+				}
+			});
+		}
+	}
 
 	addFriend = () => {
 		this.props.socket.emit('inviteFriend', { login:this.props.login })
@@ -83,7 +96,7 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 			return "var(--win-color)";
 		return "var(--lose-color)";
 	}
-	
+
 	handleHistory = () => {
 		if (this.state.User)
 			this.props.socket.emit('askHistoryOf', {login: this.state.User.login})
@@ -100,7 +113,7 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 						<div id='profilSection'>
 							<span>
 								<img alt="UserImage" src={this.state.User.imgUrl} style={{borderRadius:"50%"}}/>
-								{	
+								{
 									this.state.User.isFriend === 1 &&
 									<div style={{backgroundColor:this.setColorStatus(this.state.User.status)}} className="status"/>
 								}

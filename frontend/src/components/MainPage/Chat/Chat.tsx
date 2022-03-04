@@ -120,28 +120,52 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 			this.setState({messages: data.msg, activeRoom: data.room})
         });
 		this.props.socket.on('loadRoom',  (data:any) => {
+			var ret;
 			console.log(data.room)
 			this.setState({openNewPass: false, openNewRoom:false})
-			this.setState({messages: data.msg, activeRoom: data.room})
+			ret = this.deleteMsgFromBlocked(data.msg)
+			this.setState({messages: ret, activeRoom: data.room})
 			if (this.mRef)
 				this.mRef.scrollTop = this.mRef.scrollHeight;
 		});
+		this.props.socket.on("reloadChatBlock", (data:any) => {
+			this.removeBlockedMessage(data.login)
+			this.props.socket.emit('blockUserChat', data)
+		});
+		this.props.socket.on("reloadChatUnblock", (data:any) => {
+			this.props.socket.emit('unblockUserChat', data)
+		});
+
 		this.props.socket.on("placeHolder", (data:any) => {
-			this.setState({placeHolder:data.name})
+			var ret = data.name;
+			if(ret.startsWith('-'))
+			{
+				var parse = ret.split('-').at(1);
+				if(parse)
+				{
+					var loginOne = parse.split(' ').at(0);
+					var loginTwo = parse.split('/').at(1);
+					if(loginOne === this.props.User.login)
+						ret = loginTwo;
+					if(loginTwo === this.props.User.login)
+						ret = loginOne;
+				}
+			}
+			this.setState({placeHolder:ret})
 		});
 		this.props.socket.on('ReceiveMessage',  (data:any) => {
 			console.log(data);
 			if (data.dest == this.state.activeRoom){
-				this.setState({messages: this.state.messages.concat([data])})
+				if(this.props.User.blockedUsers.indexOf(data.sender) === -1)
+					this.setState({messages: this.state.messages.concat([data])})
 				if (this.mRef)
 					this.mRef.scrollTop = this.mRef.scrollHeight;
 			}
         });
 		this.props.socket.on('updateRooms', (data:any) => {
 			console.log(data.rooms.at(1).options);
-			data.rooms.at(1).options= this.setPrivName(data.rooms.at(1).options)
-
-
+			data.rooms.at(1).options = this.deleteOtherPrivRoom(data.rooms.at(1).options);
+			data.rooms.at(1).options = this.setPrivName(data.rooms.at(1).options)
 			this.setState({rooms:data.rooms, loaded:true});
 		});
 		this.props.socket.on('needPassword', (data:any) => {
@@ -150,15 +174,57 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 			this.setState({RowsStyle:"40px auto 40px"})
 			this.setState({openNewPass:true})
 		})
-
 	}
-
+	removeBlockedMessage(login:string){
+		var temp = this.state.messages;
+		this.state.messages.forEach((value:Msg) => {
+			if(value.sender !== login)
+				temp.push(value)
+		})
+		this.setState({messages:temp});
+	}
+	addUnblockedMessage(login:string){
+		var temp = this.state.messages;
+		this.state.messages.forEach((value:Msg) => {
+			if(value.sender !== login)
+				temp.push(value)
+		})
+		this.setState({messages:temp});
+	}
+	deleteMsgFromBlocked(data:Msg[]){
+		var todel:number[] = [];
+		data.forEach((element:Msg, index:number) => {
+			if(this.props.User.blockedUsers.indexOf(element.sender) !== -1)
+				todel.push(index);
+		});
+		todel.slice().reverse().forEach((idx) => {
+			data.splice(idx,1);
+		})
+		return data
+	}
+	deleteOtherPrivRoom(data:opt[]){
+		var todel:number[] = [];
+		data.forEach((element:opt, index:number) => {
+			var parse = element.label.split('-').at(1)
+			if (parse){
+				var nick = parse.split(' ').at(0)
+				var nickOther = parse.split('/').at(1)
+				if(nick !== this.props.User.nickname && nickOther !== this.props.User.nickname)
+					todel.push(index);
+			}
+		});
+		todel.slice().reverse().forEach((idx) => {
+			data.splice(idx,1);
+		})
+		return data
+	}
 	setPrivName(data:opt[]){
 			data.forEach((element:opt) => {
 				var parse = element.label.split('-').at(1)
-				if (parse)
+				if (parse){
 					var nick = parse.split(' ').at(0)
-				var nickOther = element.label.split('/').at(1)
+					var nickOther = parse.split('/').at(1)
+				}
 				if (nick && nickOther){
 					if (this.props.User.nickname === nick)
 						element.label = nickOther
@@ -167,7 +233,7 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 				}
 			});
 			return data
-	
+
 	}
 
 	messagesRef = (ref:HTMLDivElement) => {
@@ -240,7 +306,6 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 		this.props.socket.emit('joinRoom',{room:selectedOption.value})
 	}
 
-
 	render(){
 
 		return (
@@ -285,14 +350,14 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 							<b>This room require a password :</b>
                         	<input type="password" placeholder="password" id="passRequest" className="inputPopUp"/>
                         	<button onClick={this.sendPass} className="buttonPopUp1">Send</button>
-                        	<button onClick={this.togglePopupPass} className="buttonPopUp">Cancel</button>
+                        	<button onClick={() => {this.togglePopupPass(); this.props.socket.emit('cancelPass')}} className="buttonPopUp">Cancel</button>
 						</>}
 					/>}
 
 					{
 						this.state.messages.map((item, index) => {
 							return (
-								<MessageItem key={"key"+ index} msg={item} User={this.props.User} activeRoom={this.state.activeRoom} socket={this.props.socket} class={(item.sender === this.props.User.login) ? true :false}/>
+								<MessageItem key={'key'+ index} msg={item} User={this.props.User} activeRoom={this.state.activeRoom} socket={this.props.socket} class={(item.sender === this.props.User.login) ? true :false}/>
 							)
 						})
 					}
