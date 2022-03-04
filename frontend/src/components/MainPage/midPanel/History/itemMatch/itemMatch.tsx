@@ -20,7 +20,6 @@ export default class ItemMatch extends React.Component<{match:string, name:any, 
 			LooserScore: arr.at(3),
 			isArcade: (arr.at(4) === 'true' ? true:false)
 		}
-		console.log("isArcade" + this.state.isArcade)
 	};
 	render(){
 		return (

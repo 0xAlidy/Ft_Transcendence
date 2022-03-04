@@ -17,9 +17,6 @@ export default class ChatMenu extends React.Component <{socket:Socket , roomList
 			activeRoom: null,
             inputRoomName: '',
 		}
-		this.props.socket.on('LoadRoom', (data:any) =>{
-			// this.setState({test:data.activeRoom})
-		})
 		this.chatMenu= null;
 		this.flipflap = true;
 	};

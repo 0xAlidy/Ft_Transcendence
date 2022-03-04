@@ -20,7 +20,6 @@ export default class History extends React.Component<{login:string|null, User:Us
 		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/matchs?login="+ (this.props.login? this.props.login: this.props.User.login) +"&token="+ this.props.User.token).then(res => {
 			this.setState({matchs: res.data});
 		})
-		console.log("LOGIN " + this.props.login? this.props.login: this.props.User.login)
 		const box = document.getElementById("boxMatchs");
 		const shadow = document.getElementById("shadow");
 		const title = document.getElementById("title");
@@ -44,7 +43,6 @@ export default class History extends React.Component<{login:string|null, User:Us
 				this.setState({matchs: res.data});
 			})
 		}
-		console.log("LOGIN " + this.props.login? this.props.login: this.props.User.login)
 	}
 
 	render(){

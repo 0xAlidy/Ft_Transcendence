@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
 export default class FriendItem extends React.Component<{login:string, User:User, socket:Socket},{UserFriend:any}>{
+    _isMounted = false;
 	constructor(props:any){
 		super(props)
 		this.state = {
@@ -18,16 +19,24 @@ export default class FriendItem extends React.Component<{login:string, User:User
 	}
 
     async componentDidMount(){
+        this._isMounted = true;
         await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
 		.then(res => this.setState({ UserFriend: res.data }))
         this.props.socket.on('refreshUser', async (data:any) => {
 			if (this.props.login === data.login)
 			{
 				await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
-				.then(res => this.setState({ UserFriend: res.data }))
+				.then(res => {
+                    if (this._isMounted)
+                        this.setState({ UserFriend: res.data })
+                })
 			}
 		});
     }
+    
+    componentWillUnmount(){
+		this._isMounted = false;
+	}
 
     blockUser = () =>{
 		this.props.socket.emit('blockUser', {login:this.state.UserFriend.login});

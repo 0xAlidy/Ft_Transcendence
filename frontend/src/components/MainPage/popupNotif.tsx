@@ -17,6 +17,7 @@ interface popupInfo {
 
 export default class PopupNotif extends React.Component<{socket:Socket, User:User}, {popupInfo:popupInfo|null}>
 {
+    _isMounted = false;
     constructor(props :any) {
 		super(props);
 		this.state = {
@@ -25,10 +26,16 @@ export default class PopupNotif extends React.Component<{socket:Socket, User:Use
 	}
 
     componentDidMount(){
+        this._isMounted = true;
         this.props.socket.on('popupScore', (data:any) => {
-            this.setState({popupInfo:{win:data.win, adv:data.adv, arcade:data.arcade, scoreLose: data.scoreLose}})
+            if (this._isMounted)
+                this.setState({popupInfo:{win:data.win, adv:data.adv, arcade:data.arcade, scoreLose: data.scoreLose}})
         });
     }
+    
+    componentWillUnmount(){
+		this._isMounted = false;
+	}
 
     open = async () => {
 		let page = document.getElementById("MainPage");

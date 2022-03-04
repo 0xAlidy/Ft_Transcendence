@@ -102,7 +102,6 @@ export class roomClass{
 	isSpectate(client: clientClass){
 		var ret = false;
 		this._spectators.forEach(element => {
-			console.log(element._login + " === " + client._login)
 			if(element._login === client._login)
 				ret = true;
 		});
@@ -140,7 +139,6 @@ export class roomClass{
 			this._scoreA += 1;
 		else
 			this._scoreB += 1;
-		console.log("scoreA:" + this._scoreA + "   scoreB:" + this._scoreB)
 		if (this._scoreB == 5 ||this._scoreA == 5)
 		{
 			this._room.emit('ballThrow', {velx: 0, vely: 0 , y: -100});
@@ -192,7 +190,6 @@ export class roomClass{
 	}
 	ballUpdate(data: any)
 	{
-		console.log(data)
 		this._room.emit('updateBall', data);
 		this.randomSpell();
 	}

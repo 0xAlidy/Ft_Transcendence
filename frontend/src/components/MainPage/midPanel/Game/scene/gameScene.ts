@@ -114,9 +114,9 @@ export class Game extends Scene {
 		socket.on('spawnSpell', (data:any) => {
 			if(this.powerUpHide && this.powerUpSpeed)
 			{
-				if(data.spell == 1)
+				if(data.spell === 1)
 					this.powerUpHide.setPosition(data.x, data.y);
-				if(data.spell == 2)
+				if(data.spell === 2)
 					this.powerUpSpeed.setPosition(data.x, data.y);
 			}
 		});
@@ -157,7 +157,6 @@ export class Game extends Scene {
 		});
 		socket.on('spellUsed', (data:any) =>
 		{
-			console.log(data.spell)
 			if(data.spell === 1) {
 					this.hide(data.who)
 			}else{
@@ -239,7 +238,7 @@ export class Game extends Scene {
 	}
 	speedChange(nb:number){
 		this.powerUpSpeed.setPosition(-50,-50)
-		if(nb != this.PLAYERID -1){
+		if(nb !== this.PLAYERID -1){
 			this.speed = 30;
 		}
 		if (nb === 1){
@@ -251,7 +250,7 @@ export class Game extends Scene {
 	}
 	speedReset(nb:number){
 		this.powerUpSpeed.setPosition(-50,-50)
-		if(nb != this.PLAYERID -1){
+		if(nb !== this.PLAYERID -1){
 			this.speed = 10;
 		}
 		if (nb === 1){

@@ -51,7 +51,6 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			})
 			window.onpopstate = (event:any) => {
 				if(event){
-					console.log(window.history.state)
 					if (window.history.state)
 					{
 						if (window.history.state.loginHistory)
@@ -69,60 +68,58 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			}
 			if (this.state.User)
 			{
-					window.history.pushState({selector: this.state.selector}, '', "/");
-					if (this.state.User.color)
-						document.documentElement.style.setProperty('--main-color', this.state.User.color);
-					this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token}})})
-					if (this.state.socket)
+				window.history.pushState({selector: this.state.selector}, '', "/");
+				if (this.state.User.color)
+					document.documentElement.style.setProperty('--main-color', this.state.User.color);
+				this.setState({socket: io('http://' + window.location.href.split('/')[2].split(':')[0] + ':667',{query:{token:this.props.token}})})
+				if (this.state.socket)
+				{
+					this.state.User.waitingFriends.forEach(element => {
+						this.notify(element);
+					});
+					this.state.socket.on('kickConnect', () => {
+						window.location.href = "HTTP://" + window.location.host.split(":").at(0) + ":3000";
+					});
+					this.state.socket.on('openHistoryOf', (data:any) => {
+						this.setState({loginHistory: data.login, selector:'history'},() => window.history.pushState({selector: this.state.selector, loginHistory:this.state.loginHistory}, '', "/"))
+					});
+					this.state.socket.on('startGame', () => {
+						this.openGame();
+					});
+					this.state.socket.on('closeGame', () => {
+						this.closeGame();
+					});
+					this.state.socket.on('pendingSearch', () => {
+						this.pendingSearch();
+					});
+					this.state.socket.on('pendingInvite', (data:any) => {
+						this.pendingInvite(data.login);
+					});
+					this.state.socket.on('chatNotif', (data:any) => {
+						this.chatNotify(data.msg);
+					});
+					this.state.socket.on('chatNotifError', (data:any) => {
+						this.chatNotifyError(data.msg);
+					});
+					this.state.socket.on('inviteNotif', (data:any) => {
+						this.notify(data.login);
+					});
+					this.state.socket.on('inviteDuel', (data:any) => {
+						this.notifyDuel(data.adv, data.room);
+					});
+					this.state.socket.on('SearchStatus', (data:any) => {
+						this.setState({searching: data.bool});
+					})
+					this.state.socket.on('refreshUser', async (data:any) =>
 					{
-						this.state.User.waitingFriends.forEach(element => {
-							this.notify(element);
-						});
-						this.state.socket.on('kickConnect', () => {
-							window.location.href = "HTTP://" + window.location.host.split(":").at(0) + ":3000";
-						});
-						this.state.socket.on('openHistoryOf', (data:any) => {
-							this.setState({loginHistory: data.login, selector:'history'},() => window.history.pushState({selector: this.state.selector, loginHistory:this.state.loginHistory}, '', "/"))
-						});
-						this.state.socket.on('startGame', () => {
-							this.openGame();
-						});
-						this.state.socket.on('closeGame', () => {
-							this.closeGame();
-						});
-						this.state.socket.on('pendingSearch', () => {
-							this.pendingSearch();
-						});
-						this.state.socket.on('pendingInvite', (data:any) => {
-							this.pendingInvite(data.login);
-						});
-						this.state.socket.on('chatNotif', (data:any) => {
-							this.chatNotify(data.msg);
-						});
-						this.state.socket.on('chatNotifError', (data:any) => {
-							this.chatNotifyError(data.msg);
-						});
-						this.state.socket.on('inviteNotif', (data:any) => {
-							this.notify(data.login);
-						});
-						this.state.socket.on('inviteDuel', (data:any) => {
-							this.notifyDuel(data.adv, data.room);
-						});
-						this.state.socket.on('SearchStatus', (data:any) => {
-							this.setState({searching: data.bool});
-						})
-						this.state.socket.on('refreshUser', async (data:any) =>
+						if (this.state.User && this.state.User.login === data.login)
 						{
-							if (this.state.User && this.state.User.login === data.login)
-							{
-								await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
-									this.setState({ User: res.data })
-								})
-							}
-						});
-					}
-					else
-						console.log("ERROR socket")
+							await axios.get("HTTP://" + window.location.host.split(":").at(0) + ":667/auth/me?token=" + this.state.token).then(res => {
+								this.setState({ User: res.data })
+							})
+						}
+					});
+				}
 			}
 		}
 	}

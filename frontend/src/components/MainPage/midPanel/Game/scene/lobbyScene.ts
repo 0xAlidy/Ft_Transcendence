@@ -14,7 +14,6 @@ export class Lobby extends Scene {
 
 	init(data: any)
     {
-        console.log(data);
         this.socket = data.SOCKET as Socket;
         this.data.set('socket', this.socket);
     }
@@ -64,7 +63,6 @@ export class Lobby extends Scene {
         //     }
 		// });
         this.socket.on('me', function (data:any) {
-            console.log(data);
             username = data;
         });
         this.socket.on('changeState', function (data:any) {
@@ -77,13 +75,11 @@ export class Lobby extends Scene {
             // joinElement.getChildByName('rooms') = '';
             var y = 80;
             var current;
-            console.log('update');
             self.joinItem.forEach( item => { item.destroy()});
             data.join.forEach((room: string) =>
             {
                 if (room !== username + "'s_room")
                 {
-                    console.log(room)
                     self.joinItem.push(current = self.add.dom(600, 90 + y).createFromCache('joinItem'));
                     current.getChildByID('roomName').innerHTML = room;
                     current.addListener('click');
@@ -116,7 +112,6 @@ export class Lobby extends Scene {
             data.socket = self.socket;
             // if (self.sceneGame !== null)
             //     self.sceneGame.remove()
-            console.log(data)
             self.sceneGame = scene.launch('Game', data);
         });
     }

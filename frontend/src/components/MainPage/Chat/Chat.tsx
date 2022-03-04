@@ -69,7 +69,7 @@ const Popup = (props:any) => {
     );
   };
 
-export default class Chat extends React.Component <{socket:Socket, User:User}, {placeHolder:string,openNewPass:boolean,openNewRoom:boolean,RowsStyle:string;activeRoom:string, msgInput:string, rooms:any, loaded:boolean, date:string, loadEmoji:boolean,chosenEmoji:any,chatInput:any, messages:Msg[]}>{
+export default class Chat extends React.Component <{socket:Socket, User:User}, {openNewHelp:boolean,placeHolder:string,openNewPass:boolean,openNewRoom:boolean,RowsStyle:string;activeRoom:string, msgInput:string, rooms:any, loaded:boolean, date:string, loadEmoji:boolean,chosenEmoji:any,chatInput:any, messages:Msg[]}>{
 	mRef:HTMLDivElement | null;
 	inputRef:HTMLInputElement | null;
 
@@ -80,6 +80,7 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 		this.mRef = null;
 		this.inputRef = null;
 		this.state = {
+			openNewHelp:false,
 			placeHolder:"general",
 			openNewPass:false,
 			openNewRoom:false,
@@ -103,9 +104,11 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 			this.togglePopupPass()
 			this.setState({messages: data.msg, activeRoom: data.room})
         });
+		this.props.socket.on('help', (data:any) => {
+            this.handlePopUpHelp();
+        });
 		this.props.socket.on('loadRoom',  (data:any) => {
 			var ret;
-			console.log(data.room)
 			this.setState({openNewPass: false, openNewRoom:false})
 			ret = this.deleteMsgFromBlocked(data.msg)
 			this.setState({messages: []})
@@ -139,8 +142,7 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 			this.setState({placeHolder:ret})
 		});
 		this.props.socket.on('ReceiveMessage',  (data:any) => {
-			console.log(data);
-			if (data.dest == this.state.activeRoom){
+			if (data.dest === this.state.activeRoom){
 				if(this.props.User.blockedUsers.indexOf(data.sender) === -1)
 					this.setState({messages: this.state.messages.concat([data])})
 				if (this.mRef)
@@ -148,7 +150,6 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 			}
         });
 		this.props.socket.on('updateRooms', (data:any) => {
-			console.log(data.rooms.at(1).options);
 			data.rooms.at(1).options = this.deleteOtherPrivRoom(data.rooms.at(1).options);
 			data.rooms.at(1).options = this.setPrivName(data.rooms.at(1).options)
 			this.setState({rooms:data.rooms, loaded:true});
@@ -158,6 +159,7 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 			this.setState({messages: []})
 			this.setState({RowsStyle:"40px auto 40px"})
 			this.setState({openNewPass:true})
+			this.props.socket.emit('popUpActive', {room:this.state.activeRoom})
 		})
 	}
 	removeBlockedMessage(login:string){
@@ -234,13 +236,15 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 
 	sendMessage = () => {
 			var date = new Date()
+			if (this.state.openNewHelp === true || this.state.openNewPass === true || this.state.openNewRoom === true)
+				return
 			if (this.inputRef)
 				if (this.state.activeRoom && this.inputRef.value !== "") {
 					var toSend = {sender:this.props.User.login, dest:this.state.activeRoom, message:this.inputRef.value, date:date};
-					console.log(toSend)
 					this.props.socket.emit('sendMessage', toSend);
 					this.inputRef.value = "";
 			}
+		
 	}
 
 	sendNewRoom = () => {
@@ -273,8 +277,17 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 	handlePopUpRoom = () => {
 		if (this.state.openNewPass === false){
 			this.setState({messages: []})
+			this.props.socket.emit('popUpActive', {room:this.state.activeRoom})
 			this.setState({openNewRoom:true})
 		}
+    };
+
+	handlePopUpHelp = () => {
+        if (this.state.openNewPass === false && this.state.openNewRoom === false){
+            this.setState({messages: []})
+			this.props.socket.emit('popUpActive', {room:this.state.activeRoom})
+            this.setState({openNewHelp:true})
+        }
     };
 
 
@@ -285,12 +298,17 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 
 	togglePopupPass = () => {
         this.setState({openNewPass:false});
-        this.props.socket.emit('cancelPass');
+        this.props.socket.emit('cancelPass', {room:this.state.activeRoom});
+    }
+
+	togglePopupHelp = () => {
+        this.setState({openNewHelp:false});
+        this.props.socket.emit('cancelPass', {room:this.state.activeRoom});
     }
 
     togglePopupRoom = () => {
         this.setState({openNewRoom:false});
-        this.props.socket.emit('cancelPass');
+        this.props.socket.emit('cancelPass', {room:this.state.activeRoom});
     }
 
 	handleChange = (selectedOption:any) => {
@@ -335,6 +353,22 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
                         <button onClick={this.togglePopupRoom} className="buttonPopUp">Cancel</button>
                       </>}
                 	/>}
+
+				{this.state.openNewHelp === true && <Popup
+                    content={<>
+                        <p>welcome to the chat commands you have multiple command you can try:<br/>
+                            - /setadmin "nickname": to define another admin in the room<br/>
+                            - /password "new_password": to change existing password, you need to be owner of the room to do that<br/>
+                            - /delete password: delete the password of the room, you need to be owner of the room to do that<br/>
+                            - /unban "user_to_unban": to unban an user from the room<br/>
+                            - /mute "user_to_mute" "time_in_minute": to mute an user for a limited time<br/>
+                            - /delete :to delete the room, you need to be owner of the room to do that<br/>
+                            please use the good number of argument else your command will not work<br/>
+                            please be polite and don't insult other user</p>
+                        <button onClick={this.togglePopupHelp} className="buttonPopUp">Quit</button>
+                      </>}
+                    />}
+					
 
 					{this.state.openNewPass === true && <Popup
 						content={<>

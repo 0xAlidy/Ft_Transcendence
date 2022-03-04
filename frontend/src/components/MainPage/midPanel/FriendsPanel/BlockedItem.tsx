@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
 export default class BlockedItem extends React.Component<{login:string, User:User, socket:Socket},{UserBlocked:any}>{
+    _isMounted = false;
 	constructor(props:any){
 		super(props)
 		this.state = {
@@ -17,16 +18,24 @@ export default class BlockedItem extends React.Component<{login:string, User:Use
 	}
 
     async componentDidMount(){
+        this._isMounted = true;
         await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
 		.then(res => this.setState({ UserBlocked: res.data }))
         this.props.socket.on('refreshUser', async (data:any) => {
 			if (this.props.login === data.login)
 			{
 				await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
-				.then(res => this.setState({ UserBlocked: res.data }))
+				.then(res => {
+                    if(this._isMounted)
+                        this.setState({ UserBlocked: res.data })
+                })
 			}
 		});
     }
+
+    componentWillUnmount(){
+		this._isMounted = false;
+	}
 
     unban = () =>{
         this.props.socket.emit('unblockUser', { login:this.props.login })

@@ -64,7 +64,6 @@ export default class IGame extends React.Component<{socket:Socket}, { game:Phase
   }
 
   render() {
-    console.log('bizarre')
     return (<>
             <div id="phaser-game" style={{display:"none"}}/>
           </>);

@@ -18,21 +18,22 @@ export default class MatchMaking extends React.Component<{socket:Socket, user:Us
 			select: 0,
 			rooms:[]
 		}
-		this.props.socket.on('SpecRooms', (data:any) => {
-			data.spec.token = this.props.user.token
-			if(this._isMounted)
-				this.setState({rooms: data.spec})
-		})
 	}
 
 	componentDidMount(){
 		this._isMounted = true;
 		this.props.socket.emit("getRooms");
-		/* CHANGE SEARCH BY BACK NOT BY STATE */
+		this.props.socket.on('SpecRooms', (data:any) => {
+			data.spec.token = this.props.user.token
+			if (this._isMounted)
+				this.setState({rooms: data.spec})
+		})
 	}
+
 	componentWillUnmount(){
 		this._isMounted = false;
 	}
+	
 	OpenSpectate = () =>{
 		this.setState({ select:1 });
 		this.props.socket.emit("getRooms");

@@ -34,7 +34,6 @@ export class ChatGateway implements OnGatewayInit {
   async handleConnection(client:Socket, ...args: any[]){
     this.logger.log("New Conection on the Chat!");
     client.join("general");
-    console.log(client.handshake.query.token as string)
     var user = await this.userService.findOne(client.handshake.query.token as string)
 	this.clients.set(client.id,new clientClass(client, user.token, user.login));
 	await this.updateRoom();
@@ -125,7 +124,7 @@ export class ChatGateway implements OnGatewayInit {
 		setTimeout(async () => { 
 			await this.loadRoom(user._socket, 'general')
 			await this.setPlaceHolder(user._socket, 'general')
-			await this.chatService.deletePrivFromLogins(other._pseudo, user._pseudo)
+			// await this.chatService.deletePrivFromLogins(data.login, user._pseudo)
 			await this.updateRoom()
 		}, 1000);
     }
@@ -142,7 +141,6 @@ export class ChatGateway implements OnGatewayInit {
 		setTimeout(async () => { 
 			await this.loadRoom(user._socket, user._room)
 			await this.setPlaceHolder(user._socket, user._room)
-			await this.chatService.deletePrivFromLogins(other._pseudo, user._pseudo)
 			await this.updateRoom()
 		}, 1000);
     }
@@ -164,8 +162,13 @@ export class ChatGateway implements OnGatewayInit {
 
   @SubscribeMessage('cancelPass')
   async cancelPass(client:Socket, data:any){
-	  this.loadRoom(client,'general')
-	  this.setPlaceHolder(client,'general')
+      this.loadRoom(client,data.room)
+      this.setPlaceHolder(client,data.room)
+  }
+
+  @SubscribeMessage('popUpActive')
+  popUpActive(client:Socket,data:any){
+	  client.leave(data.room);
   }
 
 
@@ -184,7 +187,6 @@ export class ChatGateway implements OnGatewayInit {
 
 	async setPlaceHolder (client:Socket, room:string){
 		var ret:string = "";
-		console.log("'"+room+"'");
 		if(room.startsWith('-'))
 		{
 			var parse = room.split('-').at(1)
@@ -194,7 +196,6 @@ export class ChatGateway implements OnGatewayInit {
 				if (nick && nickOther){
 					var user = await this.userService.findOneByLogin(this.clients.get(client.id)._pseudo)
 					if (user){
-						console.log(nick+ " " + nickOther + " "+ user.nickname)
 						if (user.nickname === nick.nickname)
 							ret = nickOther.nickname
 						else
@@ -277,7 +278,6 @@ export class ChatGateway implements OnGatewayInit {
 
 
 async command(client: Socket,Message:Msg){
-	var help = "/help will help you to know the command you can use from the library for multiple line and other shit like this for long text so cute "
 	var resp = 0;
 
 	//nombre d arguments
@@ -288,7 +288,6 @@ async command(client: Socket,Message:Msg){
 	//getLogin by nickname
 	if (Message.message.split(' ').at(1) && numArg > 1)
 		var login = await this.userService.getLoginByNickname(Message.message.split(' ').at(1));
-	console.log(login);
 
 
 	//desactiver command dans les privRoom
@@ -297,7 +296,7 @@ async command(client: Socket,Message:Msg){
 
 
 	if (Message.message.startsWith('/help'))
-		client.emit('ReceiveMessage',{sender:'system' , dest:Message.dest, message: help, date: new Date()})
+        client.emit('help')
 	else if (Message.message.startsWith("/delete password")){
 		if (numArg === 2){
 			if(await this.chatService.isOwner(Message.sender,Message.dest) == true)
@@ -310,7 +309,6 @@ async command(client: Socket,Message:Msg){
 			client.emit('chatNotifError', {msg:'Wrong number of arguments'})
 	}
 	else if (Message.message.startsWith('/delete')) {
-		console.log("/delete")
 		if (numArg === 1){
 			if(await this.chatService.isOwner(Message.sender,Message.dest) == true || isPriv === true){
 				var user = this.getUserByName(Message.sender)
@@ -495,6 +493,10 @@ async updateRoom(){
 @SubscribeMessage('chatPrivate')
 async chatPriv(client:Socket, data:any){
 		var room = await this.chatService.privExist(data.name,data.other);
+
+		var mynick = await this.userService.getNickame(data.name)
+		var othernick = await this.userService.getNickame(data.other)
+
 		if(room){
 			await this.loadRoom(client,room.name)
 			this.setPlaceHolder(client, room.name)
@@ -504,8 +506,8 @@ async chatPriv(client:Socket, data:any){
 			await this.updateRoom();
 			await this.loadRoom(client,room.name)
 			this.setPlaceHolder(client, room.name)
-			client.emit('chatNotif', {msg:'You start a new private conversation with ' + data.name})
-			this.messageToOtherClient(data.name, 'chatNotif', {msg:data.other + " has start a new private conversation with you"})
+			client.emit('chatNotif', {msg:'You start a new private conversation with ' + mynick})
+			this.messageToOtherClient(data.name, 'chatNotif', {msg:othernick +"has start a new private conversation with you"})
 		}
 }
 

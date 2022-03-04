@@ -57,11 +57,9 @@ import { Room } from "src/chat/class/Room.class";
 		var all = await this.getAllPrivRoom()
 		var ret = null;
 		all.forEach((value:ChatRooms) => {
-			console.log(value.name + " "+ loginOne + loginTwo)
 			if(value.name.includes(loginOne) && value.name.includes(loginTwo))
 				ret = value
 		});
-		console.log(ret);
 		return ret;
 	}
 
@@ -131,7 +129,6 @@ import { Room } from "src/chat/class/Room.class";
 		 if(room.IsPassword === false)
 			ret =  true ;
 		room.users.forEach(element => {
-			console.log(user.login + " === " + element)
 			if(user.login === element)
 				ret = true
 		});
@@ -154,7 +151,6 @@ import { Room } from "src/chat/class/Room.class";
 		var room = await this.findRoomByName(dest)
 		if(room)
 		{
-			console.log(msg);
 			room.password = msg;
 			await this.ChatRoomsRepository.save(room);
 			return 0;
