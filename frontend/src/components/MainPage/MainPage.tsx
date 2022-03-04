@@ -21,7 +21,7 @@ import PopupNotif from './popupNotif';
 
 interface popupScore{open:boolean, win:boolean, adv:string}
 
-export default class MainPage extends React.Component<{ token: string, invite:boolean },{inGame:boolean, loginHistory:string|null, lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:User|null, popupOpen:boolean, popupInfo:popupScore | null}>{
+export default class MainPage extends React.Component<{ token: string, invite:boolean },{inGame:boolean, loginHistory:string|null, lastSelect:string, gameOpen:false, token:string, selector: string, socket: Socket|null, User:User|null, popupOpen:boolean, popupInfo:popupScore | null, searching:boolean}>{
 
 	menuState: any
 	selector : any;
@@ -38,7 +38,8 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			User: null,
 			popupOpen: false,
 			inGame:false,
-			token: this.props.token
+			token: this.props.token,
+			searching: false
 		};
 		this.ref = React.createRef();
 	}
@@ -107,6 +108,9 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						this.state.socket.on('inviteDuel', (data:any) => {
 							this.notifyDuel(data.adv, data.room);
 						});
+						this.state.socket.on('SearchStatus', (data:any) => {
+							this.setState({searching: data.bool});
+						})
 						this.state.socket.on('refreshUser', async (data:any) =>
 						{
 							if (this.state.User && this.state.User.login === data.login)
@@ -125,13 +129,13 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 	chatNotifyError = (msg:string) => {
 		toast.error(msg, {
 			position: "top-left",
-			autoClose: 10000,
+			autoClose: 5000,
 			hideProgressBar: false,
 			closeOnClick: true,
 			pauseOnHover: false,
 			draggable: true,
 			progress: undefined,
-			});
+		});
 	}
 	chatNotify = (msg:string) =>{
 		toast(msg, {
@@ -142,7 +146,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			pauseOnHover: false,
 			draggable: true,
 			progress: undefined,
-			});
+		});
 	}
 	notify = (login:string) => {
 		if (this.state.socket && this.state.User)
@@ -237,7 +241,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						{this.state.selector === 'profile' && <Profile token={this.props.token} socket={this.state.socket}/>}
 						{this.state.selector === 'history' && <History login={this.state.loginHistory} User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'admin' && <AdminPanel/>}
-						{this.state.selector === 'game' && <MatchMaking user={this.state.User} socket={this.state.socket}/>}
+						{this.state.selector === 'game' && <MatchMaking user={this.state.User} socket={this.state.socket} searching={this.state.searching}/>}
 						{this.state.selector === 'friends' && <FriendPanel User={this.state.User} socket={this.state.socket}/>}
 						{this.state.selector === 'rules' && <p>RULES</p>}
 						<IGame ref={this.ref} socket={this.state.socket}/>

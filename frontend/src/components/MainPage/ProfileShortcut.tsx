@@ -109,7 +109,7 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 						</div>
 						<div id='levelSection'>
 							<Gauge percent={this.state.User.xp.toString()} lvl={this.state.User.lvl.toString()}/>
-							<WinRate win={this.state.User.numberOfWin} loose={this.state.User.numberOfLose}/>
+							<WinRate win={this.state.User.numberOfWin} lose={this.state.User.numberOfLose}/>
 						</div>
 						<div id='buttonSection'>
 							{

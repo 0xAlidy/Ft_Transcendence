@@ -426,6 +426,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 }
     }
 
+    @SubscribeMessage("getStatus")
+
     @SubscribeMessage("getRooms")
     updateRoom(){
         var spec : specRooms[] = [];

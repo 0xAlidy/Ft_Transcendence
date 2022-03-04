@@ -43,6 +43,13 @@ export default class PopupNotif extends React.Component<{socket:Socket, User:Use
             this.setState({popupInfo:null})
 	}
 
+    resize = () => {
+        this.close();
+        let popup = document.querySelector(".popupNotif");
+		if(popup)
+            popup.classList.add("invisible");
+    }
+
     render(){
         return (
             <Popup open={this.state.popupInfo ? true : false} closeOnEscape={false}  closeOnDocumentClick={true} onOpen={this.open} onClose={this.close} >
@@ -50,19 +57,36 @@ export default class PopupNotif extends React.Component<{socket:Socket, User:Use
                     this.state.popupInfo &&
                     <div className='popupNotif'>
                         {
-                            this.state.popupInfo.win ? 
-                            <FontAwesomeIcon className="iconNotif" icon={solid('trophy')}/>
-                            :
-                            <FontAwesomeIcon className="iconNotif" icon={solid('skull-crossbones')}/>
+                             this.state.popupInfo.arcade ?
+                             <FontAwesomeIcon className="iconGameNotif" icon={solid('hat-wizard')}/>
+                             :
+                             <FontAwesomeIcon className="iconGameNotif" icon={solid('hand-fist')}/>
                         }
-                        {
-                            this.state.popupInfo.arcade ?
-                            <FontAwesomeIcon className="iconNotif" icon={solid('hat-wizard')}/>
-                            :
-                            <FontAwesomeIcon className="iconNotif" icon={solid('hand-fist')}/>
-                        }
-                        <ProfileShortCut login={this.state.popupInfo.adv} User={this.props.User} socket={this.props.socket} />
-                        <h3> 5 / {this.state.popupInfo.scoreLose}</h3>
+                        <div className='bodyPopupNotif'>
+                            <div className='elemBody'>
+                                <h3>Opponent</h3>
+                                <ProfileShortCut login={this.state.popupInfo.adv} User={this.props.User} socket={this.props.socket} />
+                            </div>
+                            <div className='elemBody'>
+                                {
+                                    this.state.popupInfo.win ? 
+                                    <FontAwesomeIcon className="iconNotif" icon={solid('trophy')}/>
+                                    :
+                                    <FontAwesomeIcon className="iconNotif" icon={solid('skull-crossbones')}/>
+                                }
+                            </div>
+                            <div className='elemBody'>
+                                <h3>Score</h3>
+                                {
+                                    this.state.popupInfo.win ?
+                                    <h4 style={{color:"var(--win-color)"}}>5 / {this.state.popupInfo.scoreLose}</h4>
+                                    :
+                                    <h4 style={{color:"var(--lose-color)"}}>{this.state.popupInfo.scoreLose} / 5</h4>
+                                }
+                            </div>
+                           
+                            
+                        </div>   
                     </div>
                 }
             </Popup>

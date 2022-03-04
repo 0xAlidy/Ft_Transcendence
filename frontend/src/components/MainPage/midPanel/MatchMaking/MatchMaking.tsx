@@ -10,28 +10,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
 
-export default class MatchMaking extends React.Component<{socket:Socket, user:User},{Searching:boolean, select:number, rooms:specRooms[]}>{
+export default class MatchMaking extends React.Component<{socket:Socket, user:User, searching:boolean},{select:number, rooms:specRooms[]}>{
 	constructor(props :any) {
 		super(props);
 		this.state = {
-			Searching:false,
 			select: 0,
 			rooms:[]
 		}
 	}
 
 	componentDidMount(){
-		this.props.socket.emit("getRooms")
+		this.props.socket.emit("getRooms");
 		this.props.socket.on('SpecRooms', (data:any) => {
 			data.spec.token = this.props.user.token
 			this.setState({rooms: data.spec})
 		})
-		this.props.socket.on('SearchStatus', (data:any) => {
-			this.setState({Searching: data.bool})
-		})
+		
 		/* CHANGE SEARCH BY BACK NOT BY STATE */
-
-	
 	}
 
 	OpenSpectate = () =>{
@@ -72,7 +67,7 @@ export default class MatchMaking extends React.Component<{socket:Socket, user:Us
 					<span id="shadow"></span>
 					{	this.state.select === 0 ?
 					 	<div id="vsPanel">
-							{	!this.state.Searching ?
+							{	!this.props.searching ?
 								<>
 									<h2>Select your game mode</h2>
 									<div className="gameButtonBox">

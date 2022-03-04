@@ -91,7 +91,11 @@ export function InviteButton(props:any){
 	}
 
 	props.socket.on('closeInviteNotif'+props.login, (data:any) => {
-				props.closeToast()
+		props.closeToast()
+	})
+
+	props.socket.on('startGame', () => {
+		props.closeToast()
 	})
 
 	return (
@@ -127,6 +131,9 @@ export function InviteButton(props:any){
 		props.socket.on('SearchStatus', (data:any) => {
 			if(data.bool === false)
 				props.closeToast()
+		})
+		props.socket.on('startGame', () => {
+			props.closeToast()
 		})
 		return (
 			<div className='buttonNotifWrap'>

@@ -2,11 +2,24 @@
     display: flex;
     justify-content: space-around;
     width: 80%;
-    font-size: 20px;
+    font-size: 25px;
     font-weight: bold;
     color: white;
     top :100px;
 }
+
+.winItem{
+    display: flex;
+}
+
+.trophy {
+    transform: translateX(-3px);
+}
+
+.winItem h4 {
+    margin: 0px 0px 0px 10px;
+}
+
 
 .score-win{
 	color: var(--win-color);

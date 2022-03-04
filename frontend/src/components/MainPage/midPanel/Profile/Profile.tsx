@@ -62,7 +62,7 @@ export default class Profile extends React.Component<{token:string, socket:Socke
 						<div id="statistics">
 							<h2>Statistics</h2>
 							<Gauge percent={this.state.User.xp.toString()} lvl={this.state.User.lvl.toString()}/>
-							<WinRate win={this.state.User.numberOfWin} loose={this.state.User.numberOfLose}/>
+							<WinRate win={this.state.User.numberOfWin} lose={this.state.User.numberOfLose}/>
 						</div>
 					</div>
 					<div id="security">

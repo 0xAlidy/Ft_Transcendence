@@ -78,19 +78,6 @@ export default class PopupStart extends React.Component<{ User:User, onChange:an
 			if (page)
 				page.classList.add("blurStart");
 		}
-		const box = document.getElementById("contentStart");
-		const shadow = document.getElementById("shadow");
-		const title = document.getElementById("title");
-		if (box !== null && shadow !== null && title !== null)
-			box.addEventListener("scroll", function() { 
-				if (this.scrollTop > 5)
-				{
-					shadow.style.boxShadow= "0px -11px 20px 13px #fee154";
-					title.style.boxShadow= "none";
-				}
-				else
-					title.style.boxShadow= "0px 16px 13px 0px hsl(0deg 0% 7%)";
-			});
 	}
 
 	close(){
