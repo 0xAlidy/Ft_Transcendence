@@ -40,11 +40,14 @@ export class roomClass{
 	}
 	clean()
 	{
-		this._room.emit('closeGame');
-		this._player._socket.leave(this._name)
+		this._player._isInvitable = true;
+		this._guest._isInvitable = true;
+		this._guest._room = 'lobby'
+		this._guest._socket.join('lobby')
+		this._guest._socket.leave(this._name)
+		this._player._room = 'lobby'
 		this._player._socket.join('lobby')
 		this._player._socket.leave(this._name)
-		this._player._socket.join('lobby')
 	}
 
 	async sleep(ms:number){
@@ -97,11 +100,13 @@ export class roomClass{
 		this.logger.log(client._login + " join" + this._name + "as P2.");
 	}
 	isSpectate(client: clientClass){
+		var ret = false;
 		this._spectators.forEach(element => {
+			console.log(element._login + " === " + client._login)
 			if(element._login === client._login)
-				return true;
+				ret = true;
 		});
-		return false
+		return ret;
 	}
 	addSpec(client: clientClass){
 		this._spectators.push(client);

@@ -8,7 +8,6 @@ import Menu from './Menu/Menu';
 import IGame from './midPanel/Game/Game';
 import Profile from './midPanel/Profile/Profile';
 import History from './midPanel/History/History';
-import AdminPanel from './midPanel/AdminPanel/AdminPanel';
 import axios from 'axios';
 import PopupStart from './PopupStart';
 import FriendPanel from './midPanel/FriendsPanel/FriendPanel';
@@ -18,6 +17,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {DuelButton, DuelNotif, InviteButton, InviteNotif, PendingInviteButton, PendingInviteNotif, PendingSearchButton, PendingSearchNotif} from '../utility/utility';
 import PopupNotif from './popupNotif';
+import Rules from './Rules'
 
 interface popupScore{open:boolean, win:boolean, adv:string}
 
@@ -240,10 +240,9 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 					<div className="game" id="game">
 						{this.state.selector === 'profile' && <Profile token={this.props.token} socket={this.state.socket}/>}
 						{this.state.selector === 'history' && <History login={this.state.loginHistory} User={this.state.User} socket={this.state.socket}/>}
-						{this.state.selector === 'admin' && <AdminPanel/>}
 						{this.state.selector === 'game' && <MatchMaking user={this.state.User} socket={this.state.socket} searching={this.state.searching}/>}
 						{this.state.selector === 'friends' && <FriendPanel User={this.state.User} socket={this.state.socket}/>}
-						{this.state.selector === 'rules' && <p>RULES</p>}
+						{this.state.selector === 'rules' && <Rules/>}
 						<IGame ref={this.ref} socket={this.state.socket}/>
 					{/* <button onClick={this.notify}>oui</button> */}
 					</div>

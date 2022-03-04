@@ -354,10 +354,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     async abandon(client: Socket){
         var user = this.clients.get(client.id);
         var room = this.rooms.get(this.clients.get(client.id)._room)
-
+        
         if (room)
         {
-            if(room.isSpectate(this.clients.get(client.id))){
+            if(room.isSpectate(user)){
+                room._spectators.splice(room._spectators.indexOf(user), 1);
+                user._socket.leave(room._name)
+                user._socket.join('lobby')
+                user._room = 'lobby';
                 client.emit('closeGame')
                 return;
             }
@@ -371,8 +375,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA, room._isArcade);
                 await this.userService.setInGameBylogin(room._player._login, 1);
                 await this.userService.setInGameBylogin(room._guest._login, 1);
-                room._player._isInvitable = true;
-                room._guest._isInvitable = true;
                 this.refreshFrontAll(room._player._login);
                 this.refreshFrontAll(room._guest._login);
             }
@@ -387,9 +389,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 room._guest._isInvitable = true;
                 this.refreshFrontAll(room._player._login);
                 this.refreshFrontAll(room._guest._login);
+            }
+            room.clean();
+            this.updateRoom();
         }
-        this.rooms.delete(room._name);
-        this.updateRoom();}
         // l'adversaire gagne le match
         // match history winner = 5 pts
         //
@@ -426,6 +429,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 var res = room.goal(data.goalID)
                 if(res!= 0)
                 {
+        		    room._room.emit('closeGame');
                     if(res == 1)
                     {
                         room._player._socket.emit('popupScore', {win: true, adv:room._guest._login, arcade: room._isArcade, scoreLose: room._scoreB})
@@ -453,18 +457,20 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         room._player._isInvitable = true;
                         room._guest._isInvitable = true;
                         this.matchsService.create(room._guest._login, 5, room._player._login, room._scoreA, room._isArcade);
+                        
                     }
                     room.clean();
+                    this.rooms.delete(room._name);
+                    this.updateRoom();
                 }
     }
-
-    @SubscribeMessage("getStatus")
 
     @SubscribeMessage("getRooms")
     updateRoom(){
         var spec : specRooms[] = [];
 
         this.rooms.forEach(element => {
+            console.log("roomname" + element._name + " isjoinable:" + element._isJoinable)
             if (element._isJoinable === false)
                 spec.push({name:element._name, left:element._player._login, right:element._guest._login, arcade:element._isArcade});
         });

@@ -40,12 +40,6 @@ export default class Menu extends React.Component<{blocked:boolean, forceHistory
         this.props.onChange('history')
     }
 
-    handleAdminClick = () =>{
-        if(this.props.blocked)
-            return;
-        this.props.onChange('admin')
-    }
-
     handleRulesClick = () =>{
         if(this.props.blocked)
             return;
@@ -82,13 +76,6 @@ export default class Menu extends React.Component<{blocked:boolean, forceHistory
                         <div className="menuButton" onClick={this.handleHistoryClick}>
                             <FontAwesomeIcon className="icon" icon={solid('table-list')}/>
                             <h2> HISTORY</h2>
-                        </div>
-                    }
-                    {
-                        this.props.selector !== 'admin' &&
-                        <div className="menuButton" onClick={this.handleAdminClick}>
-                            <FontAwesomeIcon className="icon" icon={solid('wrench')}/>
-                            <h2> ADMIN</h2>
                         </div>
                     }
                     {

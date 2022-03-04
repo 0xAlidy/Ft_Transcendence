@@ -7,6 +7,8 @@ import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 export default class WinRate extends React.Component<{ win:number, lose:number},{}>{
     render(){
         var ratio = (Math.round((this.props.win / this.props.lose) * 100)/100);
+        // if(isNaN(ratio))
+
         return (
         <div className="winRate">
             <div className='winItem'>

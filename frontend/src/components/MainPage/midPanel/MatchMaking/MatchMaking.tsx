@@ -11,26 +11,31 @@ import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
 
 export default class MatchMaking extends React.Component<{socket:Socket, user:User, searching:boolean},{select:number, rooms:specRooms[]}>{
+	_isMounted= false;
 	constructor(props :any) {
 		super(props);
 		this.state = {
 			select: 0,
 			rooms:[]
 		}
+		this.props.socket.on('SpecRooms', (data:any) => {
+			data.spec.token = this.props.user.token
+			if(this._isMounted)
+				this.setState({rooms: data.spec})
+		})
 	}
 
 	componentDidMount(){
+		this._isMounted = true;
 		this.props.socket.emit("getRooms");
-		this.props.socket.on('SpecRooms', (data:any) => {
-			data.spec.token = this.props.user.token
-			this.setState({rooms: data.spec})
-		})
-		
 		/* CHANGE SEARCH BY BACK NOT BY STATE */
 	}
-
+	componentWillUnmount(){
+		this._isMounted = false;
+	}
 	OpenSpectate = () =>{
 		this.setState({ select:1 });
+		this.props.socket.emit("getRooms");
 		let spectate = document.querySelector(".spectate");
 		let versus = document.querySelector(".versus");
         if (spectate && versus)

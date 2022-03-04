@@ -53,39 +53,113 @@ export class ChatGateway implements OnGatewayInit {
   async roomList(client:Socket, data:any){
 	await this.updateRoom();
   }
-  @SubscribeMessage('blockUserChat')
-  async blockUser(client: Socket, data:any){
-	  var other = this.getUserByName(data.login);
-	  var user = this.clients.get(client.id);
-	  var room;
-		await this.loadRoom(user._socket, 'general')
-		// await this.loadRoom(other._socket, 'general')
-		await this.setPlaceHolder(user._socket, 'general')
-		// await this.setPlaceHolder(other._socket, 'general')
-		// await this.chatService.deletePrivFromLogins(other._pseudo, user._pseudo)
-		await this.updateRoom()
-  }
+//   @SubscribeMessage('blockUserChat')
+//   async blockUser(client: Socket, data:any){
+// 	  var other = this.getUserByName(data.login);
+// 	  var user = this.clients.get(client.id);
+// 	  var room;
+// 		await this.loadRoom(user._socket, 'general')
+// 		await this.setPlaceHolder(user._socket, 'general')
+// 		await this.chatService.deletePrivFromLogins(other._pseudo, user._pseudo)
+// 		await this.updateRoom()
+//   }
 
-  @SubscribeMessage('unblockUserChat')
-  async unblockUser(client: Socket, data:any){
-	var other = this.getUserByName(data.login);
+//   @SubscribeMessage('unblockUserChat')
+//   async unblockUser(client: Socket, data:any){
+// 	var other = this.getUserByName(data.login);
 
-		await this.loadRoom(client, 'general')
-		await this.setPlaceHolder(client, 'general')
+// 		await this.loadRoom(client, 'general')
+// 		await this.setPlaceHolder(client, 'general')
+// 	}
+
+	refreshFrontBySocket(socket:Socket, login:string) {
+		if (socket)
+			socket.emit('refreshUser', {login: login});
 	}
-  @SubscribeMessage('password')
-  async password(client:Socket, data:any){
-    var room = await this.chatService.findRoomByName(data.room)
-	var cli = this.clients.get(client.id);
-    if (data.pass === room.password)
-    {
-	  await this.loadRoom(client, data.room)
-	  this.chatService.addUser(cli._pseudo,data.room)
-	  this.setPlaceHolder(client, data.room)
-      client.leave(cli._room)
-      client.join(data.room)
-      cli._room = data.room
+
+	@SubscribeMessage('removeFriend')
+    async removeFriend(client: Socket, data:any){
+        var user = this.clients.get(client.id);
+        await this.userService.removeFriend(user._token, data.login)
+        if (this.getUserByName(data.login))
+        {
+            this.refreshFrontBySocket(this.getUserByName(data.login)._socket, user._pseudo);
+            this.refreshFrontBySocket(this.getUserByName(data.login)._socket, data.login);
+        }
+        this.refreshFrontBySocket(client, data.login);
+        this.refreshFrontBySocket(client, user._pseudo);
     }
+
+    @SubscribeMessage('denyFriend')
+    async denyFriend(client: Socket, data:any){
+        var user = this.clients.get(client.id);
+		await this.userService.removeWaitingFriend(user._token, data.login)
+		user._socket.emit('closeInviteFriend', {login: data.login})
+		if (this.getUserByName(data.login))
+        	this.refreshFrontBySocket(this.getUserByName(data.login)._socket, user._pseudo);
+        //this.refreshFrontBySocket(client, data.login);
+    }
+
+	async denyFriendHL(login:string, otherLogin:string)
+	{
+		var other = await this.userService.findOneByLogin(login);
+		await this.userService.removeWaitingFriend(other.token, otherLogin)
+	}
+
+	@SubscribeMessage('blockUser')
+    async blockUser(client: Socket, data:any){
+        var other = this.getUserByName(data.login);
+        var user = this.clients.get(client.id);
+        // await this.chatService.deletePrivFromLogins(data.login, user._login)
+        await this.removeFriend(client, data);
+        await this.denyFriend(client, data);
+		if (other)
+        	await this.denyFriend(other._socket, {login: user._pseudo});
+		else
+			this.denyFriendHL(data.login, user._pseudo);
+        await this.userService.addBlocked(user._token, data.login);
+        if (other)
+            this.refreshFrontBySocket(other._socket, user._pseudo);
+        this.refreshFrontBySocket(client, data.login);
+        this.refreshFrontBySocket(client, user._pseudo);
+		setTimeout(async () => { 
+			await this.loadRoom(user._socket, 'general')
+			await this.setPlaceHolder(user._socket, 'general')
+			await this.chatService.deletePrivFromLogins(other._pseudo, user._pseudo)
+			await this.updateRoom()
+		}, 1000);
+    }
+
+	@SubscribeMessage('unblockUser')
+    async unblockUser(client: Socket, data:any){
+        var other = this.getUserByName(data.login);
+        var user = this.clients.get(client.id);
+        await this.userService.removeBlocked(user._token, data.login);
+        if (this.getUserByName(data.login))
+            this.refreshFrontBySocket(this.getUserByName(data.login)._socket, user._pseudo);
+        this.refreshFrontBySocket(client, data.login);
+        this.refreshFrontBySocket(client, user._pseudo);
+		setTimeout(async () => { 
+			await this.loadRoom(user._socket, user._room)
+			await this.setPlaceHolder(user._socket, user._room)
+			await this.chatService.deletePrivFromLogins(other._pseudo, user._pseudo)
+			await this.updateRoom()
+		}, 1000);
+    }
+
+	@SubscribeMessage('password')
+	async password(client:Socket, data:any){
+		var room = await this.chatService.findRoomByName(data.room)
+		var cli = this.clients.get(client.id);
+		if (data.pass === room.password)
+		{
+			await this.loadRoom(client, data.room)
+			this.chatService.addUser(cli._pseudo,data.room)
+			this.setPlaceHolder(client, data.room)
+			client.leave(cli._room)
+			client.join(data.room)
+			cli._room = data.room
+   		}
   }
 
   @SubscribeMessage('cancelPass')

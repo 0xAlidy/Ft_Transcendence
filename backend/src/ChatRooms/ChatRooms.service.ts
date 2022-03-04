@@ -38,8 +38,8 @@ import { Room } from "src/chat/class/Room.class";
 	}
 	async deletePrivFromLogins(loginOne:string, loginTwo:string)
 	{
-		var room;
-		if(room = this.privExist(loginOne,loginTwo))
+		var room  = await this.privExist(loginOne,loginTwo);
+		if(room)
 		{
 			this.ChatRoomsRepository.delete(room)
 		}

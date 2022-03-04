@@ -41,9 +41,9 @@ export default class FriendItem extends React.Component<{login:string, User:User
 		return "var(--lose-color)";
 	}
 
-    mp = () =>{
-
-    }
+    joinPriv = () => {
+		this.props.socket.emit('chatPrivate', {name:this.props.login , other:this.props.User.login})
+	}
 
     history = () =>{
 		this.props.socket.emit('askHistoryOf', {login: this.props.login})
@@ -70,7 +70,7 @@ export default class FriendItem extends React.Component<{login:string, User:User
                     <ProfileShortCut login={this.props.login} socket={this.props.socket} User={this.props.User}/>
                     <div style={{backgroundColor:this.setColorStatus(this.state.UserFriend.status)}} className="statusFriendItem"/>
                     <h3>{this.state.UserFriend.nickname}</h3>
-                    <FontAwesomeIcon className="chooseButton" onClick={this.mp} icon={solid('message')}/>
+                    <FontAwesomeIcon className="chooseButton" onClick={this.joinPriv} icon={solid('message')}/>
                     <FontAwesomeIcon className="chooseButton" onClick={this.history} icon={solid('table-list')}/>
                     <FontAwesomeIcon className="chooseButton" onClick={() => this.inviteDuel(false)} icon={solid('hand-fist')}/>
                     <FontAwesomeIcon className="chooseButton" onClick={() => this.inviteDuel(true)} icon={solid('hat-wizard')}/>

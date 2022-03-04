@@ -98,63 +98,67 @@ export class NotifGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 		this.refreshFrontBySocket(client, user._login);
 	}
 
-	@SubscribeMessage('removeFriend')
-	async removeFriend(client: Socket, data:any){
-		var user = this.clients.get(client.id);
-		await this.userService.removeFriend(user._token, data.login)
-		if (this.getUserClassbyName(data.login))
-		{
-			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, user._login);
-			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, data.login);
-		}
-		this.refreshFrontBySocket(client, data.login);
-		this.refreshFrontBySocket(client, user._login);
-	}
+	// @SubscribeMessage('removeFriend')
+    // async removeFriend(client: Socket, data:any){
+    //     var user = this.clients.get(client.id);
+    //     await this.userService.removeFriend(user._token, data.login)
+    //     if (this.getUserClassbyName(data.login))
+    //     {
+    //         this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, user._login);
+    //         this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, data.login);
+    //     }
+    //     this.refreshFrontBySocket(client, data.login);
+    //     this.refreshFrontBySocket(client, user._login);
+    // }
 
-	@SubscribeMessage('denyFriend')
-	async denyFriend(client: Socket|undefined, data:any){
-		if(client){
-			var user = this.clients.get(client.id);
-			user._socket.emit('closeInviteFriend', {login: data.login})
-		}
-		var userdb = await this.userService.findOneByLogin(data.other)
-		await this.userService.removeWaitingFriend(userdb.token, data.login)
-		if (this.getUserClassbyName(data.login))
-			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, user._login);
-		//this.refreshFrontBySocket(client, data.login);
-	}
+    // @SubscribeMessage('denyFriend')
+    // async denyFriend(client: Socket, data:any){
+    //     var user = this.clients.get(client.id);
+	// 	await this.userService.removeWaitingFriend(user._token, data.login)
+	// 	user._socket.emit('closeInviteFriend', {login: data.login})
+	// 	if (this.getUserClassbyName(data.login))
+    //     	this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, user._login);
+    //     //this.refreshFrontBySocket(client, data.login);
+    // }
 
-	@SubscribeMessage('blockUser')
-	async blockUser(client: Socket, data:any){
-		var other = this.getUserClassbyName(data.login);
-		var user = this.clients.get(client.id);
-		// await this.chatService.deletePrivFromLogins(data.login, user._login)
+	// async denyFriendHL(login:string, otherLogin:string)
+	// {
+	// 	var other:User = await this.userService.findOneByLogin(login);
+	// 	await this.userService.removeWaitingFriend(other.token, otherLogin)
+	// }
 
-		await this.removeFriend(client, data);
-		await this.denyFriend(client, data);
-		await this.denyFriend(other._socket, {login: user._login, other:data.login});
-		await this.userService.addBlocked(user._token, data.login);
-		if (other)
-			this.refreshFrontBySocket(other._socket, user._login);
-		this.refreshFrontBySocket(client, data.login);
-		this.refreshFrontBySocket(client, user._login);
-		if (other)
-			other._socket.emit('reloadChatBlock', data)
-			user._socket.emit('reloadChatBlock',data)
-	}
+    // @SubscribeMessage('blockUser')
+    // async blockUser(client: Socket, data:any){
+    //     var other = this.getUserClassbyName(data.login);
+    //     var user = this.clients.get(client.id);
+    //     // await this.chatService.deletePrivFromLogins(data.login, user._login)
+    //     await this.removeFriend(client, data);
+    //     await this.denyFriend(client, data);
+	// 	if (other)
+    //     	await this.denyFriend(other._socket, {login: user._login});
+	// 	else
+	// 		this.denyFriendHL(data.login, user._login);
+    //     await this.userService.addBlocked(user._token, data.login);
+    //     if (other)
+    //         this.refreshFrontBySocket(other._socket, user._login);
+    //     this.refreshFrontBySocket(client, data.login);
+    //     this.refreshFrontBySocket(client, user._login);
+    //     other._socket.emit('reloadChatBlock', data)
+    //     user._socket.emit('reloadChatBlock',data)
+    // }
 
-	@SubscribeMessage('unblockUser')
-	async unblockUser(client: Socket, data:any){
-		var other = this.getUserClassbyName(data.login);
-		var user = this.clients.get(client.id);
-		await this.userService.removeBlocked(user._token, data.login);
-		if (this.getUserClassbyName(data.login))
-			this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, user._login);
-		this.refreshFrontBySocket(client, data.login);
-		this.refreshFrontBySocket(client, user._login);
-		other._socket.emit('reloadChatUnblock',data)
-		user._socket.emit('reloadChatUnblock',data)
-	}
+	// @SubscribeMessage('unblockUser')
+    // async unblockUser(client: Socket, data:any){
+    //     var other = this.getUserClassbyName(data.login);
+    //     var user = this.clients.get(client.id);
+    //     await this.userService.removeBlocked(user._token, data.login);
+    //     if (this.getUserClassbyName(data.login))
+    //         this.refreshFrontBySocket(this.getUserClassbyName(data.login)._socket, user._login);
+    //     this.refreshFrontBySocket(client, data.login);
+    //     this.refreshFrontBySocket(client, user._login);
+    //     other._socket.emit('reloadChatUnblock',data)
+    //     user._socket.emit('reloadChatUnblock',data)
+    // }
 
 	@SubscribeMessage('askHistoryOf')
 	async askHistoryOf(client: Socket, data:any){
