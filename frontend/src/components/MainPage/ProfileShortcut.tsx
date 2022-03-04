@@ -37,6 +37,7 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 			}
 		});
 	}
+
 	componentWillUnmount(){
 		this._isMounted = false;
 	}
