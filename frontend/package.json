@@ -40,7 +40,8 @@
     "react-webcam": "^6.0.0",
     "reactjs-popup": "^2.0.5",
     "sass": "^1.49.0",
-    "socket.io-client": "^4.4.0"
+    "socket.io-client": "^4.4.0",
+    "uuid": "^8.3.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -69,6 +70,7 @@
   },
   "devDependencies": {
     "@types/react-avatar-editor": "^10.3.6",
+    "@types/uuid": "^8.3.4",
     "typescript": "^3.9.10"
   }
 }

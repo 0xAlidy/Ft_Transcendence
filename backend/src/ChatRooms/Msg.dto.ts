@@ -3,4 +3,5 @@ export interface Msg{
 	dest:string;
 	message:string;
 	date:Date;
+	uuid:string;
   }

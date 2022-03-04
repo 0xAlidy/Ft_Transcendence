@@ -6,7 +6,7 @@ import { ChatRoomsService } from 'src/ChatRooms/ChatRooms.service';
 import { Client } from 'socket.io/dist/client';
 import { UsersService } from 'src/user/users.service';
 import { Msg } from 'src/ChatRooms/Msg.dto';
-
+import { v4 as uuidv4 } from 'uuid';
 
 
 interface opt {
@@ -91,6 +91,7 @@ export class ChatGateway implements OnGatewayInit {
   @SubscribeMessage('cancelPass')
   async cancelPass(client:Socket, data:any){
 	  this.loadRoom(client,'general')
+	  this.setPlaceHolder(client,'general')
   }
 
 
@@ -155,18 +156,22 @@ export class ChatGateway implements OnGatewayInit {
   }
   async loadRoomAll(roomName:string, moveRoom:string)
   {
-		var msg = await this.chatService.getMessagesByRoom('general');
 		var room = await this.chatService.findRoomByName(roomName);
-		if (room.users){
+		if (room && room.users){
 			room.users.forEach((value) =>{
 	  			var user = this.getUserByName(value)
-				if (user._room !== "")
-					user._socket.leave(user._room);
-				user._socket.join(moveRoom)
-				this.messageToOtherClient(value, 'loadRoom', {room:moveRoom, msg:msg})
+				if (user)
+				{	
+					if (user._room !== "")
+						user._socket.leave(user._room);
+					user._socket.join(moveRoom)
+					this.setPlaceHolder(user._socket, moveRoom)
+					this.loadRoom(user._socket, moveRoom)
+				}
 			})
 		}
   }
+
   async loadRoom(client:Socket, roomName:string)
   {
 	  var user = this.clients.get(client.id);
@@ -175,6 +180,7 @@ export class ChatGateway implements OnGatewayInit {
 	  user._socket.join(roomName)
 	  user._room = roomName;
 	  var msg = await this.chatService.getMessagesByRoom(roomName);
+	  
 	  client.emit('loadRoom', {room:roomName, msg:msg})
   }
   getUserByName(str:string):null|clientClass{
@@ -213,11 +219,23 @@ async command(client: Socket,Message:Msg){
 
 	if (Message.message.startsWith('/help'))
 		client.emit('ReceiveMessage',{sender:'system' , dest:Message.dest, message: help, date: new Date()})
+	else if (Message.message.startsWith("/delete password")){
+		if (numArg === 2){
+			if(await this.chatService.isOwner(Message.sender,Message.dest) == true)
+				if (await this.chatService.removePass(Message.dest))
+					client.emit('chatNotif', {msg:'the password has been removed'})
+				else
+					client.emit('chatNotifError', {msg:'error'})
+				}
+		else
+			client.emit('chatNotifError', {msg:'Wrong number of arguments'})
+	}
 	else if (Message.message.startsWith('/delete')) {
 		console.log("/delete")
 		if (numArg === 1){
 			if(await this.chatService.isOwner(Message.sender,Message.dest) == true){
-				await this.loadRoomAll(Message.sender,'general')
+				var user = this.getUserByName(Message.sender)
+				await this.loadRoomAll(user._room,'general')
 				if(await this.chatService.deleteRoom(Message.dest) === 0){
 					this.server.to(Message.dest).emit('chatNotif',{msg:'the room' + Message.dest + 'has been deleted, you are now logged to general'})
 					await this.updateRoom();
@@ -299,7 +317,7 @@ async command(client: Socket,Message:Msg){
 		if (numArg === 2){
 			if(await this.chatService.isOwner(Message.sender,Message.dest) == true){
 				//argument
-				 resp = await  this.chatService.changePass(login, Message.dest)
+				 resp = await  this.chatService.changePass(Message.message.split(' ').at(1), Message.dest)
 				if (resp === 0)
 					 client.emit('chatNotif', {msg:'the password has been changed'})
 				if (resp === 1)
@@ -308,17 +326,6 @@ async command(client: Socket,Message:Msg){
 			else
 			client.emit('chatNotifError', {msg:'Only owner can do that'})
 		}
-		else
-			client.emit('chatNotifError', {msg:'Wrong number of arguments'})
-	}
-	else if (Message.message.startsWith("/delete password")){
-		if (numArg === 2){
-			if(await this.chatService.isOwner(Message.sender,Message.dest) == true)
-				if (await this.chatService.removePass(Message.dest))
-					client.emit('chatNotif', {msg:'the password has been removed'})
-				else
-					client.emit('chatNotifError', {msg:'error'})
-				}
 		else
 			client.emit('chatNotifError', {msg:'Wrong number of arguments'})
 	}
@@ -346,9 +353,9 @@ async command(client: Socket,Message:Msg){
 
 async normalMessage(client:Socket, Msg:Msg)
 {
-	// var room = await this.chatService.findRoomByName(Msg.dest)
 	if (await this.chatService.isBanned(Msg.sender, Msg.dest) == false){
 		if (await this.chatService.canTalk(Msg.sender, Msg.dest) === true){
+			Msg.uuid = uuidv4()
 			await this.chatService.addMessage(Msg)
 			this.server.to(Msg.dest).emit('ReceiveMessage', Msg)
 		}
@@ -422,7 +429,7 @@ async chatPriv(client:Socket, data:any){
 
 
 @SubscribeMessage('sendMessage')
-  async handleMessage(client: Socket, Message: {sender: string, dest: string, message: string, date: Date }) {
+  async handleMessage(client: Socket, Message: {uuid:string, sender: string, dest: string, message: string, date: Date }) {
 	if (Message.message.startsWith('/') )
 		this.command(client, Message);
 	else {

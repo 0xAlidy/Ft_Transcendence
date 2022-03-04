@@ -44,24 +44,7 @@ import { Socket } from "socket.io-client";
 import { User } from '../../../interfaces'
 import MessageItem from "./message";
 import Select from 'react-select';
-
-export class Message{
-	message: string;
-	dest: string;
-	sender: string;
-	date: Date;
-	constructor(Cont:string , dest:string, sender: string, date:Date){
-		this.message = Cont;
-		this.sender = sender;
-		this.dest = dest;
-		this.date = date;
-	}
-	resetCont(){
-		this.message = "";
-		this.sender = "";
-		this.dest = "";
-	}
-}
+// import { v4 as uuidv4 } from 'uuid';
 
 export interface Msg{
 	id: number;
@@ -69,6 +52,7 @@ export interface Msg{
 	dest:string;
 	message:string;
 	date:Date;
+	uuid:string;
 }
 export interface opt{
 	value:string;
@@ -124,6 +108,7 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 			console.log(data.room)
 			this.setState({openNewPass: false, openNewRoom:false})
 			ret = this.deleteMsgFromBlocked(data.msg)
+			this.setState({messages: []})
 			this.setState({messages: ret, activeRoom: data.room})
 			if (this.mRef)
 				this.mRef.scrollTop = this.mRef.scrollHeight;
@@ -311,7 +296,7 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 		return (
 			<div className="chatContainer" id="chatContainer" style={{gridTemplateRows:this.state.RowsStyle}}>
 				<div className="chattext">
-					<input onKeyPress={this.inputEnter} onChange={(e:any) => this.setState({chatInput: this.state.chatInput + e.target.value})} ref={this.setInputRef} type="text" placeholder="     Text message" autoComplete="off" id='inputText' className="inputChat" />
+					<input onKeyPress={this.inputEnter} ref={this.setInputRef} type="text" placeholder="     Text message" autoComplete="off" id='inputText' className="inputChat" />
 
 				</div>
 				<div className="chatsend">
@@ -355,9 +340,9 @@ export default class Chat extends React.Component <{socket:Socket, User:User}, {
 					/>}
 
 					{
-						this.state.messages.map((item, index) => {
+						this.state.messages.map((item:Msg, index) => {
 							return (
-								<MessageItem key={'key'+ index} msg={item} User={this.props.User} activeRoom={this.state.activeRoom} socket={this.props.socket} class={(item.sender === this.props.User.login) ? true :false}/>
+								<MessageItem key={item.uuid} msg={item} User={this.props.User} activeRoom={this.state.activeRoom} socket={this.props.socket} class={(item.sender === this.props.User.login) ? true :false}/>
 							)
 						})
 					}

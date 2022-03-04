@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
 export default class ProfileShortCut extends React.Component<{login: string, socket: Socket,  User: User}, {canOpen: boolean, opened: boolean, User: UserPublic | null, img: string | null}> {
+	_isMounted = false;
 	constructor(props:any) {
 		super(props)
 		this.state = {
@@ -22,8 +23,12 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 	};
 
 	async componentDidMount() {
+		this._isMounted = true;
 		await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
-		.then(res => this.setState({ User: res.data }))
+		.then(res => {
+			if(this._isMounted)
+				this.setState({ User: res.data })
+		})
 		this.props.socket.on('refreshUser', async (data:any) => {
 			if (this.props.login === data.login)
 			{
@@ -32,18 +37,8 @@ export default class ProfileShortCut extends React.Component<{login: string, soc
 			}
 		});
 	}
-	async componentDidUpdate(prevProps:any) {
-		if(prevProps.login !== this.props.login){
-			await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
-			.then(res => this.setState({ User: res.data }))
-			this.props.socket.on('refreshUser', async (data:any) => {
-				if (this.props.login === data.login)
-				{
-					await axios.get("http://" + window.location.host.split(":").at(0) + ":667/user/getUser?token="+ this.props.User.token +'&name='+ this.props.login)
-					.then(res => this.setState({ User: res.data }))
-				}
-			});
-		}
+	componentWillUnmount(){
+		this._isMounted = false;
 	}
 
 	addFriend = () => {

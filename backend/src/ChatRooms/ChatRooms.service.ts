@@ -154,6 +154,7 @@ import { Room } from "src/chat/class/Room.class";
 		var room = await this.findRoomByName(dest)
 		if(room)
 		{
+			console.log(msg);
 			room.password = msg;
 			await this.ChatRoomsRepository.save(room);
 			return 0;
