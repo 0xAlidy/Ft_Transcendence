@@ -145,24 +145,24 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @SubscribeMessage('createPrivateSession')
     createPrivateSession(client: Socket, data: any){
         var cli = this.clients.get(client.id);
-        if(this.rooms.get("Privroom"+cli._login))
+        if (this.rooms.get("Privroom"+cli._login))
         {
             cli._socket.emit('chatNotifError',{msg: 'you are already pending for a match!'})
             return;
         }
-        if(this.isInPrivateRoom(cli._login))
+        if (this.isInPrivateRoom(cli._login))
         {
             cli._socket.emit('chatNotifError',{msg: 'You have to accept/refuse the request!'})
             return;
         }
         var guest = this.getUserClassbyName(data.login);
-        if(!guest){
+        if (!guest){
             cli._socket.emit('chatNotifError',{msg: 'your friend is not connected!'})
             return
         }
-        if(guest._isInvitable){
-            cli._socket.emit('pendingInvite', {login:guest._login})
-            guest._socket.emit('inviteDuel', {adv:cli._login, room:'Privroom' +cli._login})
+        if (guest._isInvitable){
+            cli._socket.emit('pendingInvite', {login:guest._login, arcade:data.arcade})
+            guest._socket.emit('inviteDuel', {adv:cli._login, room:'Privroom' + cli._login, arcade:data.arcade})
             this.rooms.set('Privroom' +cli._login, new roomClass('Privroom' +cli._login, cli , guest, this.server.to('Privroom' +cli._login), data.arcade));
         }
         else
@@ -265,7 +265,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             this.updateRoom();
         }
         else
-            client.emit('pendingSearch');
+            client.emit('pendingSearch', {arcade:true});
     }
 
     @SubscribeMessage('searchRoom')
@@ -302,7 +302,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             this.updateRoom();
         }
         else
-            client.emit('pendingSearch');
+            client.emit('pendingSearch', {arcade:false});
     }
     // @SubscribeMessage('createRoom')
     // createRoom(client: Socket): void {

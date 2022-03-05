@@ -89,11 +89,11 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 					this.state.socket.on('closeGame', () => {
 						this.closeGame();
 					});
-					this.state.socket.on('pendingSearch', () => {
-						this.pendingSearch();
+					this.state.socket.on('pendingSearch', (data:any) => {
+						this.pendingSearch(data.arcade);
 					});
 					this.state.socket.on('pendingInvite', (data:any) => {
-						this.pendingInvite(data.login);
+						this.pendingInvite(data.login, data.arcade);
 					});
 					this.state.socket.on('chatNotif', (data:any) => {
 						this.chatNotify(data.msg);
@@ -105,7 +105,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 						this.notify(data.login);
 					});
 					this.state.socket.on('inviteDuel', (data:any) => {
-						this.notifyDuel(data.adv, data.room);
+						this.notifyDuel(data.adv, data.room, data.arcade);
 					});
 					this.state.socket.on('SearchStatus', (data:any) => {
 						this.setState({searching: data.bool});
@@ -123,6 +123,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			}
 		}
 	}
+
 	chatNotifyError = (msg:string) => {
 		toast.error(msg, {
 			position: "top-left",
@@ -134,6 +135,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			progress: undefined,
 		});
 	}
+
 	chatNotify = (msg:string) =>{
 		toast(msg, {
 			position: "top-left",
@@ -145,6 +147,7 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			progress: undefined,
 		});
 	}
+
 	notify = (login:string) => {
 		if (this.state.socket && this.state.User)
 		{
@@ -156,10 +159,11 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			// toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>); PAS TOUCHE JE VAIS OUBLIER SINON
 		}
 	}
-	pendingSearch = () => {
+
+	pendingSearch = (arcade:string) => {
 		if (this.state.socket && this.state.User)
 		{
-			var ret: JSX.Element = <PendingSearchNotif />
+			var ret: JSX.Element = <PendingSearchNotif arcade={arcade}/>
 			var er: JSX.Element =  <PendingSearchButton socket={this.state.socket}/>
 			toast(ret, { className: 'notif', bodyClassName: "bodyNotif", closeButton:er });
 
@@ -167,10 +171,11 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			// toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>); PAS TOUCHE JE VAIS OUBLIER SINON
 		}
 	}
-	pendingInvite = (login:string) => {
+
+	pendingInvite = (login:string, arcade:boolean) => {
 		if (this.state.socket && this.state.User)
 		{
-			var ret: JSX.Element = <PendingInviteNotif user={this.state.User} socket={this.state.socket} login={login}/>
+			var ret: JSX.Element = <PendingInviteNotif user={this.state.User} socket={this.state.socket} login={login} arcade={arcade}/>
 			var er: JSX.Element =  <PendingInviteButton login={login} socket={this.state.socket}/>
 			toast(ret, { className: 'notif', bodyClassName: "bodyNotif", closeButton:er });
 
@@ -178,10 +183,11 @@ export default class MainPage extends React.Component<{ token: string, invite:bo
 			// toast.dark(<DuelNotif token={this.props.token} login={login} socket={this.state.socket}/>); PAS TOUCHE JE VAIS OUBLIER SINON
 		}
 	}
-	notifyDuel = (login:string, room:string) => {
+
+	notifyDuel = (login:string, room:string, arcade:boolean) => {
 		if(this.state.socket && this.state.User && this.state.inGame === false)
 		{
-			var ret: JSX.Element = <DuelNotif user={this.state.User} login={login} socket={this.state.socket}/>
+			var ret: JSX.Element = <DuelNotif user={this.state.User} login={login} socket={this.state.socket} arcade={arcade}/>
 			var er: JSX.Element = <DuelButton room={room} login={login} socket={this.state.socket}/>
 			toast(ret, { className: 'notif', bodyClassName: "bodyNotif", closeButton:er });
 			// onCLose refreshUser ?

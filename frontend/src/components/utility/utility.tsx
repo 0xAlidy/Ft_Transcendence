@@ -25,12 +25,15 @@ export default class Nickname extends React.Component<{login:string},{nickname:s
 	}
 };
 
+
+/* FRIEND REQUEST POPUP */
+
 export function InviteNotif(props:{login:string, socket:Socket, user:User}){
 	return (
 		<>
 			<div className='titleNotif'>
-				<FontAwesomeIcon className="iconNewFriend" icon={solid('user-plus')}/>
-				<h2>You received a friend request !</h2>
+				<FontAwesomeIcon className="NotifIcon" icon={solid('user-plus')}/>
+				<h2>You received a friend request</h2>
 			</div>
 			<div className='profileNotif'>
 				<ProfileShortCut login={props.login} User={props.user} socket={props.socket} />
@@ -77,9 +80,10 @@ export function InviteButton(props:any){
 	)
   }
 
+/* DUEL POPUP */
+
   export function DuelButton(props:any){
 
-	// Vous pouvez utiliser des Hooks ici !
 	const accept = () =>{
 		props.socket.emit('joinPrivateSession', {room:props.room})
 		props.closeToast()
@@ -110,18 +114,26 @@ export function InviteButton(props:any){
 	)
   }
 
-  export function DuelNotif(props:{login:string, user:User, socket:Socket}){
-	// Vous pouvez utiliser des Hooks ici !
+  	export function DuelNotif(props:{login:string, user:User, socket:Socket, arcade:boolean}){
+		return (
+			<>
+				<div className='titleNotif'>
+					{
+						props.arcade ?
+							<FontAwesomeIcon className="NotifIcon" icon={solid('hat-wizard')}/>
+						:
+							<FontAwesomeIcon className="NotifIcon" icon={solid('hand-fist')}/>
+					}
+					<h2>You received a duel request</h2>
+				</div>
+				<div className='profileNotif'>
+					<ProfileShortCut login={props.login} User={props.user} socket={props.socket} />
+					<h3>{props.login}</h3>
+				</div>
+			</>
+		);
+	}
 
-	return (<>
-			{"⚔️ You receive a duel request!"}
-			<br/>
-			<div style={{display: 'flex',width:'100%'}}>
-				<ProfileShortCut login={props.login} User={props.user} socket={props.socket} />
-			</div>
-		</>
-	);
-}
 	export function PendingSearchButton(props:any){
 
 		const deny = () =>{
@@ -144,14 +156,20 @@ export function InviteButton(props:any){
 		)
 	  }
 
-	  export function PendingSearchNotif(){
-		// Vous pouvez utiliser des Hooks ici !
-
-		return (<>
-				{"⚔️ Waiting for oponent..."}
-			</>
+	  export function PendingSearchNotif(props:any){
+		return (
+			<div className='titleNotif'>
+				{
+					props.arcade ?
+						<FontAwesomeIcon className="NotifIcon" icon={solid('hat-wizard')}/>
+					:
+						<FontAwesomeIcon className="NotifIcon" icon={solid('hand-fist')}/>
+				}
+				<h2>Waiting for an opponent . . .</h2>
+			</div>
 		);
 	}
+
 	export function PendingInviteButton(props:any){
 
 		const deny = () =>{
@@ -174,14 +192,21 @@ export function InviteButton(props:any){
 		)
 	  }
 
-	  export function PendingInviteNotif(props:{login:string, user:User, socket:Socket}){
-		// Vous pouvez utiliser des Hooks ici !
-
-		return (<>
-				{"⚔️ Waiting for " + props.login}
-				<br/>
-				<div style={{display: 'flex',width:'100%'}}>
+	  export function PendingInviteNotif(props:{login:string, user:User, socket:Socket, arcade:boolean}){
+		return (
+			<>
+				<div className='titleNotif'>
+					{
+						props.arcade ?
+							<FontAwesomeIcon className="NotifIcon" icon={solid('hat-wizard')}/>
+						:
+							<FontAwesomeIcon className="NotifIcon" icon={solid('hand-fist')}/>
+					}
+					<h2>Duel request sent</h2>
+				</div>
+				<div className='profileNotif'>
 					<ProfileShortCut login={props.login} User={props.user} socket={props.socket} />
+					<h3>{props.login}</h3>
 				</div>
 			</>
 		);

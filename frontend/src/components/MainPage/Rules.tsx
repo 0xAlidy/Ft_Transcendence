@@ -3,7 +3,7 @@ import '../../styles/MainPage/Rules.css'
 
 export default class Rules extends React.Component<{},{}>{
 	async componentDidMount(){
-		/*const box = document.getElementById("boxRules");
+		const box = document.getElementById("boxRules");
 		const shadow = document.getElementById("shadow");
 		const title = document.getElementById("title");
 		if (box !== null && shadow !== null && title !== null)
@@ -15,7 +15,7 @@ export default class Rules extends React.Component<{},{}>{
 				}
 				else
 					title.style.boxShadow= "0px 16px 13px 0px hsl(0deg 0% 7%)";
-			});*/
+			});
 	};
 
 	render(){
