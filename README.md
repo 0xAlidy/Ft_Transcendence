@@ -1,24 +1,19 @@
-FT_Transcendence
+# FT_Transcendence
 
-Avant de lancer l'application :
+This project is about creating a website for the mighty Pong contest!
 
-- Creer un .env dans le backend avec : 
-    IP={IP_HOST}  # Localhost ou 10.2.2.8 par exemple
+# Before launching the application
+
+- Creat .env in backend : 
+    IP={IP_HOST}  # Localhost or 10.2.2.8 (for example)
     ID={Application_ID} # oauth
     SECRET={Application_secret} #oauth
 
-- Verifier l'id dans HomePage.tsx soit la meme que dans le backend
+- Check the id in HomePage.tsx is the same as in the backend
 
-
-Creer un compte invité :
-
-http://localhost:667/auth/invite?login=
-
-INFORMATIONS :
-
-- Front : http://localhost:3000
-
-- PgAdmin: http://localhost:5050
-
-PGADMIN_DEFAULT_EMAIL == user42@42lyon.fr
-PGADMIN_DEFAULT_PASSWORD == password
+# Informations
+- Create a guest account : http://{IP_HOST}:667/auth/invite?login={login}
+- Front : http://{IP_HOST}:3000
+- PgAdmin: http://{IP_HOST}:5050
+- PGADMIN_DEFAULT_EMAIL == user42@42lyon.fr
+- PGADMIN_DEFAULT_PASSWORD == password
