@@ -18,8 +18,7 @@ This project is about creating a website for the mighty Pong contest!
 - PGADMIN_DEFAULT_EMAIL == user42@42lyon.fr
 - PGADMIN_DEFAULT_PASSWORD == password
 
-# Gallery
-![Capture](https://user-images.githubusercontent.com/52237626/169101314-d10f0e13-7808-44e4-8d11-d2d31554b320.PNG)
-![Screen_Shot_2022-03-15_at_4 09 29_PM](https://user-images.githubusercontent.com/52237626/169101403-d021f132-25c1-46ae-b866-736b70eb5e09.png)
-![Screen_Shot_2022-03-15_at_4 05 45_PM](https://user-images.githubusercontent.com/52237626/169100895-9f88382c-5823-422d-b93d-fabb07aedc3d.png)
-![Screen_Shot_2022-03-15_at_4 12 54_PM](https://user-images.githubusercontent.com/52237626/169100871-961ba717-68b2-4d82-8a94-54bdb406b1c8.png)
+# Gallery![Capture](https://user-images.githubusercontent.com/52237626/169102020-07931afe-c0fd-423d-bd5c-fe322efc32a1.PNG)
+![Screen_Shot_2022-03-15_at_4 09 29_PM](https://user-images.githubusercontent.com/52237626/169102032-af7bf47e-66ce-4db4-b385-505819336183.png)
+![Screen_Shot_2022-03-15_at_4 10 45_PM](https://user-images.githubusercontent.com/52237626/169102049-426101db-041d-4735-8bf2-d33142a78560.png)
+![Screen_Shot_2022-03-15_at_4 12 54_PM](https://user-images.githubusercontent.com/52237626/169102061-2e59f56b-29fe-4071-bbac-13b082ecb511.png)
